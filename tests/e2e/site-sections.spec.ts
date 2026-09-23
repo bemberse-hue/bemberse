@@ -56,3 +56,49 @@ test('las secciones nombran el dolor explicitamente', async ({ page }) => {
   const mentionsTool = ['checklist', 'notion', 'sheets'].some((word) => porQueText.includes(word));
   expect(mentionsTool, 'la seccion "por-que-fallan" debe mencionar checklist, Notion o Sheets').toBe(true);
 });
+
+test('hay al menos 3 diagramas SVG inline, todos en trazo hueso sin relleno', async ({ page }) => {
+  await page.goto(SITE_URL);
+
+  const diagramCount = await page.locator('.site-diagram svg').count();
+  expect(diagramCount).toBeGreaterThanOrEqual(3);
+
+  const shapeResults = await page.$$eval('.site-diagram svg circle, .site-diagram svg line, .site-diagram svg rect', (shapes) =>
+    shapes.map((shape) => {
+      const s = getComputedStyle(shape as Element);
+      return { fill: s.fill, stroke: s.stroke };
+    }),
+  );
+  expect(shapeResults.length).toBeGreaterThan(0);
+  for (const { fill, stroke } of shapeResults) {
+    expect(fill === 'none' || fill === 'rgba(0, 0, 0, 0)').toBe(true);
+    expect(stroke).toBe('rgb(245, 245, 240)'); // --bone
+  }
+});
+
+test('sin imagenes de red fuera del logo (los diagramas son SVG, no archivos)', async ({ page }) => {
+  const imageRequests: string[] = [];
+  page.on('request', (req) => {
+    if (req.resourceType() === 'image' && !req.url().endsWith('logo.png')) {
+      imageRequests.push(req.url());
+    }
+  });
+  await page.goto(SITE_URL);
+  await page.waitForTimeout(500);
+  expect(imageRequests, `peticiones de imagen inesperadas: ${imageRequests.join(', ')}`).toHaveLength(0);
+});
+
+test('con prefers-reduced-motion, los diagramas no llevan ninguna animacion corriendo', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto(SITE_URL);
+
+  const runningAnimations = await page.evaluate(() => {
+    const diagrams = document.querySelectorAll('.site-diagram svg, .site-diagram svg *');
+    let count = 0;
+    diagrams.forEach((el) => {
+      count += (el as SVGElement).getAnimations?.().length ?? 0;
+    });
+    return count;
+  });
+  expect(runningAnimations).toBe(0);
+});
