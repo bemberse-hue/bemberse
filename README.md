@@ -228,19 +228,36 @@ vacío. Puedes:
 
 ---
 
-## Despliegue (Vercel, $0.00)
+## Despliegue
 
-No hay backend que desplegar. `vercel.json` ya apunta a `npm run build` con
-salida en `dist/`:
+El repo esta en **https://github.com/bemberse-hue/bemberse** y cada push a
+`main` republica el sitio automaticamente mediante GitHub Actions
+(`.github/workflows/deploy.yml`).
 
-```bash
-npm run build
-vercel deploy --prod   # o conecta el repo en el dashboard de Vercel
-```
+**Preview en vivo:** https://bemberse-hue.github.io/bemberse/
 
-Cualquier hosting estático (Netlify, GitHub Pages, Cloudflare Pages) sirve
-igual, ya que `dist/` es HTML+CSS+JS puro sin variables de entorno ni
-funciones serverless.
+### Para servirlo en bemberse.com
+
+El dominio ya apunta a **Vercel** (`216.198.79.1`, y `www` como CNAME a
+`vercel-dns-017.com`), asi que el camino natural es conectar este repo a
+Vercel:
+
+1. Entra a https://vercel.com/new e importa `bemberse-hue/bemberse`.
+2. Vercel detecta Vite solo; `vercel.json` ya fija `npm run build` y
+   `dist/` como salida. Deploy.
+3. En **Settings -> Domains** del proyecto, asigna `bemberse.com` (y
+   `www.bemberse.com`). Como el DNS ya apunta a Vercel, se activa sin
+   tocar el registrador.
+
+Alternativa, si prefieres servirlo desde GitHub Pages: apunta el dominio a
+los registros A de GitHub (`185.199.108.153`, `185.199.109.153`,
+`185.199.110.153`, `185.199.111.153`) y añade el dominio con
+`gh api -X PUT repos/bemberse-hue/bemberse/pages -f cname=bemberse.com`.
+Eso lo sacaria de Vercel.
+
+Cualquier otro hosting estatico (Netlify, Cloudflare Pages) sirve igual:
+`dist/` es HTML+CSS+JS puro, sin variables de entorno ni funciones
+serverless.
 
 ---
 
