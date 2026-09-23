@@ -264,6 +264,65 @@ export function getBlockerTitles(graph: RuntimeGraph, nodeId: string): string[] 
     .map((n) => n.title);
 }
 
+/**
+ * Profundidad de bloqueo: cuantos pasos de dependencia sin cumplir separan
+ * a un nodo de ser accionable. 0 para unlocked/core/completed. Memoizado
+ * porque en un DAG convergente el mismo prerequisito se visita desde
+ * varias ramas.
+ */
+function blockDepth(graph: RuntimeGraph, nodeId: string, memo: Map<string, number>): number {
+  const cached = memo.get(nodeId);
+  if (cached !== undefined) return cached;
+
+  const node = graph.nodes.get(nodeId);
+  if (!node || node.status !== 'locked') {
+    memo.set(nodeId, 0);
+    return 0;
+  }
+
+  // Marcar antes de recurrir: en un DAG valido esto nunca se lee (no hay
+  // ciclos), pero evita una recursion infinita si algo se coló sin pasar
+  // por validateRawGraph.
+  memo.set(nodeId, 0);
+  const depths = node.dependsOn.map((id) => blockDepth(graph, id, memo));
+  const depth = 1 + (depths.length > 0 ? Math.max(...depths) : 0);
+  memo.set(nodeId, depth);
+  return depth;
+}
+
+/**
+ * El camino hacia atras desde un nodo bloqueado hasta el prerequisito
+ * accionable que, en el fondo, es lo que lo bloquea. En cada paso elige,
+ * entre los prerequisitos directos aun no completados, el que esta MAS
+ * lejos de ser accionable — no el primero que aparezca en `dependsOn`.
+ *
+ * Nodo desbloqueado, en curso, completado, o inexistente -> cadena vacia.
+ */
+export function getBlockerChain(graph: RuntimeGraph, nodeId: string): RuntimeNode[] {
+  const start = graph.nodes.get(nodeId);
+  if (!start || start.status !== 'locked') return [];
+
+  const memo = new Map<string, number>();
+  const path: RuntimeNode[] = [start];
+  const visited = new Set([start.id]);
+  let current = start;
+
+  while (current.status === 'locked') {
+    const candidates = current.dependsOn
+      .map((id) => graph.nodes.get(id))
+      .filter((n): n is RuntimeNode => !!n && !visited.has(n.id) && n.status !== 'completed');
+
+    if (candidates.length === 0) break; // no deberia pasar en un grafo valido, pero no cuelga
+
+    candidates.sort((a, b) => blockDepth(graph, b.id, memo) - blockDepth(graph, a.id, memo));
+    current = candidates[0];
+    path.push(current);
+    visited.add(current.id);
+  }
+
+  return path;
+}
+
 export function graphStats(graph: RuntimeGraph): { total: number; completed: number; unlocked: number; locked: number } {
   let completed = 0;
   let unlocked = 0;
