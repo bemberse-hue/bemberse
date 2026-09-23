@@ -1,0 +1,474 @@
+[
+  {
+    "id": "E1-T1",
+    "title": "Añadir Vitest, Playwright y el guardián de tamaño",
+    "epic": "01-verificacion",
+    "dependencies": [],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN `npm run typecheck` runs THE SYSTEM SHALL exit 0 with `strict` true in tsconfig.json.",
+      "WHEN `npm test` runs THE SYSTEM SHALL execute Vitest and exit 0 with at least one passing test.",
+      "WHEN `npm run test:e2e` runs against the dev server THE SYSTEM SHALL execute Playwright and exit 0.",
+      "WHEN `npm run size` runs after a build THE SYSTEM SHALL exit 0 while the total gzipped size of dist/ is at or under 120KB, and exit non-zero above it."
+    ],
+    "verify": [
+      "npm run typecheck",
+      "npm test",
+      "npm run build",
+      "npm run size",
+      "npm run test:e2e"
+    ],
+    "checkpoint": "step-01-test-harness",
+    "files": [
+      "package.json",
+      "scripts/check-size.mjs",
+      "tests/unit/sanity.test.ts",
+      "tests/e2e/smoke.spec.ts"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E1-T2",
+    "title": "Fijar el motor DAG actual con tests de caracterización",
+    "epic": "01-verificacion",
+    "dependencies": [
+      "E1-T1"
+    ],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN the characterization suite runs THE SYSTEM SHALL assert, without modifying src/core/graph.ts, that a node whose dependencies are all completed reports status `unlocked` and one with a pending dependency reports `locked`.",
+      "WHEN the characterization suite runs THE SYSTEM SHALL assert that completing a node promotes exactly the nodes whose every prerequisite is now met, and that undoing it restores the previous statuses.",
+      "WHEN the characterization suite runs THE SYSTEM SHALL assert that a node with no outgoing edges is reported as a goal and that a graph containing a cycle is rejected by validateRawGraph.",
+      "WHEN `npx vitest run tests/unit/graph-characterization.test.ts` runs THE SYSTEM SHALL execute at least 12 assertions and exit 0."
+    ],
+    "verify": [
+      "npx vitest run tests/unit/graph-characterization.test.ts",
+      "git diff --exit-code src/core/graph.ts"
+    ],
+    "checkpoint": "step-02-characterization",
+    "files": [
+      "tests/unit/graph-characterization.test.ts",
+      "tests/fixtures/graphs.ts"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E2-T1",
+    "title": "Reescribir los tokens visuales a base monocroma",
+    "epic": "02-sistema-visual",
+    "dependencies": [
+      "E1-T1"
+    ],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN the token test scans src/style.css THE SYSTEM SHALL find zero hex, rgb() or hsl() color literals outside the `:root` block.",
+      "WHEN the page loads THE SYSTEM SHALL compute `font-family` containing `Oswald` for h1 and containing `IBM Plex Sans` for body text.",
+      "WHEN the page loads THE SYSTEM SHALL compute the body background as rgb(5, 5, 5) and the body color as rgb(245, 245, 240).",
+      "WHEN the token test reads `:root` THE SYSTEM SHALL find the nine documented tokens (--bg, --bone, --gray-1..4, --accent, --accent-soft, --danger) each defined exactly once."
+    ],
+    "verify": [
+      "npx vitest run tests/unit/tokens.test.ts",
+      "npx playwright test tests/e2e/design-tokens.spec.ts",
+      "npm run build"
+    ],
+    "checkpoint": "step-03-tokens",
+    "files": [
+      "src/style.css",
+      "index.html",
+      "tests/unit/tokens.test.ts",
+      "tests/e2e/design-tokens.spec.ts"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E2-T2",
+    "title": "Aplicar la base monocroma a los componentes existentes",
+    "epic": "02-sistema-visual",
+    "dependencies": [
+      "E2-T1"
+    ],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN the app renders any screen THE SYSTEM SHALL compute `border-radius: 0px` for every element matching `.btn`.",
+      "WHEN the app renders any screen THE SYSTEM SHALL compute a background for every `.btn` that is either transparent or rgb(245, 245, 240), never a purple value.",
+      "WHEN any single screen is rendered THE SYSTEM SHALL apply the accent color to at most one visible element, counting computed color, background-color and stroke.",
+      "WHEN `npm run build` runs THE SYSTEM SHALL exit 0 and `npm run size` SHALL report the gzipped bundle at or under 120KB."
+    ],
+    "verify": [
+      "npx playwright test tests/e2e/design-tokens.spec.ts",
+      "npm run build",
+      "npm run size"
+    ],
+    "checkpoint": "step-04-components-restyle",
+    "files": [
+      "src/style.css",
+      "src/viz/colors.ts",
+      "src/ui/icons.ts"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E3-T1",
+    "title": "Partir el build en sitio y app con Vite multipágina",
+    "epic": "03-sitio",
+    "dependencies": [
+      "E1-T2",
+      "E2-T1"
+    ],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN `npm run build` runs THE SYSTEM SHALL emit both dist/index.html and dist/app/index.html.",
+      "WHEN the smoke suite runs with BASE_PATH=/app/ against the preview server THE SYSTEM SHALL pass every parity row: a seeded profile skips onboarding, a seeded graph is restored and drawn, Space opens execution mode, and Esc closes it.",
+      "WHEN a visitor with existing IndexedDB data loads `/` THE SYSTEM SHALL redirect to /app/ via the temporary compatibility script marked `legacy-redirect`.",
+      "WHEN `npm run typecheck` runs THE SYSTEM SHALL exit 0."
+    ],
+    "verify": [
+      "npm run typecheck",
+      "npm run build",
+      "test -f dist/app/index.html",
+      "test -f dist/index.html",
+      "npx playwright test tests/e2e/smoke.spec.ts"
+    ],
+    "checkpoint": "step-05-mpa-split",
+    "files": [
+      "vite.config.ts",
+      "index.html",
+      "app/index.html",
+      "src/main.ts",
+      "src/site.ts",
+      "tests/e2e/smoke.spec.ts",
+      "playwright.config.ts"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E3-T2",
+    "title": "Construir las secciones del sitio explicativo",
+    "epic": "03-sitio",
+    "dependencies": [
+      "E3-T1"
+    ],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN `/` loads THE SYSTEM SHALL render seven sections with the ids hero, dolor, por-que-fallan, como-funciona, quienes-somos, hub, cta, each containing a visible heading.",
+      "WHEN `/` loads THE SYSTEM SHALL render the animated node background in the hero without requesting any network image.",
+      "WHEN the CTA link is activated THE SYSTEM SHALL navigate to /app/ and the engine SHALL boot there.",
+      "WHEN the sections render THE SYSTEM SHALL name the pain explicitly: the copy of the `dolor` and `por-que-fallan` sections SHALL mention procrastinación, abrumación, and at least one of checklist, Notion or Sheets."
+    ],
+    "verify": [
+      "npx playwright test tests/e2e/site-sections.spec.ts",
+      "npm run build",
+      "npm run size"
+    ],
+    "checkpoint": "step-06-site-sections",
+    "files": [
+      "index.html",
+      "src/site.ts",
+      "src/site.css",
+      "src/ui/siteSections.ts",
+      "tests/e2e/site-sections.spec.ts"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E3-T3",
+    "title": "Dibujar los diagramas minimalistas en blanco y negro",
+    "epic": "03-sitio",
+    "dependencies": [
+      "E3-T2"
+    ],
+    "priority": "p1",
+    "acceptance": [
+      "WHEN `/` loads THE SYSTEM SHALL render at least three inline SVG diagrams, each with `stroke` set to the bone token and `fill` of `none` on every drawn shape.",
+      "WHEN `/` loads THE SYSTEM SHALL issue zero network requests for image files (svg, png, jpg, webp) other than the brand logo.",
+      "WHEN `prefers-reduced-motion: reduce` is set THE SYSTEM SHALL render every diagram in its final state with no running CSS animation."
+    ],
+    "verify": [
+      "npx playwright test tests/e2e/site-sections.spec.ts",
+      "npm run size"
+    ],
+    "checkpoint": "step-07-diagrams",
+    "files": [
+      "src/ui/diagrams.ts",
+      "src/site.css",
+      "tests/e2e/site-sections.spec.ts"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E4-T1",
+    "title": "Calcular la cadena de bloqueo en el motor DAG",
+    "epic": "04-candados",
+    "dependencies": [
+      "E1-T2"
+    ],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN getBlockerChain is called with a locked node in a linear graph THE SYSTEM SHALL return the ordered path from that node back to the nearest actionable prerequisite, both endpoints included.",
+      "WHEN getBlockerChain is called with a node blocked by several prerequisites THE SYSTEM SHALL return the chain through the prerequisite that is itself furthest from being actionable.",
+      "WHEN getBlockerChain is called with an unlocked or completed node THE SYSTEM SHALL return an empty array.",
+      "WHEN the existing characterization suite runs after this change THE SYSTEM SHALL still exit 0, proving no exported behaviour moved."
+    ],
+    "verify": [
+      "npx vitest run tests/unit/blockers.test.ts",
+      "npx vitest run tests/unit/graph-characterization.test.ts",
+      "npm run typecheck"
+    ],
+    "checkpoint": "step-08-blocker-chain",
+    "files": [
+      "src/core/graph.ts",
+      "tests/unit/blockers.test.ts"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E4-T2",
+    "title": "Trazar la cadena al pulsar un nodo bloqueado",
+    "epic": "04-candados",
+    "dependencies": [
+      "E4-T1",
+      "E2-T2"
+    ],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN a locked node is clicked THE SYSTEM SHALL keep the element with id `inspector` hidden and SHALL add the class `trace-active` to the edges that form the blocker chain.",
+      "WHEN a locked node is clicked THE SYSTEM SHALL render a lock glyph inside that node, distinguishable without relying on color.",
+      "WHEN an unlocked or completed node is clicked THE SYSTEM SHALL open the inspector as it does today.",
+      "WHEN `prefers-reduced-motion: reduce` is set and a locked node is clicked THE SYSTEM SHALL mark the chain without running the travelling dash animation."
+    ],
+    "verify": [
+      "npx playwright test tests/e2e/locks.spec.ts",
+      "npm run typecheck",
+      "npm run build"
+    ],
+    "checkpoint": "step-09-lock-trace",
+    "files": [
+      "src/viz/GraphView.ts",
+      "src/main.ts",
+      "src/style.css",
+      "tests/e2e/locks.spec.ts"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E4-T3",
+    "title": "Destellar el nodo que acaba de desbloquearse",
+    "epic": "04-candados",
+    "dependencies": [
+      "E4-T2"
+    ],
+    "priority": "p1",
+    "acceptance": [
+      "WHEN a task is completed and a dependent node becomes unlocked THE SYSTEM SHALL add the class `node--just-unlocked` to that node and remove it once the animation ends.",
+      "WHEN a task is completed THE SYSTEM SHALL remove the lock glyph from every node that is no longer locked.",
+      "WHEN the source tree is scanned THE SYSTEM SHALL contain no reference to `AudioContext` or `new Audio(`, because this product ships no sound."
+    ],
+    "verify": [
+      "npx playwright test tests/e2e/locks.spec.ts",
+      "bash -c '! grep -rEn \"AudioContext|new Audio\\(\" src/'",
+      "npm run build"
+    ],
+    "checkpoint": "step-10-unlock-flash",
+    "files": [
+      "src/viz/GraphView.ts",
+      "src/style.css",
+      "tests/e2e/locks.spec.ts"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E5-T1",
+    "title": "Calcular ruta crítica y carga aguas abajo",
+    "epic": "05-dendrograma",
+    "dependencies": [
+      "E4-T1"
+    ],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN countDownstream is called on a node THE SYSTEM SHALL return the number of distinct nodes reachable from it following edge direction, counting each node once even when several paths reach it.",
+      "WHEN getCriticalPath is called THE SYSTEM SHALL return the actionable-to-goal path whose completion unlocks the largest number of distinct nodes, together with that count.",
+      "WHEN getCriticalPath is called on a graph with no actionable node THE SYSTEM SHALL return an empty path and a count of zero.",
+      "WHEN `npx vitest run tests/unit/critical-path.test.ts` runs THE SYSTEM SHALL exit 0 covering a linear graph, a converging graph and a graph with two independent goals."
+    ],
+    "verify": [
+      "npx vitest run tests/unit/critical-path.test.ts",
+      "npx vitest run tests/unit/graph-characterization.test.ts",
+      "npm run typecheck"
+    ],
+    "checkpoint": "step-11-critical-path",
+    "files": [
+      "src/core/graph.ts",
+      "tests/unit/critical-path.test.ts"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E5-T2",
+    "title": "Calcular el layout horizontal del dendrograma",
+    "epic": "05-dendrograma",
+    "dependencies": [
+      "E5-T1"
+    ],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN the layout runs on any valid DAG THE SYSTEM SHALL assign every node a depth strictly greater than the depth of each of its prerequisites.",
+      "WHEN the layout runs THE SYSTEM SHALL assign no two nodes the same pair of coordinates.",
+      "WHEN the layout runs twice on the same graph THE SYSTEM SHALL return identical coordinates, so the view does not jump between renders.",
+      "WHEN the layout runs THE SYSTEM SHALL contain no DOM or SVG reference, keeping it testable without a browser."
+    ],
+    "verify": [
+      "npx vitest run tests/unit/dendrogram-layout.test.ts",
+      "bash -c '! grep -En \"document\\.|SVGElement\" src/viz/dendrogramLayout.ts'",
+      "npm run typecheck"
+    ],
+    "checkpoint": "step-12-dendrogram-layout",
+    "files": [
+      "src/viz/dendrogramLayout.ts",
+      "tests/unit/dendrogram-layout.test.ts"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E5-T3",
+    "title": "Renderizar la vista Dendrograma",
+    "epic": "05-dendrograma",
+    "dependencies": [
+      "E5-T2",
+      "E2-T2"
+    ],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN the dendrogram renders a graph with N edges THE SYSTEM SHALL draw N `path` elements whose `d` attribute uses a cubic Bézier command.",
+      "WHEN the dendrogram renders THE SYSTEM SHALL show, on every node that has descendants, a numeric badge equal to its downstream count.",
+      "WHEN the dendrogram renders THE SYSTEM SHALL mark the critical path edges with the class `edge--critical` and no other edges with it.",
+      "WHEN a node is clicked in the dendrogram THE SYSTEM SHALL behave exactly as in the network view: locked nodes trace their chain, others open the inspector."
+    ],
+    "verify": [
+      "npx playwright test tests/e2e/dendrogram.spec.ts",
+      "npm run typecheck",
+      "npm run build"
+    ],
+    "checkpoint": "step-13-dendrogram-view",
+    "files": [
+      "src/viz/DendrogramView.ts",
+      "src/style.css",
+      "tests/e2e/dendrogram.spec.ts"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E5-T4",
+    "title": "Conmutar entre vista Red y Dendrograma",
+    "epic": "05-dendrograma",
+    "dependencies": [
+      "E5-T3"
+    ],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN the view switch is activated THE SYSTEM SHALL replace the active renderer and leave exactly one root svg inside the universe container.",
+      "WHEN the view is switched and the page is reloaded THE SYSTEM SHALL restore the same view, having stored the choice as `preferredView` in the existing profile store.",
+      "WHEN a profile saved before this change is read THE SYSTEM SHALL default to the network view without raising an error and without upgrading the IndexedDB version.",
+      "WHEN the view is switched THE SYSTEM SHALL preserve the completed set and the current next step, unchanged."
+    ],
+    "verify": [
+      "npx playwright test tests/e2e/dendrogram.spec.ts",
+      "npx playwright test tests/e2e/smoke.spec.ts",
+      "bash -c 'grep -n \"DB_VERSION = 2\" src/db/database.ts'"
+    ],
+    "checkpoint": "step-14-view-switcher",
+    "files": [
+      "src/ui/viewSwitcher.ts",
+      "src/main.ts",
+      "src/db/database.ts",
+      "src/core/types.ts",
+      "tests/e2e/dendrogram.spec.ts"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E6-T1",
+    "title": "Ilustrar el estado vacío del universo",
+    "epic": "06-ux-retorno",
+    "dependencies": [
+      "E3-T3",
+      "E5-T4"
+    ],
+    "priority": "p1",
+    "acceptance": [
+      "WHEN the engine loads with no stored graph THE SYSTEM SHALL show the empty state containing at least one inline SVG diagram drawn only with bone strokes and no color fill.",
+      "WHEN the empty state is shown THE SYSTEM SHALL offer exactly one primary action that opens the guided wizard, plus one secondary text link that loads the sample graph.",
+      "WHEN the sample graph is loaded from the empty state THE SYSTEM SHALL hide the empty state and render the graph in the currently selected view."
+    ],
+    "verify": [
+      "npx playwright test tests/e2e/smoke.spec.ts",
+      "npm run build"
+    ],
+    "checkpoint": "step-15-empty-state",
+    "files": [
+      "src/ui/emptyState.ts",
+      "app/index.html",
+      "src/style.css",
+      "tests/e2e/smoke.spec.ts"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E6-T2",
+    "title": "Cerrar la navegación de retorno y el foco por teclado",
+    "epic": "06-ux-retorno",
+    "dependencies": [
+      "E6-T1",
+      "E4-T3"
+    ],
+    "priority": "p1",
+    "acceptance": [
+      "WHEN the engine at /app/ is open THE SYSTEM SHALL expose a link back to `/` that is reachable by keyboard and has an accessible name.",
+      "WHEN Tab is pressed repeatedly from page load THE SYSTEM SHALL move focus through the view switch, the new-entry action and the back link, each showing a visible focus ring.",
+      "WHEN a graph node receives focus and Enter is pressed THE SYSTEM SHALL perform the same action as a click on that node.",
+      "WHEN Escape is pressed THE SYSTEM SHALL close, in order of precedence, the execution panel, then the inspector, then the wizard, matching today's behaviour."
+    ],
+    "verify": [
+      "npx playwright test tests/e2e/smoke.spec.ts",
+      "npx playwright test tests/e2e/locks.spec.ts",
+      "npm run build"
+    ],
+    "checkpoint": "step-16-nav-return",
+    "files": [
+      "src/ui/hud.ts",
+      "app/index.html",
+      "src/viz/GraphView.ts",
+      "src/viz/DendrogramView.ts",
+      "src/style.css"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E6-T3",
+    "title": "Retirar el redirector temporal de compatibilidad",
+    "epic": "06-ux-retorno",
+    "dependencies": [
+      "E6-T2"
+    ],
+    "priority": "p1",
+    "acceptance": [
+      "WHEN the source tree is scanned THE SYSTEM SHALL contain no occurrence of `legacy-redirect` in index.html or under src/.",
+      "WHEN `/` is loaded by a visitor holding existing IndexedDB data THE SYSTEM SHALL render the explanatory site without redirecting, and the site SHALL still offer the CTA to /app/.",
+      "WHEN the full suite runs after removal THE SYSTEM SHALL exit 0 on typecheck, unit tests, build, size guard and end-to-end tests."
+    ],
+    "verify": [
+      "bash -c '! grep -rn \"legacy-redirect\" src/ index.html app/'",
+      "npm run typecheck",
+      "npm test",
+      "npm run build",
+      "npm run size",
+      "npm run test:e2e"
+    ],
+    "checkpoint": "step-17-decommission-redirect",
+    "files": [
+      "index.html",
+      "src/site.ts",
+      "tests/e2e/site-sections.spec.ts"
+    ],
+    "status": "pending"
+  }
+]

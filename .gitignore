@@ -4,3 +4,6 @@ dist/
 *.local
 .vercel
 tsconfig.tsbuildinfo
+test-results/
+playwright-report/
+blob-report/
