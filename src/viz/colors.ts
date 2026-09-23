@@ -1,88 +1,89 @@
 import type { NodeStatus } from '@/core/types';
 
 /**
- * Paleta del universo, derivada del logo (blanco -> #b673df).
- * Los nodos NO son esferas 3D: cada uno es un circulo de color solido con
- * un halo de degradado a su alrededor, que es lo que aporta profundidad.
+ * Paleta del universo — sistema visual v3 (base monocroma + acento
+ * restringido). Los valores aqui DEBEN coincidir con los tokens de
+ * `:root` en src/style.css; se duplican como literales porque los
+ * atributos de presentacion SVG (`stop-color`) no resuelven `var()` de
+ * forma fiable en todos los motores de render.
+ *
+ * Tabla de estado (ver blueprint constella-v2 §7 y
+ * .claude/rules/design-tokens.md):
+ *
+ *   Estado       Relleno         Trazo                  Halo
+ *   locked       --gray-4        --gray-3               ninguno
+ *   unlocked     transparente    --bone                 ninguno
+ *   core         --accent-soft   --accent               acento, pulsando
+ *   completed    --gray-4        --gray-3 al 50%        ninguno
+ *   goal         transparente    --bone (trazo 2px)     ninguno
+ *
+ * `core` (el "proximo paso") manda sobre `goal`: si el propio objetivo es
+ * la unica tarea accionable ahora mismo, se resalta igual — el tamano
+ * mayor de un objetivo es cosa del layout, no de este modulo.
  */
 
-export const BRAND = {
-  purple: '#b673df',
-  purpleLight: '#e3c6f7',
-  purpleDeep: '#7c3aed',
-  magenta: '#e879f9',
-  magentaDeep: '#a21caf',
-};
+const GRAY_4 = '#242424';
+const GRAY_3 = '#565656';
+const GRAY_3_HALF = 'rgba(86, 86, 86, 0.5)';
+const BONE = '#f5f5f0';
+const ACCENT = '#b673df';
+const ACCENT_SOFT = 'rgba(182, 115, 223, 0.14)';
 
 /** Relleno plano del circulo. */
 export function nodeFillColor(status: NodeStatus, isGoal: boolean): string {
-  if (isGoal) return status === 'completed' ? '#f5c9fb' : BRAND.magenta;
+  if (status === 'core') return ACCENT_SOFT;
+  if (isGoal) return 'transparent';
   switch (status) {
     case 'completed':
-      return '#5c4d75';
-    case 'core':
-      return '#efdcff';
+      return GRAY_4;
     case 'unlocked':
-      return BRAND.purple;
+      return 'transparent';
     default:
-      return '#2a2338';
+      return GRAY_4; // locked
   }
 }
 
-/** Borde: un tono mas claro que el relleno, para recortar el circulo del fondo. */
+/** Borde del circulo. */
 export function nodeStrokeColor(status: NodeStatus, isGoal: boolean): string {
-  if (isGoal) return status === 'completed' ? '#ffffff' : '#f7b6ff';
+  if (status === 'core') return ACCENT;
+  if (isGoal) return BONE; // el grosor extra lo pone .node--goal en CSS
   switch (status) {
     case 'completed':
-      return '#8875a8';
-    case 'core':
-      return '#ffffff';
+      return GRAY_3_HALF;
     case 'unlocked':
-      return BRAND.purpleLight;
+      return BONE;
     default:
-      return '#4a4160';
-  }
-}
-
-/** Color base del halo degradado que rodea a cada nodo. */
-export function nodeHaloColor(status: NodeStatus, isGoal: boolean): string {
-  if (isGoal) return BRAND.magenta;
-  switch (status) {
-    case 'completed':
-      return '#7b68a0';
-    case 'core':
-      return '#d9b4ff';
-    case 'unlocked':
-      return BRAND.purple;
-    default:
-      return '#3d3452';
+      return GRAY_3; // locked
   }
 }
 
 export interface HaloSpec {
   id: string;
   color: string;
-  /** Opacidad del centro del halo. */
+  /** Opacidad del centro del halo. 0 = sin halo visible. */
   strength: number;
 }
 
-/** Un degradado radial por estado: fuerte cerca del circulo, transparente al borde. */
+/**
+ * Un degradado radial por estado. Segun la tabla, solo el nucleo
+ * ("proximo paso") lleva halo de verdad — el resto se define con
+ * strength 0 para que el circulo del halo exista en el DOM (por
+ * simplicidad de implementacion) pero no pinte nada.
+ */
 export const HALO_GRADIENTS: HaloSpec[] = [
-  { id: 'halo-locked', color: '#3d3452', strength: 0.35 },
-  { id: 'halo-unlocked', color: BRAND.purple, strength: 0.5 },
-  { id: 'halo-next', color: '#d9b4ff', strength: 0.75 },
-  { id: 'halo-completed', color: '#7b68a0', strength: 0.3 },
-  { id: 'halo-goal', color: BRAND.magenta, strength: 0.65 },
-  { id: 'halo-goal-done', color: '#f5c9fb', strength: 0.8 },
+  { id: 'halo-locked', color: GRAY_3, strength: 0 },
+  { id: 'halo-unlocked', color: BONE, strength: 0 },
+  { id: 'halo-next', color: ACCENT, strength: 0.55 },
+  { id: 'halo-completed', color: GRAY_3, strength: 0 },
+  { id: 'halo-goal', color: BONE, strength: 0 },
 ];
 
 export function nodeHaloId(status: NodeStatus, isGoal: boolean): string {
-  if (isGoal) return status === 'completed' ? 'halo-goal-done' : 'halo-goal';
+  if (status === 'core') return 'halo-next';
+  if (isGoal) return 'halo-goal';
   switch (status) {
     case 'completed':
       return 'halo-completed';
-    case 'core':
-      return 'halo-next';
     case 'unlocked':
       return 'halo-unlocked';
     default:
@@ -91,7 +92,7 @@ export function nodeHaloId(status: NodeStatus, isGoal: boolean): string {
 }
 
 export const EDGE_COLORS = {
-  future: '#2e2742',
-  done: '#5b4780',
-  active: BRAND.purple,
+  future: GRAY_4,
+  done: GRAY_3,
+  active: ACCENT,
 };

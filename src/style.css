@@ -174,7 +174,9 @@ h1, h2, h3 {
 .node--completed .node__label { fill: var(--gray-1); }
 
 /* El objetivo se distingue por tamano y grosor de trazo, no por color
-   (node__dot ya es mas grande vía layout.ts; aquí solo ajustamos la etiqueta). */
+   (node__dot ya es mas grande vía layout.ts; aquí ademas duplicamos el
+   grosor del trazo — 2px en vez del 1.75px base — y agrandamos la etiqueta). */
+.node--goal .node__dot { stroke-width: calc(3px * var(--node-scale, 1)); }
 .node--goal .node__label {
   font-size: calc(14px * var(--node-scale, 1));
   font-weight: 700;
