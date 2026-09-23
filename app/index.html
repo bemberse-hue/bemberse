@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+    <meta name="theme-color" content="#050505" />
+    <meta name="description" content="Constella — el motor de Bemberse. Desenreda tu caos en un universo de tareas, 100% local." />
+    <meta name="color-scheme" content="dark" />
+    <meta name="robots" content="noindex" />
+    <title>Bemberse — Tu universo</title>
+    <link rel="icon" href="data:," />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div id="app">
+      <!-- Capa 2D: el universo de tareas (SVG montado aqui por GraphView) -->
+      <div id="universe-container" class="universe-container"></div>
+
+      <!-- Pantalla de bienvenida: nombre -->
+      <section id="onboarding" class="onboarding hidden" role="dialog" aria-modal="true" aria-labelledby="onboarding-title">
+        <div class="onboarding__panel">
+          <div class="onboarding__eyebrow">BEMBERSE</div>
+          <h1 id="onboarding-title" class="onboarding__title">¿Cómo te llamas?</h1>
+          <p class="onboarding__sub">
+            Cada punto será una tarea, las líneas muestran qué depende de qué,
+            y el más grande es tu objetivo. Vas a encender una tarea a la vez
+            hasta desenredarlo todo.
+          </p>
+          <form id="onboarding-form" class="onboarding__form">
+            <input
+              id="onboarding-name"
+              class="onboarding__input"
+              type="text"
+              placeholder="Tu nombre"
+              maxlength="40"
+              autocomplete="given-name"
+              required
+            />
+            <button type="submit" class="btn btn--primary btn--lg">Entrar a mi universo</button>
+          </form>
+        </div>
+      </section>
+
+      <!-- HUD superior -->
+      <header id="hud" class="hud">
+        <div class="hud__brand" id="hud-brand">BEMBERSE</div>
+        <div id="hud-status" class="hud__status">0 tareas · 0 desbloqueadas</div>
+        <div class="hud__actions">
+          <button id="btn-new-entry" class="hud__btn hud__btn--primary" title="Traer nuevas tareas (N)">+ Nueva entrada</button>
+          <button id="btn-reset" class="hud__btn hud__btn--danger" title="Borrar todo">Reiniciar</button>
+        </div>
+      </header>
+
+      <!-- Hint inferior -->
+      <div id="hint" class="hint">Toca un punto para verlo · <kbd>Espacio</kbd> ejecuta tu próximo paso</div>
+
+      <!-- Toast global -->
+      <div id="toast" class="toast hidden"></div>
+
+      <!-- Inspector -->
+      <aside id="inspector" class="inspector hidden" aria-live="polite">
+        <button id="btn-inspector-close" class="icon-btn inspector__close" aria-label="Cerrar"></button>
+        <div id="inspector-kind" class="inspector__kind">TAREA</div>
+        <h3 id="inspector-title" class="inspector__title">—</h3>
+        <p id="inspector-desc" class="inspector__desc"></p>
+        <p id="inspector-meta" class="inspector__meta"></p>
+        <div id="inspector-blockers" class="inspector__blockers hidden"></div>
+        <div class="inspector__actions">
+          <button id="btn-inspector-set-next" class="btn btn--primary hidden">Marcar como próximo paso</button>
+          <button id="btn-inspector-start" class="btn btn--complete hidden">Empezar ahora</button>
+          <button id="btn-inspector-undo" class="btn btn--ghost hidden">Deshacer completada</button>
+        </div>
+      </aside>
+
+      <!-- Asistente guiado -->
+      <section id="wizard" class="wizard hidden" role="dialog" aria-modal="true" aria-labelledby="wizard-title">
+        <div class="wizard__panel">
+          <button id="btn-wizard-close" class="icon-btn wizard__close" aria-label="Cerrar"></button>
+          <div class="wizard__steps">
+            <span class="wizard__step-dot" data-step="0"></span>
+            <span class="wizard__step-dot" data-step="1"></span>
+            <span class="wizard__step-dot" data-step="2"></span>
+            <span class="wizard__step-dot" data-step="3"></span>
+          </div>
+
+          <div class="wizard__step" data-step-panel="0">
+            <div class="wizard__eyebrow">CÓMO FUNCIONA</div>
+            <h1 id="wizard-title" class="wizard__title">De tu caos a tu universo, en 3 pasos</h1>
+            <ol class="wizard__overview">
+              <li><strong>Cuéntanos tu caos.</strong> Escribe o dicta todo lo que tienes en la cabeza, sin orden.</li>
+              <li><strong>Pégalo en tu IA.</strong> Copiamos un prompt listo para ChatGPT o Claude que lo convierte en tareas conectadas.</li>
+              <li><strong>Trae el resultado.</strong> Pegas el JSON que te devuelva la IA y tu universo aparece.</li>
+            </ol>
+            <div class="wizard__actions">
+              <button id="btn-wizard-start" class="btn btn--primary btn--lg">Empezar</button>
+            </div>
+            <button id="btn-wizard-skip-to-json" class="wizard__skip">¿Ya tienes el JSON de la IA? Salta directo</button>
+          </div>
+
+          <div class="wizard__step hidden" data-step-panel="1">
+            <div class="wizard__eyebrow">PASO 1 DE 3</div>
+            <h1 class="wizard__title">Cuéntanos tu caos</h1>
+            <p class="wizard__sub">Escribe o dicta todo tu ruido mental. Sin orden. Sin filtro.</p>
+            <textarea id="ingest-text" class="wizard__textarea" placeholder="Todo lo que tengas en la cabeza, tal cual sale..." rows="7"></textarea>
+            <div class="wizard__controls">
+              <button id="btn-mic" class="btn btn--ghost" title="Dictado por voz">Dictar</button>
+              <span id="mic-status" class="mic-status"></span>
+            </div>
+            <div class="wizard__actions">
+              <button id="btn-wizard-to-prompt" class="btn btn--primary btn--lg">Siguiente</button>
+            </div>
+          </div>
+
+          <div class="wizard__step hidden" data-step-panel="2">
+            <div class="wizard__eyebrow">PASO 2 DE 3</div>
+            <h1 class="wizard__title">Pégalo en tu IA</h1>
+            <p class="wizard__sub">Copia este prompt (incluye tu texto + las instrucciones exactas de formato) y pégalo en ChatGPT o Claude.</p>
+            <div class="wizard__actions">
+              <button id="btn-copy-prompt" class="btn btn--primary btn--lg">Copiar prompt + instrucciones</button>
+            </div>
+            <details class="prompt-preview">
+              <summary>Ver el prompt exacto que se copiará</summary>
+              <pre id="prompt-preview-text" class="prompt-preview__text"></pre>
+            </details>
+            <p class="wizard__note">Cuando la IA te devuelva el JSON, cópialo y sigue al siguiente paso.</p>
+            <div class="wizard__actions">
+              <button id="btn-wizard-to-import" class="btn btn--primary btn--lg">Ya lo copié, continuar</button>
+            </div>
+          </div>
+
+          <div class="wizard__step hidden" data-step-panel="3">
+            <div class="wizard__eyebrow">PASO 3 DE 3</div>
+            <h1 class="wizard__title">Trae el resultado</h1>
+            <p class="wizard__sub">Pega el JSON que te devolvió la IA, o sube el archivo.</p>
+            <textarea id="import-text" class="wizard__textarea" placeholder='{ "version": "1.0", "nodes": [...], "edges": [...] }' rows="7"></textarea>
+            <div class="wizard__controls">
+              <label class="btn btn--ghost file-btn">
+                Subir archivo .json
+                <input id="import-file" type="file" accept="application/json" hidden />
+              </label>
+              <span id="import-status" class="mic-status"></span>
+            </div>
+            <div class="wizard__actions">
+              <button id="btn-do-import" class="btn btn--primary btn--lg">Crear mi universo</button>
+            </div>
+            <pre id="import-error" class="import-error hidden"></pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- Modo Ejecucion -->
+      <section id="cockpit" class="cockpit hidden" aria-live="polite">
+        <div class="cockpit__panel">
+          <div class="cockpit__eyebrow">TU PRÓXIMO PASO</div>
+          <h2 id="cockpit-title" class="cockpit__title">—</h2>
+          <p id="cockpit-desc" class="cockpit__desc"></p>
+          <div id="cockpit-path" class="cockpit__path"></div>
+
+          <div class="cockpit__actions">
+            <button id="btn-complete" class="btn btn--complete btn--lg">Marcar completada</button>
+            <button id="btn-exit-cockpit" class="btn btn--ghost">Volver al universo (Esc)</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Estado vacio -->
+      <section id="empty-state" class="empty-state hidden">
+        <p id="empty-state-title">Tu universo está en blanco.</p>
+        <div class="empty-state__actions">
+          <button id="btn-empty-start" class="btn btn--primary btn--lg">Empezar</button>
+          <button id="btn-empty-sample" class="empty-state__sample-link">o prueba con un ejemplo</button>
+        </div>
+      </section>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

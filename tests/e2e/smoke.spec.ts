@@ -1,20 +1,146 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
 
-// E1-T1: smoke minimo que prueba que el arnes de Playwright arranca contra la
-// app real. E3-T1 lo reescribe con el checklist de paridad completo (§9.1)
-// una vez exista el split de paginas sitio/app.
+// Suite de paridad del motor Constella ('/app/'), escrita en el paso 05
+// (split sitio/app, blueprint constella-v2 §9.1). Cubre las seis filas del
+// checklist de paridad: nada de lo que el motor ya hacia en '/' debe
+// perderse al mudarse a '/app/'.
 
-test('la app carga sin errores de consola y muestra la portada en la primera visita', async ({ page }) => {
+async function resetDb(page: Page): Promise<void> {
+  // Ruta relativa a proposito: baseURL ya es '/app/' por defecto, y
+  // page.goto('/') iria a la raiz del servidor (el sitio), no al motor.
+  await page.goto('./');
+  await page.evaluate(() => indexedDB.deleteDatabase('bemberse-db'));
+}
+
+async function completeOnboarding(page: Page, name = 'Nico'): Promise<void> {
+  await page.reload();
+  await page.waitForSelector('#onboarding:not(.hidden)', { timeout: 8000 });
+  await page.fill('#onboarding-name', name);
+  await page.click('#onboarding-form button[type=submit]');
+  await page.waitForFunction(
+    () => document.getElementById('onboarding')?.classList.contains('hidden'),
+    { timeout: 8000 },
+  );
+}
+
+test('la app carga sin errores de consola y arranca en el onboarding la primera vez', async ({ page }) => {
   const consoleErrors: string[] = [];
   page.on('console', (msg) => {
     if (msg.type() === 'error') consoleErrors.push(msg.text());
   });
   page.on('pageerror', (err) => consoleErrors.push(`pageerror: ${err.message}`));
 
-  await page.goto('/');
-  await page.evaluate(() => indexedDB.deleteDatabase('bemberse-db'));
+  await resetDb(page);
   await page.reload();
-
-  await expect(page.locator('#landing')).not.toHaveClass(/hidden/, { timeout: 8000 });
+  await expect(page.locator('#onboarding')).not.toHaveClass(/hidden/, { timeout: 8000 });
   expect(consoleErrors, `errores de consola: ${consoleErrors.join('\n')}`).toHaveLength(0);
+});
+
+test('fila 1 — un perfil ya guardado salta el onboarding en la siguiente visita', async ({ page }) => {
+  await resetDb(page);
+  await completeOnboarding(page, 'Nico');
+
+  // Recargar simula "volver otro dia": el perfil ya esta en IndexedDB.
+  await page.reload();
+  await page.waitForTimeout(300);
+  await expect(page.locator('#onboarding')).toHaveClass(/hidden/);
+  await expect(page.locator('#hud-brand')).toContainText('NICO');
+});
+
+test('fila 2 — un grafo ya guardado se restaura y se dibuja al volver', async ({ page }) => {
+  await resetDb(page);
+  await completeOnboarding(page);
+
+  await page.click('#btn-empty-sample');
+  await page.waitForFunction(() => document.getElementById('empty-state')?.classList.contains('hidden'));
+  const statusBefore = await page.textContent('#hud-status');
+
+  await page.reload();
+  await page.waitForTimeout(500);
+  const statusAfter = await page.textContent('#hud-status');
+
+  expect(statusAfter).toBe(statusBefore);
+  const nodeCount = await page.locator('.nodes-layer .node').count();
+  expect(nodeCount).toBeGreaterThan(0);
+});
+
+test('fila 3 — el asistente guiado importa un JSON valido y crea el universo', async ({ page }) => {
+  await resetDb(page);
+  await completeOnboarding(page);
+
+  await page.click('#btn-empty-start');
+  await page.waitForSelector('#wizard:not(.hidden)');
+  await page.click('#btn-wizard-start');
+  await page.fill('#ingest-text', 'probar el asistente guiado');
+  await page.click('#btn-wizard-to-prompt');
+  await page.click('#btn-wizard-to-import');
+
+  const json = JSON.stringify({
+    version: '1.0',
+    nodes: [
+      { id: 'paso-1', title: 'Primer paso' },
+      { id: 'meta', title: 'Meta del asistente' },
+    ],
+    edges: [{ from: 'paso-1', to: 'meta' }],
+  });
+  await page.fill('#import-text', json);
+  await page.click('#btn-do-import');
+
+  await page.waitForFunction(() => document.getElementById('empty-state')?.classList.contains('hidden'));
+  await expect(page.locator('#wizard')).toHaveClass(/hidden/);
+  const nodeCount = await page.locator('.nodes-layer .node').count();
+  expect(nodeCount).toBe(2);
+});
+
+test('fila 4 — Espacio entra al modo ejecucion con el proximo paso activo', async ({ page }) => {
+  await resetDb(page);
+  await completeOnboarding(page);
+  await page.click('#btn-empty-sample');
+  await page.waitForFunction(() => document.getElementById('empty-state')?.classList.contains('hidden'));
+  await page.waitForTimeout(800);
+
+  await page.keyboard.press('Space');
+  await expect(page.locator('#cockpit')).not.toHaveClass(/hidden/, { timeout: 5000 });
+  await expect(page.locator('#cockpit-title')).not.toHaveText('—');
+});
+
+test('fila 5 — Esc cierra el panel activo: cockpit, inspector y asistente, cada uno por separado', async ({ page }) => {
+  await resetDb(page);
+  await completeOnboarding(page);
+  await page.click('#btn-empty-sample');
+  await page.waitForFunction(() => document.getElementById('empty-state')?.classList.contains('hidden'));
+  await page.waitForTimeout(800);
+
+  // Cockpit.
+  await page.keyboard.press('Space');
+  await expect(page.locator('#cockpit')).not.toHaveClass(/hidden/);
+  await page.keyboard.press('Escape');
+  await expect(page.locator('#cockpit')).toHaveClass(/hidden/);
+
+  // Inspector: clic en el centro del viewBox (el objetivo primario esta fijo ahi).
+  const box = await page.locator('.universe-svg').boundingBox();
+  if (box) await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+  await expect(page.locator('#inspector')).not.toHaveClass(/hidden/, { timeout: 5000 });
+  await page.keyboard.press('Escape');
+  await expect(page.locator('#inspector')).toHaveClass(/hidden/);
+
+  // Asistente.
+  await page.click('#btn-new-entry');
+  await expect(page.locator('#wizard')).not.toHaveClass(/hidden/);
+  await page.keyboard.press('Escape');
+  await expect(page.locator('#wizard')).toHaveClass(/hidden/);
+});
+
+test('fila 6 — Reiniciar borra el grafo, conserva el perfil, y recarga al estado vacio', async ({ page }) => {
+  await resetDb(page);
+  await completeOnboarding(page, 'Nico');
+  await page.click('#btn-empty-sample');
+  await page.waitForFunction(() => document.getElementById('empty-state')?.classList.contains('hidden'));
+
+  page.once('dialog', (dialog) => dialog.accept());
+  await page.click('#btn-reset');
+
+  await page.waitForFunction(() => document.getElementById('empty-state') && !document.getElementById('empty-state')!.classList.contains('hidden'), { timeout: 8000 });
+  await expect(page.locator('#onboarding')).toHaveClass(/hidden/); // el perfil sigue ahi
+  await expect(page.locator('#hud-brand')).toContainText('NICO');
 });

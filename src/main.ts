@@ -18,14 +18,17 @@ import { CockpitView } from '@/ui/cockpit';
 import { Hud } from '@/ui/hud';
 import { Inspector } from '@/ui/inspector';
 import { Onboarding } from '@/ui/onboarding';
-import { Landing } from '@/ui/landing';
 import { decorateStaticIcons } from '@/ui/icons';
 
 /**
- * Bemberse — orquestador de la app.
+ * Bemberse — orquestador del motor Constella (vive en /app/).
  * Maquina de estados entre: Bienvenida -> Asistente guiado -> Universo -> Modo Ejecucion.
  * Cero framework de UI: DOM directo + SVG 2D. Todo el estado vive en memoria
  * y se persiste a IndexedDB tras cada mutacion (local-first).
+ *
+ * Quien llega aqui ya vio la portada y el "por que" en el sitio ('/'):
+ * un visitante nuevo entra directo al onboarding, sin una pantalla de
+ * bienvenida propia del motor (esa vive ahora en src/site.ts).
  */
 
 let graph: RuntimeGraph | null = null;
@@ -58,7 +61,6 @@ const inspector = new Inspector({
 });
 
 const onboarding = new Onboarding((name) => handleOnboardingSubmit(name));
-const landing = new Landing(() => onboarding.open());
 
 decorateStaticIcons();
 graphView.setNodeClickHandler((nodeId) => handleNodeClick(nodeId));
@@ -80,8 +82,8 @@ async function init(): Promise<void> {
     hud.setUserName(profile.name);
     await loadGraphOrEmpty();
   } else {
-    // Primera visita: portada -> onboarding -> universo.
-    landing.open();
+    // Primera visita a /app/: directo al onboarding (nombre).
+    onboarding.open();
   }
 }
 

@@ -17,6 +17,15 @@ export default defineConfig({
     sourcemap: false,
     // Sin librerias de imagenes/modelos pesados: el bundle debe permanecer pequeno.
     chunkSizeWarningLimit: 600,
+    rollupOptions: {
+      // Multipagina: '/' es el sitio explicativo, '/app/' es el motor
+      // Constella. Cada uno es su propio documento HTML con su propio
+      // entry de JS — no comparten estado de runtime, solo el CSS/tokens.
+      input: {
+        site: path.resolve(__dirname, 'index.html'),
+        app: path.resolve(__dirname, 'app/index.html'),
+      },
+    },
   },
   server: {
     port: 5173,
