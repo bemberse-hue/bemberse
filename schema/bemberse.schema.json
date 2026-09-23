@@ -1,0 +1,42 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "BembersGraph",
+  "description": "Esquema del JSON que un LLM externo debe producir para Bemberse. Ver src/core/validate.ts para la validacion real en runtime (manual, sin dependencias).",
+  "type": "object",
+  "required": ["version", "nodes", "edges"],
+  "additionalProperties": false,
+  "properties": {
+    "version": { "type": "string", "example": "1.0" },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "nodes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "title"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$" },
+          "title": { "type": "string", "minLength": 1 },
+          "description": { "type": "string" },
+          "estimatedMinutes": { "type": "number", "minimum": 0 },
+          "priority": { "type": "number" },
+          "createdAt": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["from", "to"],
+        "additionalProperties": false,
+        "properties": {
+          "from": { "type": "string", "description": "id del nodo prerequisito" },
+          "to": { "type": "string", "description": "id del nodo dependiente" }
+        }
+      },
+      "description": "El grafo formado por nodes+edges debe ser aciclico (DAG)."
+    }
+  }
+}

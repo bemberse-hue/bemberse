@@ -1,0 +1,21 @@
+{
+  "name": "bemberse",
+  "version": "0.2.0",
+  "description": "Bemberse - tu universo de tareas. Local-first, cliente puro, cero backend.",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "d3-force": "^3.0.0"
+  },
+  "devDependencies": {
+    "@types/d3-force": "^3.0.10",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.11"
+  }
+}
