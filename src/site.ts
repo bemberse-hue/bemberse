@@ -1,7 +1,9 @@
 import './style.css';
+import './site.css';
 import { NetworkBackground } from '@/viz/networkBackground';
 import * as db from '@/db/database';
 import { decorateStaticIcons } from '@/ui/icons';
+import { mountSiteSections } from '@/ui/siteSections';
 
 /**
  * Entry del sitio explicativo ('/'). Estatico: no toca el motor DAG ni
@@ -34,4 +36,5 @@ if (bgHost) {
 }
 
 decorateStaticIcons();
+mountSiteSections();
 void legacyRedirect();

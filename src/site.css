@@ -1,0 +1,136 @@
+/* ==========================================================================
+   BEMBERSE — Sitio explicativo ('/')
+   Extiende style.css (tokens, tipografia, botones): esto SOLO anade el
+   layout de pagina scrollable y las 6 secciones que siguen al hero.
+   ========================================================================== */
+
+/* El motor (app/index.html) es una sola pantalla fija; el sitio, en
+   cambio, se recorre con scroll normal de navegador. */
+body.site,
+body.site #app {
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: auto;
+  min-height: 100%;
+}
+/* .landing (definido en style.css) es "position: absolute; inset: 0" a
+   proposito para el motor, donde es una pantalla superpuesta de tamano
+   fijo. En el sitio, #app ya no tiene altura fija (ver arriba) — sin este
+   override, inset:0 estiraria el hero a la altura de TODO el documento
+   scrollable, no solo la primera pantalla. Aqui lo volvemos a poner en
+   flujo normal, del alto de un viewport, como cualquier otra seccion. */
+body.site #hero.landing {
+  position: relative;
+  inset: auto;
+  height: 100vh;
+  height: 100dvh;
+}
+
+.site-section {
+  position: relative;
+  padding: 110px 24px;
+  border-top: 1px solid var(--border);
+}
+.site-section__inner {
+  max-width: 720px;
+  margin: 0 auto;
+}
+.site-section__eyebrow {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gray-2);
+  margin-bottom: 18px;
+}
+.site-section__title {
+  font-size: clamp(28px, 4.6vw, 44px);
+  line-height: 1.02;
+  margin-bottom: 26px;
+}
+.site-section__lead {
+  font-size: clamp(17px, 2.2vw, 20px);
+  line-height: 1.55;
+  color: var(--bone);
+  margin: 0 0 20px;
+}
+.site-section__body {
+  font-size: 15.5px;
+  line-height: 1.75;
+  color: var(--gray-1);
+  margin: 0;
+}
+.site-section__body em { color: var(--bone); font-style: normal; font-weight: 600; }
+
+.site-section__steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+.site-section__steps li {
+  display: flex;
+  gap: 22px;
+  align-items: baseline;
+}
+.site-section__step-num {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--gray-3);
+  flex: none;
+  width: 32px;
+}
+.site-section__steps strong {
+  display: block;
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  font-size: 18px;
+  margin-bottom: 6px;
+}
+.site-section__steps p {
+  margin: 0;
+  color: var(--gray-1);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.site-section--cta {
+  text-align: center;
+  padding-bottom: 140px;
+}
+.site-section--cta .site-section__inner { max-width: 560px; }
+.site-section--cta .site-section__title { margin-bottom: 16px; }
+.site-section--cta .site-section__lead { margin-bottom: 36px; color: var(--gray-1); }
+
+/* Revelado suave al hacer scroll (siteSections.ts alterna esta clase via
+   IntersectionObserver). Sin JS o con prefers-reduced-motion, el contenido
+   ya es visible por defecto — ver la regla de abajo. */
+.site-section {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.6s var(--ease), transform 0.6s var(--ease);
+}
+.site-section.is-visible {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .site-section { opacity: 1; transform: none; transition: none; }
+}
+
+/* Diagrama SVG inline que diagrams.ts inserta en cada seccion (paso 07). */
+.site-diagram {
+  margin-top: 34px;
+  color: var(--bone);
+}
+.site-diagram svg { display: block; max-width: 100%; height: auto; }
+
+@media (max-width: 640px) {
+  .site-section { padding: 70px 20px; }
+  .site-section__steps li { gap: 14px; }
+}

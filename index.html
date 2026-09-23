@@ -15,11 +15,9 @@
       rel="stylesheet"
     />
   </head>
-  <body>
+  <body class="site">
     <div id="app">
-      <!-- HERO — primera de las 7 secciones del sitio (las otras 6 llegan
-           en el paso 06). Reutiliza las clases .landing existentes de
-           style.css: este paso no toca ese archivo. -->
+      <!-- HERO -->
       <section id="hero" class="landing">
         <div id="landing-bg" class="landing__bg" aria-hidden="true"></div>
         <div class="landing__content">
@@ -37,6 +35,118 @@
           <a href="app/" id="btn-landing-start" class="btn btn--primary btn--xl">Comenzar</a>
 
           <p class="landing__foot">100% local · sin cuenta · sin nube</p>
+        </div>
+      </section>
+
+      <!-- EL DOLOR -->
+      <section id="dolor" class="site-section">
+        <div class="site-section__inner">
+          <div class="site-section__eyebrow">EL PROBLEMA</div>
+          <h2 class="site-section__title">No es falta de disciplina.</h2>
+          <p class="site-section__lead">
+            Es procrastinación por abrumación. Cuando tu cabeza guarda cuarenta
+            tareas al mismo tiempo, sin saber cuál depende de cuál, cualquier
+            paso da miedo: puede que sea el paso equivocado, o que falte otro
+            antes. Así que no se da ningún paso.
+          </p>
+          <p class="site-section__body">
+            No es que no quieras hacerlo. Es que tu mente no tiene forma de
+            distinguir la tarea que puedes hacer <em>ahora mismo</em> de las
+            treinta y nueve que todavía no puedes tocar. Toda esa carga pesa
+            igual, todo el tiempo — y eso, por sí solo, ya paraliza.
+          </p>
+        </div>
+      </section>
+
+      <!-- POR QUE FALLAN LAS HERRAMIENTAS ACTUALES -->
+      <section id="por-que-fallan" class="site-section">
+        <div class="site-section__inner">
+          <div class="site-section__eyebrow">LO QUE YA INTENTASTE</div>
+          <h2 class="site-section__title">Una lista plana no sabe qué depende de qué.</h2>
+          <p class="site-section__lead">
+            Un checklist, una hoja de Sheets o una base de Notion muestran
+            todas tus tareas con el mismo peso visual. Da igual si son
+            cuarenta filas o cuarenta tarjetas: nada te dice cuál es la única
+            que puedes ejecutar hoy.
+          </p>
+          <p class="site-section__body">
+            Notion exige configurar propiedades, relaciones y vistas antes de
+            anotar la primera idea — la fricción de armarlo mata la
+            inspiración. Un checklist tachado no tiene memoria de causa y
+            efecto: no importa el orden en que marques las casillas. Bemberse
+            parte de una regla simple: si la tarea B necesita de la tarea A,
+            mostrar la B abierta es sabotaje. Se queda bajo candado hasta que
+            A esté hecha.
+          </p>
+        </div>
+      </section>
+
+      <!-- COMO FUNCIONA -->
+      <section id="como-funciona" class="site-section">
+        <div class="site-section__inner">
+          <div class="site-section__eyebrow">CÓMO FUNCIONA</div>
+          <h2 class="site-section__title">Tres pasos, de tu caos a tu universo.</h2>
+          <ol class="site-section__steps">
+            <li>
+              <span class="site-section__step-num">01</span>
+              <div>
+                <strong>Vacía tu cabeza.</strong>
+                <p>Escribe o dicta todo lo que traes encima, sin orden ni filtro.</p>
+              </div>
+            </li>
+            <li>
+              <span class="site-section__step-num">02</span>
+              <div>
+                <strong>Estructura con tu IA.</strong>
+                <p>Copiamos un prompt listo para ChatGPT o Claude, que arma el mapa de dependencias.</p>
+              </div>
+            </li>
+            <li>
+              <span class="site-section__step-num">03</span>
+              <div>
+                <strong>Desenreda, una tarea a la vez.</strong>
+                <p>Tu universo aparece con un único próximo paso encendido. El resto espera su turno.</p>
+              </div>
+            </li>
+          </ol>
+        </div>
+      </section>
+
+      <!-- QUIENES SOMOS -->
+      <section id="quienes-somos" class="site-section">
+        <div class="site-section__inner">
+          <div class="site-section__eyebrow">QUIÉNES SOMOS</div>
+          <h2 class="site-section__title">Un motor, no una empresa de software.</h2>
+          <p class="site-section__body">
+            Bemberse lo construye un equipo pequeño convencido de que la
+            productividad no necesita más cuadros ni más suscripciones —
+            necesita claridad sobre qué es lo próximo. Todo el motor corre en
+            tu navegador: sin servidores que leen tus tareas, sin cuenta que
+            crear, sin nube donde confiar.
+          </p>
+        </div>
+      </section>
+
+      <!-- HUB DE PRODUCTIVIDAD (estructura para futuros acoples) -->
+      <section id="hub" class="site-section">
+        <div class="site-section__inner">
+          <div class="site-section__eyebrow">PRÓXIMAMENTE</div>
+          <h2 class="site-section__title">El hub de productividad.</h2>
+          <p class="site-section__body">
+            Constella es la puerta de entrada. Alrededor, estamos construyendo
+            un ecosistema de rutas pre-armadas para metas frecuentes, plantillas
+            operativas, y una red privada para quienes prefieren desenredar
+            acompañados. Esta sección crecerá con el producto.
+          </p>
+        </div>
+      </section>
+
+      <!-- CTA FINAL -->
+      <section id="cta" class="site-section site-section--cta">
+        <div class="site-section__inner">
+          <h2 class="site-section__title">Deja de cargarlo en la cabeza.</h2>
+          <p class="site-section__lead">Un vaciado de dos minutos. El resto lo ordena el mapa.</p>
+          <a href="app/" class="btn btn--primary btn--xl">Comenzar</a>
         </div>
       </section>
     </div>
