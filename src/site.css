@@ -106,6 +106,31 @@ body.site #hero.landing {
 .site-section--cta .site-section__inner { max-width: 560px; }
 .site-section--cta .site-section__title { margin-bottom: 16px; }
 .site-section--cta .site-section__lead { margin-bottom: 36px; color: var(--gray-1); }
+.site-section__trust {
+  margin: 22px 0 0;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gray-2);
+}
+
+/* El hero no tiene boton: solo una invitacion a bajar y leer el diagnostico. */
+.landing__scroll {
+  display: inline-block;
+  margin-top: 18px;
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gray-1);
+  text-decoration: none;
+  border-bottom: 1px solid var(--gray-3);
+  padding-bottom: 6px;
+  transition: color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+}
+.landing__scroll:hover { color: var(--bone); border-color: var(--bone); }
+body.site .landing__title { font-size: clamp(34px, 5.6vw, 72px); max-width: 1000px; }
 
 /* Revelado suave al hacer scroll (siteSections.ts alterna esta clase via
    IntersectionObserver). Sin JS o con prefers-reduced-motion, el contenido
@@ -268,3 +293,4 @@ body.site #hero.landing { padding-top: 64px; }
 }
 .placeholder__actions { display: flex; flex-wrap: wrap; gap: 14px; }
 .placeholder__note { margin-top: 28px; font-size: 13px; color: var(--gray-2); }
+.site-diagram svg text { font-family: var(--font-body); }

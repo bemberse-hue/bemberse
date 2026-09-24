@@ -1,104 +1,106 @@
 import { test, expect } from '@playwright/test';
 
 // El sitio vive en la raiz ('/'), pero el baseURL por defecto de este
-// proyecto es '/app/' desde el paso 05 — asi que estos tests usan la URL
-// completa en vez de rutas relativas a baseURL.
+// proyecto es '/app/' — asi que estos tests usan la URL completa.
 const SITE_URL = 'http://localhost:5173/';
 
-const REQUIRED_SECTIONS = ['hero', 'dolor', 'por-que-fallan', 'como-funciona', 'quienes-somos', 'hub', 'cta'];
+// Orden del plan: golpe inicial, diagnostico, trampa de herramientas,
+// solucion, CTA, ecosistema (al final) y quienes somos.
+const REQUIRED_SECTIONS = ['hero', 'working-memory', 'tools-trap', 'precedence-lock', 'cta', 'ecosystem', 'about'];
 
-test('el sitio renderiza las 7 secciones, cada una con un encabezado visible', async ({ page }) => {
+test('the site renders every section in order, each with a visible heading', async ({ page }) => {
   await page.goto(SITE_URL);
 
   for (const id of REQUIRED_SECTIONS) {
     const section = page.locator(`#${id}`);
-    await expect(section, `seccion #${id}`).toBeVisible();
+    await expect(section, `section #${id}`).toBeVisible();
     const heading = section.locator('h1, h2').first();
-    await expect(heading, `encabezado de #${id}`).toBeVisible();
+    await expect(heading, `heading of #${id}`).toBeVisible();
     await expect(heading).not.toHaveText('');
   }
+
+  const order = await page.$$eval('#app > section', (els) => els.map((e) => e.id));
+  expect(order).toEqual(REQUIRED_SECTIONS);
 });
 
-test('el hero no pide ninguna imagen de red (el fondo es canvas, no un archivo)', async ({ page }) => {
+test('the page is in English', async ({ page }) => {
+  await page.goto(SITE_URL);
+  await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+  await expect(page.locator('#hero h1')).toContainText('30 ideas trapped in your head');
+});
+
+test('the hero has no buttons: it pushes you to scroll and read the diagnosis first', async ({ page }) => {
+  await page.goto(SITE_URL);
+  await expect(page.locator('#hero .btn')).toHaveCount(0);
+  await expect(page.locator('#hero a[href="app/"]')).toHaveCount(0);
+  await expect(page.locator('#hero-scroll')).toHaveAttribute('href', '#working-memory');
+});
+
+test('the hero requests no network image (the background is a canvas)', async ({ page }) => {
   const imageRequests: string[] = [];
   page.on('request', (req) => {
-    if (req.resourceType() === 'image' && !req.url().endsWith('logo.png')) {
-      imageRequests.push(req.url());
-    }
+    if (req.resourceType() === 'image' && !req.url().endsWith('logo.png')) imageRequests.push(req.url());
   });
-
   await page.goto(SITE_URL);
   await page.waitForTimeout(500);
-
-  expect(imageRequests, `peticiones de imagen inesperadas: ${imageRequests.join(', ')}`).toHaveLength(0);
-  // El fondo animado es un <canvas>, no una imagen.
+  expect(imageRequests, `unexpected image requests: ${imageRequests.join(', ')}`).toHaveLength(0);
   await expect(page.locator('#landing-bg canvas')).toBeVisible();
 });
 
-test('el CTA lleva al motor y el motor arranca ahi', async ({ page }) => {
+test('the CTA block opens the engine', async ({ page }) => {
   await page.goto(SITE_URL);
-  await page.evaluate(() => indexedDB.deleteDatabase('bemberse-db'));
-  await page.reload();
-
-  await page.click('#btn-landing-start');
+  const cta = page.locator('#btn-open-engine');
+  await expect(cta).toHaveText('Open Constella Engine — Free');
+  await expect(page.locator('#cta')).toContainText('100% local · No account · No cloud tracking');
+  await cta.click();
   await expect(page).toHaveURL(/\/app\/?$/);
-  await expect(page.locator('#onboarding')).not.toHaveClass(/hidden/, { timeout: 8000 });
 });
 
-test('las secciones nombran el dolor explicitamente', async ({ page }) => {
+test('the blocks name the problem, the tools and the lock explicitly', async ({ page }) => {
   await page.goto(SITE_URL);
+  const memory = (await page.locator('#working-memory').innerText()).toLowerCase();
+  expect(memory).toContain('what should i do first');
+  expect(memory).toContain('glucose');
 
-  const dolorText = (await page.locator('#dolor').innerText()).toLowerCase();
-  expect(dolorText).toContain('procrastinaci');
-  expect(dolorText).toContain('abrumaci');
+  const tools = (await page.locator('#tools-trap').innerText()).toLowerCase();
+  for (const word of ['flat lists', 'notion', 'trello', 'amygdala']) expect(tools).toContain(word);
 
-  const porQueText = (await page.locator('#por-que-fallan').innerText()).toLowerCase();
-  const mentionsTool = ['checklist', 'notion', 'sheets'].some((word) => porQueText.includes(word));
-  expect(mentionsTool, 'la seccion "por-que-fallan" debe mencionar checklist, Notion o Sheets').toBe(true);
+  const lock = (await page.locator('#precedence-lock').innerText()).toLowerCase();
+  expect(lock).toContain('if b needs a, b stays under a strict lock');
 });
 
-test('hay al menos 3 diagramas SVG inline, todos en trazo hueso sin relleno', async ({ page }) => {
+test('the precedence-lock diagram shows A active, B and C locked', async ({ page }) => {
   await page.goto(SITE_URL);
+  const texts = await page.$$eval('#precedence-lock .site-diagram svg text', (ts) => ts.map((t) => t.textContent));
+  expect(texts).toEqual(['Task A', 'ACTIVE', 'Task B', 'LOCKED', 'Task C', 'LOCKED']);
+});
 
-  const diagramCount = await page.locator('.site-diagram svg').count();
-  expect(diagramCount).toBeGreaterThanOrEqual(3);
+test('at least 3 inline SVG diagrams, all bone strokes with no fill', async ({ page }) => {
+  await page.goto(SITE_URL);
+  expect(await page.locator('.site-diagram svg').count()).toBeGreaterThanOrEqual(3);
 
-  const shapeResults = await page.$$eval('.site-diagram svg circle, .site-diagram svg line, .site-diagram svg rect', (shapes) =>
-    shapes.map((shape) => {
-      const s = getComputedStyle(shape as Element);
+  const shapes = await page.$$eval('.site-diagram svg circle, .site-diagram svg line, .site-diagram svg rect', (els) =>
+    els.map((el) => {
+      const s = getComputedStyle(el as Element);
       return { fill: s.fill, stroke: s.stroke };
     }),
   );
-  expect(shapeResults.length).toBeGreaterThan(0);
-  for (const { fill, stroke } of shapeResults) {
+  expect(shapes.length).toBeGreaterThan(0);
+  for (const { fill, stroke } of shapes) {
     expect(fill === 'none' || fill === 'rgba(0, 0, 0, 0)').toBe(true);
     expect(stroke).toBe('rgb(245, 245, 240)'); // --bone
   }
 });
 
-test('sin imagenes de red fuera del logo (los diagramas son SVG, no archivos)', async ({ page }) => {
-  const imageRequests: string[] = [];
-  page.on('request', (req) => {
-    if (req.resourceType() === 'image' && !req.url().endsWith('logo.png')) {
-      imageRequests.push(req.url());
-    }
-  });
-  await page.goto(SITE_URL);
-  await page.waitForTimeout(500);
-  expect(imageRequests, `peticiones de imagen inesperadas: ${imageRequests.join(', ')}`).toHaveLength(0);
-});
-
-test('con prefers-reduced-motion, los diagramas no llevan ninguna animacion corriendo', async ({ page }) => {
+test('with prefers-reduced-motion, no diagram animation is running', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto(SITE_URL);
-
-  const runningAnimations = await page.evaluate(() => {
-    const diagrams = document.querySelectorAll('.site-diagram svg, .site-diagram svg *');
+  const running = await page.evaluate(() => {
     let count = 0;
-    diagrams.forEach((el) => {
+    document.querySelectorAll('.site-diagram svg, .site-diagram svg *').forEach((el) => {
       count += (el as SVGElement).getAnimations?.().length ?? 0;
     });
     return count;
   });
-  expect(runningAnimations).toBe(0);
+  expect(running).toBe(0);
 });

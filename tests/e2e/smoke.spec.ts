@@ -196,7 +196,7 @@ test('navegacion — el enlace de retorno lleva a / y tiene nombre accesible', a
   await page.waitForTimeout(500);
   expect(new URL(page.url()).pathname).toBe('/');
   await expect(page.locator('#hero')).toBeVisible();
-  await expect(page.locator('#btn-landing-start')).toHaveAttribute('href', 'app/');
+  await expect(page.locator('#btn-open-engine')).toHaveAttribute('href', 'app/');
 });
 
 test('navegacion — Tab recorre conmutador, nueva entrada y retorno con anillo de foco visible', async ({ page }) => {
@@ -257,15 +257,16 @@ test('navegacion — el logo arriba a la izquierda vuelve al inicio y las pestan
 
   const nav = page.locator('#hud .hud__nav');
   for (const [text, href] of [
-    ['El problema', '../#dolor'],
-    ['Cómo funciona', '../#como-funciona'],
-    ['Hub', '../#hub'],
-    ['Quiénes somos', '../#quienes-somos'],
+    ['The problem', '../#working-memory'],
+    ['Your tools', '../#tools-trap'],
+    ['The lock', '../#precedence-lock'],
+    ['Ecosystem', '../#ecosystem'],
+    ['About', '../#about'],
   ]) {
     await expect(nav.getByRole('link', { name: text, exact: true })).toHaveAttribute('href', href);
   }
 
-  await nav.getByRole('link', { name: 'Quiénes somos' }).click();
-  await page.waitForURL((url) => url.pathname === '/' && url.hash === '#quienes-somos');
-  await expect(page.locator('#quienes-somos')).toBeVisible();
+  await nav.getByRole('link', { name: 'About' }).click();
+  await page.waitForURL((url) => url.pathname === '/' && url.hash === '#about');
+  await expect(page.locator('#about')).toBeVisible();
 });

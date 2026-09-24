@@ -3,10 +3,10 @@
  * (--bone), sin relleno y sin color — ni siquiera el acento. Cuentan la
  * misma historia que el resto del producto, en tres golpes:
  *
- *   1. El enredo   (#dolor): todo conectado con todo, sin jerarquia.
- *   2. La fila plana (#por-que-fallan): todo del mismo peso, en orden,
+ *   1. El enredo   (#working-memory): todo conectado con todo, sin jerarquia.
+ *   2. La fila plana (#tools-trap): todo del mismo peso, en orden,
  *      sin relacion entre elementos — el otro fallo, el de los checklists.
- *   3. El camino    (#como-funciona): un DAG resuelto, con un unico nodo
+ *   3. El camino    (motor, estado vacio): un DAG resuelto, con un unico nodo
  *      accionable (mas grande, sin color) y el resto en cola.
  *
  * Son deliberadamente estaticos: sin animacion que respetar-o-desactivar
@@ -122,10 +122,84 @@ function buildResolvedDiagram(): SVGSVGElement {
   return el;
 }
 
+/**
+ * 4. El candado de precedencia: [Task A: Active] -> [Task B: Locked] ->
+ * [Task C: Locked]. Plano y estatico. La tarea activa se distingue por
+ * trazo mas grueso; las bloqueadas llevan candado — nunca color.
+ */
+function buildPrecedenceLockDiagram(): SVGSVGElement {
+  const el = svg('0 0 480 120');
+  const boxes: Array<{ x: number; title: string; state: string; active: boolean }> = [
+    { x: 10, title: 'Task A', state: 'Active', active: true },
+    { x: 170, title: 'Task B', state: 'Locked', active: false },
+    { x: 330, title: 'Task C', state: 'Locked', active: false },
+  ];
+  const w = 140;
+  const h = 64;
+  const y = 28;
+
+  for (const [i, b] of boxes.entries()) {
+    const rect = document.createElementNS(SVG_NS, 'rect');
+    rect.setAttribute('x', String(b.x));
+    rect.setAttribute('y', String(y));
+    rect.setAttribute('width', String(w));
+    rect.setAttribute('height', String(h));
+    rect.setAttribute('fill', 'none');
+    rect.setAttribute('stroke', 'currentColor');
+    rect.setAttribute('stroke-width', b.active ? '2.2' : '1');
+    if (!b.active) rect.setAttribute('stroke-dasharray', '4 4');
+    el.appendChild(rect);
+
+    for (const [text, dy, size, weight] of [
+      [b.title, 50, 15, 600],
+      [b.state.toUpperCase(), 72, 10, 500],
+    ] as const) {
+      const t = document.createElementNS(SVG_NS, 'text');
+      t.setAttribute('x', String(b.x + (b.active ? w / 2 : w / 2 + 9)));
+      t.setAttribute('y', String(dy));
+      t.setAttribute('text-anchor', 'middle');
+      t.setAttribute('font-size', String(size));
+      t.setAttribute('font-weight', String(weight));
+      t.setAttribute('letter-spacing', size < 12 ? '1.8' : '0');
+      t.setAttribute('stroke', 'none');
+      t.setAttribute('fill', 'currentColor');
+      t.setAttribute('opacity', b.active ? '1' : '0.55');
+      t.textContent = text;
+      el.appendChild(t);
+    }
+
+    if (!b.active) {
+      // Candado (mismo glifo que en el motor), a la izquierda del texto.
+      const lock = document.createElementNS(SVG_NS, 'path');
+      lock.setAttribute('d', 'M4.5 10.5h15v10h-15zM8 10.5V7.5a4 4 0 0 1 8 0v3');
+      lock.setAttribute('fill', 'none');
+      lock.setAttribute('stroke', 'currentColor');
+      lock.setAttribute('stroke-width', '1.6');
+      lock.setAttribute('transform', `translate(${b.x + 14}, ${y + 20}) scale(0.9)`);
+      el.appendChild(lock);
+    }
+
+    if (i < boxes.length - 1) {
+      const x1 = b.x + w + 4;
+      const x2 = b.x + 160 - 4;
+      el.appendChild(line(x1, y + h / 2, x2, y + h / 2, 0.8));
+      const head = document.createElementNS(SVG_NS, 'path');
+      head.setAttribute('d', `M${x2 - 6},${y + h / 2 - 5} L${x2},${y + h / 2} L${x2 - 6},${y + h / 2 + 5}`);
+      head.setAttribute('fill', 'none');
+      head.setAttribute('stroke', 'currentColor');
+      head.setAttribute('stroke-width', '1');
+      el.appendChild(head);
+    }
+  }
+  el.setAttribute('aria-hidden', 'false');
+  el.setAttribute('aria-label', 'Task A is active. Task B and Task C are locked until the task before them is done.');
+  return el;
+}
+
 const DIAGRAM_BUILDERS: Record<string, () => SVGSVGElement> = {
-  dolor: buildTangleDiagram,
-  'por-que-fallan': buildGridDiagram,
-  'como-funciona': buildResolvedDiagram,
+  'working-memory': buildTangleDiagram,
+  'tools-trap': buildGridDiagram,
+  'precedence-lock': buildPrecedenceLockDiagram,
 };
 
 /** Inserta un diagrama al final de cada seccion que lo tenga asignado. */

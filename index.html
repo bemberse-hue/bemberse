@@ -1,12 +1,12 @@
 <!doctype html>
-<html lang="es">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#050505" />
-    <meta name="description" content="Bemberse - tu universo de tareas. 100% local, sin nube, sin telemetria." />
+    <meta name="description" content="Bemberse turns the 30 ideas trapped in your head into a map where only one step is unlocked at a time. 100% local, no account, no cloud." />
     <meta name="color-scheme" content="dark" />
-    <title>Bemberse — Tu universo</title>
+    <title>Bemberse — Your brain isn’t lazy, it’s overloaded</title>
     <link rel="icon" href="data:," />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -18,180 +18,172 @@
   <body class="site">
     <div id="app">
       <!-- Navegacion del sitio -->
-      <nav class="site-nav" aria-label="Principal">
+      <nav class="site-nav" aria-label="Main">
         <a class="site-nav__brand" href="#hero">BEMBERSE</a>
         <div class="site-nav__links">
-          <a href="#dolor">El problema</a>
-          <a href="#como-funciona">Cómo funciona</a>
-          <a href="#hub">Hub</a>
-          <a href="#quienes-somos">Quiénes somos</a>
+          <a href="#working-memory">The problem</a>
+          <a href="#tools-trap">Your tools</a>
+          <a href="#precedence-lock">The lock</a>
+          <a href="#ecosystem">Ecosystem</a>
+          <a href="#about">About</a>
         </div>
-        <a class="btn btn--secondary site-nav__cta" href="app/">Abrir Constella</a>
+        <a class="btn btn--secondary site-nav__cta" href="app/">Open Constella</a>
       </nav>
 
-      <!-- HERO -->
+      <!-- HERO: el golpe inicial. Sin boton a proposito: primero se lee el diagnostico. -->
       <section id="hero" class="landing">
         <div id="landing-bg" class="landing__bg" aria-hidden="true"></div>
         <div class="landing__content">
           <img src="logo.png" class="brand__logo" alt="bemberse" width="1400" height="212" />
 
           <h1 class="landing__title">
-            Tu caos, convertido en un <span class="grad-text">mapa.</span>
+            You have 30 ideas trapped in your head. Your brain isn’t lazy: it’s <span class="grad-text">overloaded.</span>
           </h1>
           <p class="landing__sub">
-            Suelta todo lo que traes en la cabeza. Bemberse lo convierte en un
-            universo de tareas conectadas y te enciende, una a la vez, la única
-            que puedes hacer ahora.
+            Neuroscience puts the working memory buffer at about four items, give
+            or take one. You are asking it to juggle thirty. It doesn’t fail
+            because you are weak — it crashes because it is full.
           </p>
 
-          <a href="app/" id="btn-landing-start" class="btn btn--primary btn--xl">Comenzar</a>
-
-          <p class="landing__foot">100% local · sin cuenta · sin nube</p>
+          <a href="#working-memory" class="landing__scroll" id="hero-scroll">Read the diagnosis ↓</a>
         </div>
       </section>
 
-      <!-- EL DOLOR -->
-      <section id="dolor" class="site-section">
+      <!-- BLOQUE 1: el diagnostico -->
+      <section id="working-memory" class="site-section">
         <div class="site-section__inner">
-          <div class="site-section__eyebrow">EL PROBLEMA</div>
-          <h2 class="site-section__title">No es falta de disciplina.</h2>
+          <div class="site-section__eyebrow">The diagnosis</div>
+          <h2 class="site-section__title">The working memory crash.</h2>
           <p class="site-section__lead">
-            Es procrastinación por abrumación. Cuando tu cabeza guarda cuarenta
-            tareas al mismo tiempo, sin saber cuál depende de cuál, cualquier
-            paso da miedo: puede que sea el paso equivocado, o que falte otro
-            antes. Así que no se da ningún paso.
+            Your day starts with thirty open loops and a buffer that holds four.
+            Ten minutes in, the buffer overflows and your brain does the only
+            thing it can: it disconnects.
           </p>
           <p class="site-section__body">
-            No es que no quieras hacerlo. Es que tu mente no tiene forma de
-            distinguir la tarea que puedes hacer <em>ahora mismo</em> de las
-            treinta y nueve que todavía no puedes tocar. Toda esa carga pesa
-            igual, todo el tiempo — y eso, por sí solo, ya paraliza.
+            A flat list forces you to answer the same question twenty times:
+            <em>“What should I do first?”</em> Every one of those micro-decisions
+            burns prefrontal glucose. You spend your energy choosing, and by the
+            time you pick something there is nothing left to execute the first
+            task.
           </p>
         </div>
       </section>
 
-      <!-- POR QUE FALLAN LAS HERRAMIENTAS ACTUALES -->
-      <section id="por-que-fallan" class="site-section">
+      <!-- BLOQUE 2: por que fallan tus herramientas -->
+      <section id="tools-trap" class="site-section">
         <div class="site-section__inner">
-          <div class="site-section__eyebrow">LO QUE YA INTENTASTE</div>
-          <h2 class="site-section__title">Una lista plana no sabe qué depende de qué.</h2>
-          <p class="site-section__lead">
-            Un checklist, una hoja de Sheets o una base de Notion muestran
-            todas tus tareas con el mismo peso visual. Da igual si son
-            cuarenta filas o cuarenta tarjetas: nada te dice cuál es la única
-            que puedes ejecutar hoy.
-          </p>
-          <p class="site-section__body">
-            Notion exige configurar propiedades, relaciones y vistas antes de
-            anotar la primera idea — la fricción de armarlo mata la
-            inspiración. Un checklist tachado no tiene memoria de causa y
-            efecto: no importa el orden en que marques las casillas. Bemberse
-            parte de una regla simple: si la tarea B necesita de la tarea A,
-            mostrar la B abierta es sabotaje. Se queda bajo candado hasta que
-            A esté hecha.
-          </p>
-        </div>
-      </section>
-
-      <!-- COMO FUNCIONA -->
-      <section id="como-funciona" class="site-section">
-        <div class="site-section__inner">
-          <div class="site-section__eyebrow">CÓMO FUNCIONA</div>
-          <h2 class="site-section__title">Tres pasos, de tu caos a tu universo.</h2>
+          <div class="site-section__eyebrow">Why your tools fail</div>
+          <h2 class="site-section__title">The Notion &amp; to-do list trap.</h2>
           <ol class="site-section__steps">
             <li>
               <span class="site-section__step-num">01</span>
               <div>
-                <strong>Vacía tu cabeza.</strong>
-                <p>Escribe o dicta todo lo que traes encima, sin orden ni filtro.</p>
+                <strong>Flat lists.</strong>
+                <p>They treat a five-minute task exactly like a three-week project. They have no idea what causes what.</p>
               </div>
             </li>
             <li>
               <span class="site-section__step-num">02</span>
               <div>
-                <strong>Estructura con tu IA.</strong>
-                <p>Copiamos un prompt listo para ChatGPT o Claude, que arma el mapa de dependencias.</p>
+                <strong>Notion &amp; Trello.</strong>
+                <p>Tags, columns and databases before your first idea. You end up working for the app instead of moving forward.</p>
               </div>
             </li>
             <li>
               <span class="site-section__step-num">03</span>
               <div>
-                <strong>Desenreda, una tarea a la vez.</strong>
-                <p>Tu universo aparece con un único próximo paso encendido. El resto espera su turno.</p>
+                <strong>The ambiguity trap.</strong>
+                <p>If task B depends on task A, showing B as open is an alarm your amygdala can’t switch off — and the fastest way out is to procrastinate.</p>
               </div>
             </li>
           </ol>
         </div>
       </section>
 
-      <!-- QUIENES SOMOS -->
-      <section id="quienes-somos" class="site-section">
+      <!-- BLOQUE 3: la solucion -->
+      <section id="precedence-lock" class="site-section">
         <div class="site-section__inner">
-          <div class="site-section__eyebrow">QUIÉNES SOMOS</div>
-          <h2 class="site-section__title">Un motor, no una empresa de software.</h2>
+          <div class="site-section__eyebrow">The solution</div>
+          <h2 class="site-section__title">The precedence lock.</h2>
+          <p class="site-section__lead">
+            Bemberse has one rule: if B needs A, B stays under a strict lock.
+          </p>
           <p class="site-section__body">
-            Bemberse lo construye un equipo pequeño convencido de que la
-            productividad no necesita más cuadros ni más suscripciones —
-            necesita claridad sobre qué es lo próximo. Todo el motor corre en
-            tu navegador: sin servidores que leen tus tareas, sin cuenta que
-            crear, sin nube donde confiar.
+            Your brain gets biological permission to forget step 2 until step 1
+            is done. One task is lit. Everything else waits — out of sight, out
+            of the buffer.
           </p>
         </div>
       </section>
 
-      <!-- HUB DE PRODUCTIVIDAD: Constella hoy; el resto, placeholders provisionales -->
-      <section id="hub" class="site-section">
+      <!-- BLOQUE 4: llamada a Constella -->
+      <section id="cta" class="site-section site-section--cta">
+        <div class="site-section__inner">
+          <div class="site-section__eyebrow">Constella engine</div>
+          <h2 class="site-section__title">Clear your head in 60 seconds.</h2>
+          <p class="site-section__lead">Dump everything. Get a map. Do the one step that is unlocked.</p>
+          <a href="app/" id="btn-open-engine" class="btn btn--primary btn--xl">Open Constella Engine — Free</a>
+          <p class="site-section__trust">100% local · No account · No cloud tracking</p>
+        </div>
+      </section>
+
+      <!-- BLOQUE 5: el ecosistema (al final, para no cortar el flujo dolor -> solucion) -->
+      <section id="ecosystem" class="site-section">
         <div class="site-section__inner site-section__inner--wide">
-          <div class="site-section__eyebrow">BEMBERSE HUB</div>
-          <h2 class="site-section__title">El hub de productividad.</h2>
+          <div class="site-section__eyebrow">The Bemberse ecosystem</div>
+          <h2 class="site-section__title">One engine. More on the way.</h2>
           <p class="site-section__body">
-            Constella es la puerta de entrada. Alrededor crece un ecosistema
-            que se apoya en el mismo motor: rutas pre-armadas, plantillas
-            operativas y una red privada para desenredar acompañado.
+            Constella is the core. Everything else in the ecosystem is built on
+            top of the same precedence lock.
           </p>
           <ul class="hub-grid">
             <li>
               <a class="hub-card" href="app/" id="hub-card-constella">
-                <span class="hub-card__status">Disponible</span>
-                <strong class="hub-card__name">Constella</strong>
-                <span class="hub-card__desc">El motor. Vuelcas tu caos, tu IA lo ordena en un mapa y se enciende una tarea a la vez.</span>
-                <span class="hub-card__go">Abrir →</span>
+                <span class="hub-card__status">Available</span>
+                <strong class="hub-card__name">Constella Engine</strong>
+                <span class="hub-card__desc">The core spatial engine. Dump your noise, unlock one step at a time.</span>
+                <span class="hub-card__go">Launch engine →</span>
               </a>
             </li>
             <li>
-              <a class="hub-card hub-card--soon" href="rutas/" id="hub-card-rutas">
-                <span class="hub-card__status">Próximamente</span>
-                <strong class="hub-card__name">Rutas</strong>
-                <span class="hub-card__desc">Mapas pre-armados para metas frecuentes. Los importas y empiezas directo en el paso uno.</span>
-                <span class="hub-card__go">Ver adelanto →</span>
+              <a class="hub-card hub-card--soon" href="routes/" id="hub-card-routes">
+                <span class="hub-card__status">Coming soon</span>
+                <strong class="hub-card__name">Routes</strong>
+                <span class="hub-card__desc">Pre-built dependency graphs for launches, habits and complex goals.</span>
+                <span class="hub-card__go">Preview →</span>
               </a>
             </li>
             <li>
-              <a class="hub-card hub-card--soon" href="plantillas/" id="hub-card-plantillas">
-                <span class="hub-card__status">Próximamente</span>
-                <strong class="hub-card__name">Plantillas</strong>
-                <span class="hub-card__desc">Estructuras operativas para lo que se repite: la semana, el cierre de mes, un lanzamiento.</span>
-                <span class="hub-card__go">Ver adelanto →</span>
+              <a class="hub-card hub-card--soon" href="templates/" id="hub-card-templates">
+                <span class="hub-card__status">Coming soon</span>
+                <strong class="hub-card__name">Templates</strong>
+                <span class="hub-card__desc">Standard operating workflows for repeatable weekly execution.</span>
+                <span class="hub-card__go">Preview →</span>
               </a>
             </li>
             <li>
-              <a class="hub-card hub-card--soon" href="circulo/" id="hub-card-circulo">
-                <span class="hub-card__status">Próximamente</span>
-                <strong class="hub-card__name">Círculo</strong>
-                <span class="hub-card__desc">Una red privada y pequeña para avanzar acompañado. Compartes tu mapa, no tu vida.</span>
-                <span class="hub-card__go">Ver adelanto →</span>
+              <a class="hub-card hub-card--soon" href="circle/" id="hub-card-circle">
+                <span class="hub-card__status">Coming soon</span>
+                <strong class="hub-card__name">Circle</strong>
+                <span class="hub-card__desc">A private accountability network. Share your graph, not your noise.</span>
+                <span class="hub-card__go">Preview →</span>
               </a>
             </li>
           </ul>
         </div>
       </section>
 
-      <!-- CTA FINAL -->
-      <section id="cta" class="site-section site-section--cta">
+      <!-- QUIENES SOMOS -->
+      <section id="about" class="site-section">
         <div class="site-section__inner">
-          <h2 class="site-section__title">Deja de cargarlo en la cabeza.</h2>
-          <p class="site-section__lead">Un vaciado de dos minutos. El resto lo ordena el mapa.</p>
-          <a href="app/" class="btn btn--primary btn--xl">Comenzar</a>
+          <div class="site-section__eyebrow">About</div>
+          <h2 class="site-section__title">An engine, not a software company.</h2>
+          <p class="site-section__body">
+            Bemberse is built by a small team convinced that productivity doesn’t
+            need more boards or more subscriptions — it needs clarity about what
+            comes next. The whole engine runs in your browser: no servers reading
+            your tasks, no account to create, no cloud to trust.
+          </p>
         </div>
       </section>
     </div>

@@ -64,7 +64,7 @@ const STATIC_ICONS: StaticIconSpec[] = [
   { selector: '#btn-wizard-to-prompt', name: 'arrowRight', position: 'after' },
   { selector: '#btn-wizard-to-import', name: 'arrowRight', position: 'after' },
   { selector: '#btn-wizard-skip-to-json', name: 'arrowRight', position: 'after', size: 14 },
-  { selector: '#btn-landing-start', name: 'sparkle' },
+  { selector: '#btn-open-engine', name: 'sparkle' },
 ];
 
 /**
