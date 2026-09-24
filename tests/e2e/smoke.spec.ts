@@ -117,9 +117,12 @@ test('fila 5 — Esc cierra el panel activo: cockpit, inspector y asistente, cad
   await page.keyboard.press('Escape');
   await expect(page.locator('#cockpit')).toHaveClass(/hidden/);
 
-  // Inspector: clic en el centro del viewBox (el objetivo primario esta fijo ahi).
-  const box = await page.locator('.universe-svg').boundingBox();
-  if (box) await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+  // Inspector: desde el paso 09 un nodo bloqueado ya no lo abre (traza su
+  // cadena), asi que se pulsa uno desbloqueado.
+  await page
+    .locator('.node:not(.node--locked):not(.node--goal) .node__dot')
+    .first()
+    .click({ force: true });
   await expect(page.locator('#inspector')).not.toHaveClass(/hidden/, { timeout: 5000 });
   await page.keyboard.press('Escape');
   await expect(page.locator('#inspector')).toHaveClass(/hidden/);

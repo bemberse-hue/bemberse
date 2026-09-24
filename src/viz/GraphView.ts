@@ -58,6 +58,7 @@ export class GraphView {
   private onNodeClick: NodeClickHandler | null = null;
   private dimmed = false;
   private size: LayoutSize = computeLayoutSize(0);
+  private traceTimeoutId: number | null = null;
 
   constructor(private readonly container: HTMLElement) {
     this.svg = document.createElementNS(SVG_NS, 'svg');
@@ -200,6 +201,10 @@ export class GraphView {
 
   /** Actualiza colores/estado/resalte sin recalcular el layout. */
   applyStatuses(graph: RuntimeGraph, _opts: { animateHighlight?: boolean } = {}): void {
+    // Un cambio de estado (completar, deshacer...) invalida cualquier
+    // traza de bloqueo que estuviera a medio mostrar.
+    this.clearTrace();
+
     const activePathIds = graph.coreId ? new Set(getPathToGoal(graph, graph.coreId).map((n) => n.id)) : new Set<string>();
     const activePairs = new Set<string>();
     if (graph.coreId) {
@@ -276,6 +281,40 @@ export class GraphView {
     }
   }
 
+  /**
+   * Traza visualmente por que un nodo esta bloqueado: resalta, en blanco
+   * (no en el acento — esa pantalla puede ya tener su propio "proximo
+   * paso" resaltado, y solo se permite un highlight de color a la vez),
+   * las aristas que forman la cadena de bloqueo. Se retira sola a los
+   * pocos segundos, o en el siguiente cambio de estado del grafo.
+   *
+   * `nodeIds` es la cadena completa devuelta por `getBlockerChain`, del
+   * nodo bloqueado hacia atras hasta su prerequisito accionable.
+   */
+  traceBlockerChain(nodeIds: string[]): void {
+    this.clearTrace();
+    for (let i = 0; i < nodeIds.length - 1; i++) {
+      // getBlockerChain camina "hacia atras" (dependiente -> prerequisito),
+      // pero las aristas se guardaron en su sentido real: from=prerequisito.
+      const to = nodeIds[i];
+      const from = nodeIds[i + 1];
+      for (const [edgeId, endpoints] of this.edgeEndpoints) {
+        if (endpoints.from === from && endpoints.to === to) {
+          this.edgeEls.get(edgeId)?.classList.add('trace-active');
+        }
+      }
+    }
+    this.traceTimeoutId = window.setTimeout(() => this.clearTrace(), 3200);
+  }
+
+  clearTrace(): void {
+    if (this.traceTimeoutId !== null) {
+      window.clearTimeout(this.traceTimeoutId);
+      this.traceTimeoutId = null;
+    }
+    for (const el of this.edgeEls.values()) el.classList.remove('trace-active');
+  }
+
   /** Modo Ejecucion: atenua el universo de fondo para enfocar el panel de la tarea. */
   setDimmed(dim: boolean): void {
     this.dimmed = dim;
@@ -294,6 +333,7 @@ export class GraphView {
   };
 
   dispose(): void {
+    this.clearTrace();
     this.simulation?.stop();
     this.nodesLayer.removeEventListener('click', this.handleClick);
     this.container.removeChild(this.svg);

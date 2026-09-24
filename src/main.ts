@@ -8,6 +8,7 @@ import {
   completeNode,
   selectCore,
   uncompleteNode,
+  getBlockerChain,
   toPersisted,
   fromPersisted,
 } from '@/core/graph';
@@ -147,6 +148,16 @@ function handleNodeClick(nodeId: string): void {
   if (!graph) return;
   const node = graph.nodes.get(nodeId);
   if (!node) return;
+
+  if (node.status === 'locked') {
+    // Un nodo bloqueado no abre el Inspector: el sistema traza por que no
+    // se puede, en vez de dejarte "entrar" a una tarea que no toca todavia.
+    const chain = getBlockerChain(graph, nodeId);
+    graphView.traceBlockerChain(chain.map((n) => n.id));
+    return;
+  }
+
+  graphView.clearTrace();
   inspector.open(node, graph);
 }
 

@@ -138,6 +138,22 @@ h1, h2, h3 {
 }
 @keyframes edge-flow { to { stroke-dashoffset: -20; } }
 
+/* Traza de bloqueo: al pulsar un nodo bloqueado, la cadena que lo frena se
+   ilumina en hueso (no en acento: el "proximo paso" ya ocupa el unico
+   highlight de color de la pantalla). */
+.edge.trace-active {
+  stroke: var(--bone);
+  opacity: 1;
+  stroke-width: calc(2.4px * var(--node-scale, 1));
+  stroke-dasharray: 4 6;
+  animation: edge-flow 0.7s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .edge--active,
+  .edge--critical,
+  .edge.trace-active { animation: none; }
+}
+
 .nodes-layer .node { cursor: pointer; }
 .node__halo {
   pointer-events: none;
