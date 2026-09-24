@@ -159,7 +159,8 @@ export class GraphView implements GraphRenderer {
 
     // El lienzo crece con el tamano del grafo, asi los grafos grandes no
     // quedan apretados contra los bordes.
-    this.size = computeLayoutSize(graph.nodes.size);
+    const portrait = this.container.clientHeight > this.container.clientWidth * 1.15;
+    this.size = computeLayoutSize(graph.nodes.size, portrait);
     // Encuadre inicial: todo el grafo, salvo que asi quede ilegible — en
     // grafos muy grandes se arranca acercado al centro y se explora con
     // zoom/arrastre (ZoomPan).

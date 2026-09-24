@@ -44,11 +44,12 @@ export interface LayoutSize {
  * y trazos se escalan con el mismo factor para que el tamano APARENTE en
  * pantalla no cambie: mas espacio, misma legibilidad.
  */
-export function computeLayoutSize(nodeCount: number): LayoutSize {
+/** `portrait`: pantalla vertical (movil) — el lienzo se reparte en alto, no en ancho. */
+export function computeLayoutSize(nodeCount: number, portrait = false): LayoutSize {
   const scale = Math.min(2.2, Math.max(1, Math.sqrt(nodeCount / COMFORTABLE_NODES)));
   return {
-    width: Math.round(BASE_WIDTH * scale),
-    height: Math.round(BASE_HEIGHT * scale),
+    width: Math.round((portrait ? BASE_HEIGHT : BASE_WIDTH) * scale),
+    height: Math.round((portrait ? BASE_WIDTH : BASE_HEIGHT) * scale),
     scale,
   };
 }

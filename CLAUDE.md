@@ -49,7 +49,7 @@ src/site.ts   Entry del sitio explicativo (/)
 ## Convenciones
 
 - Alias `@/` → `src/`.
-- Comentarios y copy de interfaz en español; identificadores en inglés.
+- Comentarios en español; copy de interfaz (sitio y motor) en inglés; identificadores en inglés.
 - Sin linter ni formatter en el repo: sigue el estilo del archivo que estás tocando.
 - Cada paso del build deja una etiqueta `step-NN-<slug>`; es el objetivo de rollback.
 

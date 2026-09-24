@@ -75,9 +75,12 @@ export class ZoomPan {
       const half = { w: cw / min / 2, h: ch / min / 2 };
       // Centrado en el foco, pero sin dejar vacio delante del borde del
       // contenido: si el foco esta en la primera columna, se ve desde ahi.
+      // En un eje donde la vista ya es mas grande que el contenido, se centra.
+      const axis = (f: number, h: number, total: number): number =>
+        2 * h >= total ? total / 2 : Math.min(Math.max(f, h), total - h);
       const center = {
-        x: Math.min(Math.max(focus.x, half.w), Math.max(half.w, this.content.w - half.w)),
-        y: Math.min(Math.max(focus.y, half.h), Math.max(half.h, this.content.h - half.h)),
+        x: axis(focus.x, half.w, this.content.w),
+        y: axis(focus.y, half.h, this.content.h),
       };
       this.setScale(min, center);
     }

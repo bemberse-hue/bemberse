@@ -142,7 +142,7 @@ src/
 schema/
   bemberse.schema.json    JSON Schema de referencia/documentación
 sample-data/
-  example-graph.json      Grafo de ejemplo (27 tareas, 4 ramas de productividad, 3 objetivos)
+  presets/                Mapas listos de la ingesta: product-launch, chaotic-week, break-the-freeze
 prompts/
   ingest-prompt.md        Copia legible del prompt, para editar/versionar
 ```
@@ -165,7 +165,7 @@ prompts/
   muestra el camino hacia el objetivo, para que la motivación sea "esto me
   acerca a X", no "se me acaba el tiempo".
 - **Sin dependencias de validación (zod/ajv)**: el esquema es pequeño y el
-  validador manual da mensajes de error en español orientados al usuario.
+  validador manual da mensajes de error en inglés orientados al usuario.
 
 ---
 
@@ -209,13 +209,14 @@ npm run build      # build de producción -> dist/
 npm run preview    # sirve dist/ localmente
 ```
 
-Al abrir la app por primera vez, se pide tu nombre y luego verás el estado
-vacío. Puedes:
+Al abrir la app por primera vez entras directo a la ingesta: un solo campo
+para volcar todo (escrito o dictado). Desde ahi puedes:
 
-- Pulsar **"o prueba con un ejemplo"** para importar
-  [`sample-data/example-graph.json`](sample-data/example-graph.json) y ver
-  el universo funcionando de inmediato, sin pasar por un LLM.
-- O pulsar **"Empezar"** y seguir el asistente guiado de 3 pasos.
+- Pulsar **"Copy prompt for your AI"**, pegarlo en ChatGPT o Claude y pegar
+  de vuelta el JSON que devuelve en **"Build my map"**.
+- O cargar uno de los presets (**Product Launch**, **Chaotic Week**,
+  **Break the Freeze**, en `sample-data/presets/`) y ver el mapa funcionando
+  de inmediato, sin pasar por un LLM.
 
 ### Atajos de teclado
 
