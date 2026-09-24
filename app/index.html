@@ -59,8 +59,15 @@
         </div>
       </header>
 
+      <!-- Zoom del universo (tambien rueda, pellizco, arrastre y teclas + - 0) -->
+      <div id="zoom-controls" class="zoom-controls" role="group" aria-label="Zoom">
+        <button id="btn-zoom-in" class="zoom-controls__btn" aria-label="Acercar (+)" title="Acercar (+)">+</button>
+        <button id="btn-zoom-out" class="zoom-controls__btn" aria-label="Alejar (-)" title="Alejar (-)">−</button>
+        <button id="btn-zoom-fit" class="zoom-controls__btn zoom-controls__btn--text" aria-label="Ajustar a pantalla (0)" title="Ajustar a pantalla (0)">Ajustar</button>
+      </div>
+
       <!-- Hint inferior -->
-      <div id="hint" class="hint">Toca un punto para verlo · <kbd>Espacio</kbd> ejecuta tu próximo paso</div>
+      <div id="hint" class="hint">Toca un punto para verlo · arrastra y usa la rueda para moverte · <kbd>Espacio</kbd> ejecuta tu próximo paso</div>
 
       <!-- Toast global -->
       <div id="toast" class="toast hidden"></div>

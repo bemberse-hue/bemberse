@@ -396,6 +396,42 @@ h1, h2, h3 {
 .hud__btn--primary { border-color: var(--gray-3); }
 .hud__btn--danger:hover { border-color: var(--danger); color: var(--danger); }
 
+.universe-svg { cursor: grab; }
+.universe-svg.is-panning { cursor: grabbing; }
+
+.zoom-controls {
+  position: absolute;
+  right: 20px;
+  bottom: 20px;
+  z-index: 20;
+  display: flex;
+  border: 1px solid var(--gray-3);
+  background: var(--panel-bg);
+}
+.zoom-controls__btn {
+  min-width: 40px;
+  height: 40px;
+  padding: 0 12px;
+  background: transparent;
+  border: none;
+  border-left: 1px solid var(--gray-3);
+  color: var(--bone);
+  font-family: var(--font-body);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  border-radius: 0;
+  transition: background var(--dur-fast) var(--ease);
+}
+.zoom-controls__btn:first-child { border-left: none; }
+.zoom-controls__btn:hover { background: var(--gray-4); }
+.zoom-controls__btn--text {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
 .hint {
   position: absolute;
   bottom: 22px;

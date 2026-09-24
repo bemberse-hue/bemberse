@@ -15,5 +15,9 @@ export interface GraphRenderer {
   traceBlockerChain(nodeIds: string[]): void;
   clearTrace(): void;
   flashUnlocked(nodeIds: string[]): void;
+  /** factor > 1 acerca (botones + / - del HUD). */
+  zoomBy(factor: number): void;
+  /** Encuadra el grafo entero (boton Ajustar). */
+  fitView(): void;
   dispose(): void;
 }

@@ -5,9 +5,12 @@ import { nodeFillColor, nodeStrokeColor } from './colors';
 import { GLYPH_PATHS, GOAL_GLYPH, truncate } from './GraphView';
 import type { GraphRenderer } from './renderer';
 import { attachNodeKeyboard, updateRovingTabindex } from './nodeKeyboard';
+import { ZoomPan } from './zoomPan';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 const RADIUS = 13;
+/** Escala de pantalla a partir de la cual los titulos se muestran enteros. */
+const DETAIL_SCALE = 1.3;
 const GOAL_RADIUS = 18;
 
 /**
@@ -34,6 +37,10 @@ export class DendrogramView implements GraphRenderer {
   private dimmed = false;
   private traceTimeoutId: number | null = null;
   private detachKeyboard: () => void = () => {};
+  private readonly zoom: ZoomPan;
+  /** Acercado lo bastante como para leer titulos completos. */
+  private detailed = false;
+  private lastGraph: RuntimeGraph | null = null;
 
   constructor(private readonly container: HTMLElement) {
     this.svg = document.createElementNS(SVG_NS, 'svg');
@@ -49,6 +56,29 @@ export class DendrogramView implements GraphRenderer {
     this.container.appendChild(this.svg);
     this.nodesLayer.addEventListener('click', this.handleClick);
     this.detachKeyboard = attachNodeKeyboard(this.nodesLayer, (id) => this.activate(id));
+    this.zoom = new ZoomPan(this.svg, (scale) => this.setDetailed(scale >= DETAIL_SCALE));
+  }
+
+  /** Con zoom suficiente, las etiquetas muestran el titulo entero en vez de truncarlo. */
+  private setDetailed(detailed: boolean): void {
+    if (detailed === this.detailed) return;
+    this.detailed = detailed;
+    this.svg.classList.toggle('is-detailed', detailed);
+    const graph = this.lastGraph;
+    if (!graph) return;
+    for (const [id, g] of this.nodeEls) {
+      const node = graph.nodes.get(id);
+      const label = g.querySelector('.node__label');
+      if (node && label) label.textContent = detailed ? node.title : truncate(node.title, 22);
+    }
+  }
+
+  zoomBy(factor: number): void {
+    this.zoom.zoomBy(factor);
+  }
+
+  fitView(): void {
+    this.zoom.fit();
   }
 
   setNodeClickHandler(handler: (nodeId: string) => void): void {
@@ -67,7 +97,13 @@ export class DendrogramView implements GraphRenderer {
     // El viewBox crece con la profundidad y la anchura del arbol: 27 nodos
     // no se aplastan en un ancho fijo. Margen extra a la derecha para las
     // etiquetas de la ultima columna.
-    this.svg.setAttribute('viewBox', `0 0 ${width + COLUMN_GAP / 2} ${height}`);
+    // Si encuadrar todo deja los nodos diminutos, se arranca a tamano
+    // legible centrado en el proximo paso, y el resto se explora con zoom.
+    const focus = graph.coreId ? nodes.get(graph.coreId) : undefined;
+    this.zoom.reset(width + COLUMN_GAP / 2, height, {
+      minScreenScale: 0.85,
+      focus: focus ? { x: focus.x, y: focus.y } : null,
+    });
 
     for (const edge of graph.edges) {
       const from = nodes.get(edge.from);
@@ -136,6 +172,7 @@ export class DendrogramView implements GraphRenderer {
   applyStatuses(graph: RuntimeGraph, _opts: { animateHighlight?: boolean } = {}): void {
     this.clearTrace();
 
+    this.lastGraph = graph;
     for (const [id, g] of this.nodeEls) {
       const node = graph.nodes.get(id);
       if (node) this.styleNode(g, node);
@@ -177,7 +214,7 @@ export class DendrogramView implements GraphRenderer {
     glyph.setAttribute('d', glyphPath);
     glyph.style.display = glyphPath ? '' : 'none';
 
-    label.textContent = truncate(node.title, 22);
+    label.textContent = this.detailed ? node.title : truncate(node.title, 22);
     if (title) title.textContent = node.title;
   }
 
@@ -234,6 +271,7 @@ export class DendrogramView implements GraphRenderer {
     this.clearTrace();
     this.nodesLayer.removeEventListener('click', this.handleClick);
     this.detachKeyboard();
+    this.zoom.dispose();
     this.svg.remove();
   }
 }

@@ -13,8 +13,12 @@ import {
 import { HALO_GRADIENTS, nodeFillColor, nodeHaloId, nodeStrokeColor } from './colors';
 import type { GraphRenderer } from './renderer';
 import { attachNodeKeyboard, updateRovingTabindex } from './nodeKeyboard';
+import { ZoomPan } from './zoomPan';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
+
+/** Escala efectiva a partir de la cual los titulos se muestran enteros. */
+const DETAIL_SCALE = 1.25;
 
 export type NodeClickHandler = (nodeId: string) => void;
 
@@ -62,6 +66,10 @@ export class GraphView implements GraphRenderer {
   private size: LayoutSize = computeLayoutSize(0);
   private traceTimeoutId: number | null = null;
   private detachKeyboard: () => void = () => {};
+  private readonly zoom: ZoomPan;
+  /** Acercado lo bastante como para leer titulos completos. */
+  private detailed = false;
+  private lastGraph: RuntimeGraph | null = null;
 
   constructor(private readonly container: HTMLElement) {
     this.svg = document.createElementNS(SVG_NS, 'svg');
@@ -82,6 +90,29 @@ export class GraphView implements GraphRenderer {
 
     this.nodesLayer.addEventListener('click', this.handleClick);
     this.detachKeyboard = attachNodeKeyboard(this.nodesLayer, (id) => this.activate(id));
+    this.zoom = new ZoomPan(this.svg, (scale) => this.setDetailed(scale * this.size.scale >= DETAIL_SCALE));
+  }
+
+  /** Con zoom suficiente, las etiquetas muestran el titulo entero en vez de truncarlo. */
+  private setDetailed(detailed: boolean): void {
+    if (detailed === this.detailed) return;
+    this.detailed = detailed;
+    this.svg.classList.toggle('is-detailed', detailed);
+    const graph = this.lastGraph;
+    if (!graph) return;
+    for (const layoutNode of this.layoutNodes) {
+      const node = graph.nodes.get(layoutNode.id);
+      const label = this.nodeEls.get(layoutNode.id)?.querySelector('.node__label');
+      if (node && label) label.textContent = detailed ? node.title : truncate(node.title, layoutNode.isGoal ? 24 : 17);
+    }
+  }
+
+  zoomBy(factor: number): void {
+    this.zoom.zoomBy(factor);
+  }
+
+  fitView(): void {
+    this.zoom.fit();
   }
 
   setNodeClickHandler(handler: NodeClickHandler): void {
@@ -129,7 +160,10 @@ export class GraphView implements GraphRenderer {
     // El lienzo crece con el tamano del grafo, asi los grafos grandes no
     // quedan apretados contra los bordes.
     this.size = computeLayoutSize(graph.nodes.size);
-    this.svg.setAttribute('viewBox', `0 0 ${this.size.width} ${this.size.height}`);
+    // Encuadre inicial: todo el grafo, salvo que asi quede ilegible — en
+    // grafos muy grandes se arranca acercado al centro y se explora con
+    // zoom/arrastre (ZoomPan).
+    this.zoom.reset(this.size.width, this.size.height, { minScreenScale: 0.5 });
     // Textos y trazos se escalan igual que el lienzo (ver style.css).
     this.svg.style.setProperty('--node-scale', this.size.scale.toFixed(3));
 
@@ -216,6 +250,7 @@ export class GraphView implements GraphRenderer {
       for (let i = 0; i < path.length - 1; i++) activePairs.add(`${path[i].id}->${path[i + 1].id}`);
     }
 
+    this.lastGraph = graph;
     for (const layoutNode of this.layoutNodes) {
       const node = graph.nodes.get(layoutNode.id);
       const g = this.nodeEls.get(layoutNode.id);
@@ -261,7 +296,7 @@ export class GraphView implements GraphRenderer {
     glyph.setAttribute('d', glyphPath);
     glyph.style.display = glyphPath ? '' : 'none';
 
-    label.textContent = truncate(node.title, layoutNode.isGoal ? 24 : 17);
+    label.textContent = this.detailed ? node.title : truncate(node.title, layoutNode.isGoal ? 24 : 17);
     if (title) title.textContent = node.title;
   }
 
@@ -371,6 +406,7 @@ export class GraphView implements GraphRenderer {
     this.simulation?.stop();
     this.nodesLayer.removeEventListener('click', this.handleClick);
     this.detachKeyboard();
+    this.zoom.dispose();
     this.container.removeChild(this.svg);
   }
 }

@@ -76,6 +76,11 @@ const emptyState = new EmptyState({
   onSample: () => loadSampleGraph(),
 });
 
+const ZOOM_STEP = 1.35;
+document.getElementById('btn-zoom-in')?.addEventListener('click', () => graphView.zoomBy(ZOOM_STEP));
+document.getElementById('btn-zoom-out')?.addEventListener('click', () => graphView.zoomBy(1 / ZOOM_STEP));
+document.getElementById('btn-zoom-fit')?.addEventListener('click', () => graphView.fitView());
+
 window.addEventListener('keydown', handleKeydown);
 
 init();
@@ -300,4 +305,7 @@ function handleKeydown(event: KeyboardEvent): void {
   }
 
   if (event.key === 'n' || event.key === 'N') wizard.open(0);
+  else if (event.key === '+' || event.key === '=') graphView.zoomBy(ZOOM_STEP);
+  else if (event.key === '-' || event.key === '_') graphView.zoomBy(1 / ZOOM_STEP);
+  else if (event.key === '0') graphView.fitView();
 }
