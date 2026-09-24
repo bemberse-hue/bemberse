@@ -14,6 +14,9 @@ import {
 } from '@/core/graph';
 import * as db from '@/db/database';
 import { GraphView } from '@/viz/GraphView';
+import { DendrogramView } from '@/viz/DendrogramView';
+import type { GraphRenderer } from '@/viz/renderer';
+import { ViewSwitcher, type ViewKind } from '@/ui/viewSwitcher';
 import { Wizard } from '@/ui/wizard';
 import { CockpitView } from '@/ui/cockpit';
 import { Hud } from '@/ui/hud';
@@ -38,7 +41,11 @@ const universeContainer = document.getElementById('universe-container') as HTMLE
 const emptyState = document.getElementById('empty-state') as HTMLElement;
 const hint = document.getElementById('hint') as HTMLElement;
 
-const graphView = new GraphView(universeContainer);
+// Vista activa (Red o Arbol). Todo lo demas habla con GraphRenderer y no
+// sabe cual es.
+let graphView: GraphRenderer = createRenderer('network');
+
+const viewSwitcher = new ViewSwitcher((view) => switchView(view));
 
 const hud = new Hud({
   onNewEntry: () => wizard.open(0),
@@ -64,7 +71,6 @@ const inspector = new Inspector({
 const onboarding = new Onboarding((name) => handleOnboardingSubmit(name));
 
 decorateStaticIcons();
-graphView.setNodeClickHandler((nodeId) => handleNodeClick(nodeId));
 
 document.getElementById('btn-empty-start')?.addEventListener('click', () => wizard.open(0));
 document.getElementById('btn-empty-sample')?.addEventListener('click', () => loadSampleGraph());
@@ -112,6 +118,24 @@ async function loadGraphOrEmpty(): Promise<void> {
     setEmptyState(true);
   }
   hud.updateStats(graph);
+}
+
+function createRenderer(view: ViewKind): GraphRenderer {
+  const renderer = view === 'dendrogram' ? new DendrogramView(universeContainer) : new GraphView(universeContainer);
+  renderer.setNodeClickHandler((nodeId) => handleNodeClick(nodeId));
+  return renderer;
+}
+
+/**
+ * Cambia de vista sin tocar el grafo: la anterior se desmonta entera (un
+ * solo svg en el contenedor) y la nueva recibe el MISMO RuntimeGraph, con
+ * su conjunto de completadas y su proximo paso intactos.
+ */
+function switchView(view: ViewKind): void {
+  graphView.dispose();
+  graphView = createRenderer(view);
+  if (graph) graphView.applyStructure(graph);
+  inspector.close();
 }
 
 function setEmptyState(show: boolean): void {

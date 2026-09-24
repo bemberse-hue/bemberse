@@ -219,6 +219,17 @@ h1, h2, h3 {
   50% { filter: drop-shadow(0 0 16px rgba(182, 115, 223, 0.85)); }
 }
 
+/* Dendrograma: insignia de carga aguas abajo (etiqueta, sin color). */
+.node__badge {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  fill: var(--gray-2);
+  pointer-events: none;
+}
+.dendrogram-svg .node__label { font-size: 10.5px; }
+
 /* ---------- Botones ---------- */
 .btn {
   display: inline-flex;

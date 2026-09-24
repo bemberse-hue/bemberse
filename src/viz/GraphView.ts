@@ -11,23 +11,24 @@ import {
   type LayoutSize,
 } from './layout';
 import { HALO_GRADIENTS, nodeFillColor, nodeHaloId, nodeStrokeColor } from './colors';
+import type { GraphRenderer } from './renderer';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
 export type NodeClickHandler = (nodeId: string) => void;
 
 /** Glifos de estado dibujados dentro del circulo (24x24, mismo set que los iconos de UI). */
-const GLYPH_PATHS: Record<string, string> = {
+export const GLYPH_PATHS: Record<string, string> = {
   locked: 'M4.5 10.5h15v10h-15zM8 10.5V7.5a4 4 0 0 1 8 0v3',
   completed: 'M4.5 12.5 9.5 17.5 19.5 6.5',
 };
 
 /** Los objetivos nunca muestran candado: llevan su propia diana. */
-const GOAL_GLYPH =
+export const GOAL_GLYPH =
   'M12 4.5v3M12 16.5v3M4.5 12h3M16.5 12h3M12 8.4a3.6 3.6 0 1 1 0 7.2 3.6 3.6 0 1 1 0-7.2';
 const GOAL_GLYPH_DONE = GLYPH_PATHS.completed;
 
-function truncate(text: string, max: number): string {
+export function truncate(text: string, max: number): string {
   return text.length > max ? `${text.slice(0, max - 1)}…` : text;
 }
 
@@ -44,7 +45,7 @@ function hashId(id: string): number {
  * importancia, con un mini-titulo siempre visible. Un click abre el
  * detalle completo (ver Inspector).
  */
-export class GraphView {
+export class GraphView implements GraphRenderer {
   private readonly svg: SVGSVGElement;
   private readonly edgesLayer: SVGGElement;
   private readonly nodesLayer: SVGGElement;
