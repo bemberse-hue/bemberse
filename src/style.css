@@ -722,6 +722,19 @@ h1, h2, h3 {
   text-align: center;
   padding: 24px;
 }
+.empty-state__diagram { width: min(320px, 70vw); color: var(--bone); }
+.empty-state__diagram svg { width: 100%; height: auto; display: block; }
+.empty-state__title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: -0.03em;
+  line-height: 0.95;
+  font-size: clamp(28px, 4vw, 40px);
+  color: var(--bone);
+  margin: 0;
+}
+.empty-state__sub { max-width: 440px; margin: -8px 0 0; line-height: 1.6; font-size: 15px; }
 .empty-state__actions { display: flex; flex-direction: column; align-items: center; gap: 14px; }
 .empty-state__sample-link {
   background: none;

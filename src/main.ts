@@ -23,6 +23,7 @@ import { Hud } from '@/ui/hud';
 import { Inspector } from '@/ui/inspector';
 import { Onboarding } from '@/ui/onboarding';
 import { decorateStaticIcons } from '@/ui/icons';
+import { EmptyState } from '@/ui/emptyState';
 
 /**
  * Bemberse — orquestador del motor Constella (vive en /app/).
@@ -38,8 +39,6 @@ import { decorateStaticIcons } from '@/ui/icons';
 let graph: RuntimeGraph | null = null;
 
 const universeContainer = document.getElementById('universe-container') as HTMLElement;
-const emptyState = document.getElementById('empty-state') as HTMLElement;
-const hint = document.getElementById('hint') as HTMLElement;
 
 // Vista activa (Red o Arbol). Todo lo demas habla con GraphRenderer y no
 // sabe cual es.
@@ -72,8 +71,10 @@ const onboarding = new Onboarding((name) => handleOnboardingSubmit(name));
 
 decorateStaticIcons();
 
-document.getElementById('btn-empty-start')?.addEventListener('click', () => wizard.open(0));
-document.getElementById('btn-empty-sample')?.addEventListener('click', () => loadSampleGraph());
+const emptyState = new EmptyState({
+  onStart: () => wizard.open(0),
+  onSample: () => loadSampleGraph(),
+});
 
 window.addEventListener('keydown', handleKeydown);
 
@@ -149,8 +150,8 @@ function switchView(view: ViewKind): void {
 }
 
 function setEmptyState(show: boolean): void {
-  emptyState.classList.toggle('hidden', !show);
-  hint.classList.toggle('hidden', show);
+  if (show) emptyState.open();
+  else emptyState.close();
 }
 
 function loadSampleGraph(): void {

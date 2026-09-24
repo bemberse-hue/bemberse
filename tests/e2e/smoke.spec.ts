@@ -147,3 +147,38 @@ test('fila 6 — Reiniciar borra el grafo, conserva el perfil, y recarga al esta
   await expect(page.locator('#onboarding')).toHaveClass(/hidden/); // el perfil sigue ahi
   await expect(page.locator('#hud-brand')).toContainText('NICO');
 });
+
+test('estado vacio — diagrama en linea solo con trazo hueso, una accion primaria y un enlace a la muestra', async ({ page }) => {
+  await resetDb(page);
+  await completeOnboarding(page);
+  await expect(page.locator('#empty-state')).not.toHaveClass(/hidden/);
+
+  const diagram = await page.$$eval('#empty-state svg, #empty-state svg *', (els) =>
+    els.map((el) => {
+      const s = getComputedStyle(el);
+      return { tag: el.tagName, fill: s.fill, stroke: s.stroke };
+    }),
+  );
+  expect(diagram.length).toBeGreaterThan(1);
+  for (const { fill, stroke } of diagram) {
+    expect(fill).toBe('none');
+    expect(['none', 'rgb(245, 245, 240)']).toContain(stroke);
+  }
+
+  await expect(page.locator('#empty-state .btn--primary')).toHaveCount(1);
+  await page.click('#empty-state .btn--primary');
+  await expect(page.locator('#wizard')).not.toHaveClass(/hidden/);
+  await page.keyboard.press('Escape');
+
+  await page.click('#btn-empty-sample');
+  await expect(page.locator('#empty-state')).toHaveClass(/hidden/);
+});
+
+test('estado vacio — la muestra se dibuja en la vista seleccionada', async ({ page }) => {
+  await resetDb(page);
+  await completeOnboarding(page);
+  await page.click('#btn-view-toggle');
+  await page.click('#btn-empty-sample');
+  await expect(page.locator('#empty-state')).toHaveClass(/hidden/);
+  await expect(page.locator('.dendrogram-svg .node')).not.toHaveCount(0);
+});

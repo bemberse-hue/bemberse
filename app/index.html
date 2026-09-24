@@ -170,8 +170,13 @@
       </section>
 
       <!-- Estado vacio -->
-      <section id="empty-state" class="empty-state hidden">
-        <p id="empty-state-title">Tu universo está en blanco.</p>
+      <section id="empty-state" class="empty-state hidden" aria-labelledby="empty-state-title">
+        <div id="empty-state-diagram" class="empty-state__diagram" aria-hidden="true"></div>
+        <h2 id="empty-state-title" class="empty-state__title">Tu universo está en blanco</h2>
+        <p class="empty-state__sub">
+          Todo lo que tienes en la cabeza está enredado así. Vuélcalo y lo
+          convertimos en un mapa donde sólo una tarea se enciende a la vez.
+        </p>
         <div class="empty-state__actions">
           <button id="btn-empty-start" class="btn btn--primary btn--lg">Empezar</button>
           <button id="btn-empty-sample" class="empty-state__sample-link">o prueba con un ejemplo</button>
