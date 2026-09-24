@@ -71,6 +71,12 @@ export interface ValidationIssue {
 export interface UserProfile {
   name: string;
   createdAt: string;
+  /**
+   * Vista preferida del universo. Opcional a proposito: los perfiles
+   * guardados antes de que existiera no lo tienen, y leerlos no debe exigir
+   * subir DB_VERSION. Ausente = 'network'.
+   */
+  preferredView?: 'network' | 'dendrogram';
 }
 
 export class GraphValidationError extends Error {

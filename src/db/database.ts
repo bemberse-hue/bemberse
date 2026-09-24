@@ -87,6 +87,16 @@ export async function loadProfile(): Promise<UserProfile | null> {
   });
 }
 
+/**
+ * Guarda la vista preferida dentro del perfil que ya existe (mismo store,
+ * misma clave, sin migracion). Sin perfil no hay donde guardarla.
+ */
+export async function savePreferredView(view: 'network' | 'dendrogram'): Promise<void> {
+  const profile = await loadProfile();
+  if (!profile) return;
+  await saveProfile({ ...profile, preferredView: view });
+}
+
 /** Comprueba si IndexedDB esta disponible (modo incognito estricto, etc). */
 export function isPersistenceAvailable(): boolean {
   try {

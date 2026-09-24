@@ -87,6 +87,13 @@ async function init(): Promise<void> {
   const profile = await db.loadProfile().catch(() => null);
   if (profile) {
     hud.setUserName(profile.name);
+    // Un perfil anterior al conmutador no trae preferredView: red por defecto.
+    const view: ViewKind = profile.preferredView === 'dendrogram' ? 'dendrogram' : 'network';
+    if (view !== viewSwitcher.view) {
+      viewSwitcher.set(view);
+      graphView.dispose();
+      graphView = createRenderer(view);
+    }
     await loadGraphOrEmpty();
   } else {
     // Primera visita a /app/: directo al onboarding (nombre).
@@ -95,7 +102,7 @@ async function init(): Promise<void> {
 }
 
 async function handleOnboardingSubmit(name: string): Promise<void> {
-  await db.saveProfile({ name, createdAt: new Date().toISOString() }).catch((err) => {
+  await db.saveProfile({ name, createdAt: new Date().toISOString(), preferredView: viewSwitcher.view }).catch((err) => {
     console.error('Error guardando el perfil:', err);
   });
   hud.setUserName(name);
@@ -136,6 +143,9 @@ function switchView(view: ViewKind): void {
   graphView = createRenderer(view);
   if (graph) graphView.applyStructure(graph);
   inspector.close();
+  db.savePreferredView(view).catch((err) => {
+    console.error('Error guardando la vista preferida:', err);
+  });
 }
 
 function setEmptyState(show: boolean): void {

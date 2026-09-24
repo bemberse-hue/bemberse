@@ -76,6 +76,74 @@ test('el click enruta igual que en la red: bloqueado traza, desbloqueado abre el
   await expect(page.locator('#inspector')).not.toHaveClass(/hidden/, { timeout: 5000 });
 });
 
+test('la vista elegida sobrevive a recargar (preferredView en el perfil)', async ({ page }) => {
+  await loadSample(page);
+  await openTree(page);
+  await page.waitForTimeout(300); // la escritura en IndexedDB es asincrona
+  await page.reload();
+  await page.waitForSelector('.dendrogram-svg', { timeout: 8000 });
+  await expect(page.locator('#btn-view-toggle')).toHaveAttribute('aria-pressed', 'true');
+  const view = await page.evaluate(
+    () =>
+      new Promise<string | undefined>((resolve) => {
+        const req = indexedDB.open('bemberse-db');
+        req.onsuccess = () => {
+          const g = req.result.transaction('profile').objectStore('profile').getAll();
+          g.onsuccess = () => resolve(g.result[0]?.preferredView);
+        };
+      }),
+  );
+  expect(view).toBe('dendrogram');
+});
+
+test('un perfil antiguo sin preferredView abre la red sin error ni subir la version', async ({ page }) => {
+  const errors: string[] = [];
+  page.on('pageerror', (e) => errors.push(e.message));
+  await loadSample(page);
+  // Reescribir el perfil como lo guardaba la version anterior: sin el campo.
+  await page.evaluate(
+    () =>
+      new Promise<void>((resolve) => {
+        const req = indexedDB.open('bemberse-db');
+        req.onsuccess = () => {
+          const store = req.result.transaction('profile', 'readwrite').objectStore('profile');
+          const keys = store.getAllKeys();
+          keys.onsuccess = () => {
+            store.put({ name: 'Nico', createdAt: '2025-01-01T00:00:00.000Z' }, keys.result[0]);
+            store.transaction.oncomplete = () => {
+              req.result.close();
+              resolve();
+            };
+          };
+        };
+      }),
+  );
+  await page.reload();
+  await page.waitForSelector('#universe-container > svg');
+  await expect(page.locator('.dendrogram-svg')).toHaveCount(0);
+  const version = await page.evaluate(
+    () =>
+      new Promise<number>((resolve) => {
+        const req = indexedDB.open('bemberse-db');
+        req.onsuccess = () => resolve(req.result.version);
+      }),
+  );
+  expect(version).toBe(2);
+  expect(errors).toHaveLength(0);
+});
+
+test('conmutar conserva completadas y proximo paso', async ({ page }) => {
+  await loadSample(page);
+  await page.keyboard.press('Space');
+  await page.click('#btn-complete');
+  const before = await page.textContent('#hud-status');
+  const coreBefore = await page.locator('.node--next').getAttribute('data-id');
+  await openTree(page);
+  expect(await page.textContent('#hud-status')).toBe(before);
+  expect(await page.locator('.node--next').getAttribute('data-id')).toBe(coreBefore);
+  expect(await page.locator('.dendrogram-svg .node--completed').count()).toBe(1);
+});
+
 test('conmutar deja exactamente un svg raiz en el contenedor, en ambos sentidos', async ({ page }) => {
   await loadSample(page);
   await openTree(page);
