@@ -191,6 +191,12 @@ test('navegacion — el enlace de retorno lleva a / y tiene nombre accesible', a
   await link.focus();
   await page.keyboard.press('Enter');
   await page.waitForURL((url) => url.pathname === '/');
+  // Con datos guardados, el sitio ya no redirige de vuelta al motor (E6-T3)
+  // y sigue ofreciendo el CTA hacia /app/.
+  await page.waitForTimeout(500);
+  expect(new URL(page.url()).pathname).toBe('/');
+  await expect(page.locator('#hero')).toBeVisible();
+  await expect(page.locator('#btn-landing-start')).toHaveAttribute('href', 'app/');
 });
 
 test('navegacion — Tab recorre conmutador, nueva entrada y retorno con anillo de foco visible', async ({ page }) => {

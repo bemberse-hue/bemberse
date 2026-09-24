@@ -25,7 +25,7 @@
       "tests/unit/sanity.test.ts",
       "tests/e2e/smoke.spec.ts"
     ],
-    "status": "pending"
+    "status": "done"
   },
   {
     "id": "E1-T2",
@@ -50,7 +50,7 @@
       "tests/unit/graph-characterization.test.ts",
       "tests/fixtures/graphs.ts"
     ],
-    "status": "pending"
+    "status": "done"
   },
   {
     "id": "E2-T1",
@@ -78,7 +78,7 @@
       "tests/unit/tokens.test.ts",
       "tests/e2e/design-tokens.spec.ts"
     ],
-    "status": "pending"
+    "status": "done"
   },
   {
     "id": "E2-T2",
@@ -105,7 +105,7 @@
       "src/viz/colors.ts",
       "src/ui/icons.ts"
     ],
-    "status": "pending"
+    "status": "done"
   },
   {
     "id": "E3-T1",
@@ -139,7 +139,7 @@
       "tests/e2e/smoke.spec.ts",
       "playwright.config.ts"
     ],
-    "status": "pending"
+    "status": "done"
   },
   {
     "id": "E3-T2",
@@ -168,7 +168,7 @@
       "src/ui/siteSections.ts",
       "tests/e2e/site-sections.spec.ts"
     ],
-    "status": "pending"
+    "status": "done"
   },
   {
     "id": "E3-T3",
@@ -193,7 +193,7 @@
       "src/site.css",
       "tests/e2e/site-sections.spec.ts"
     ],
-    "status": "pending"
+    "status": "done"
   },
   {
     "id": "E4-T1",
@@ -219,7 +219,7 @@
       "src/core/graph.ts",
       "tests/unit/blockers.test.ts"
     ],
-    "status": "pending"
+    "status": "done"
   },
   {
     "id": "E4-T2",
@@ -248,7 +248,7 @@
       "src/style.css",
       "tests/e2e/locks.spec.ts"
     ],
-    "status": "pending"
+    "status": "done"
   },
   {
     "id": "E4-T3",
@@ -274,7 +274,7 @@
       "src/style.css",
       "tests/e2e/locks.spec.ts"
     ],
-    "status": "pending"
+    "status": "done"
   },
   {
     "id": "E5-T1",
@@ -300,7 +300,7 @@
       "src/core/graph.ts",
       "tests/unit/critical-path.test.ts"
     ],
-    "status": "pending"
+    "status": "done"
   },
   {
     "id": "E5-T2",
@@ -326,7 +326,7 @@
       "src/viz/dendrogramLayout.ts",
       "tests/unit/dendrogram-layout.test.ts"
     ],
-    "status": "pending"
+    "status": "done"
   },
   {
     "id": "E5-T3",
@@ -354,7 +354,7 @@
       "src/style.css",
       "tests/e2e/dendrogram.spec.ts"
     ],
-    "status": "pending"
+    "status": "done"
   },
   {
     "id": "E5-T4",
@@ -383,7 +383,7 @@
       "src/core/types.ts",
       "tests/e2e/dendrogram.spec.ts"
     ],
-    "status": "pending"
+    "status": "done"
   },
   {
     "id": "E6-T1",
@@ -410,7 +410,7 @@
       "src/style.css",
       "tests/e2e/smoke.spec.ts"
     ],
-    "status": "pending"
+    "status": "done"
   },
   {
     "id": "E6-T2",
@@ -440,7 +440,7 @@
       "src/viz/DendrogramView.ts",
       "src/style.css"
     ],
-    "status": "pending"
+    "status": "done"
   },
   {
     "id": "E6-T3",
@@ -469,6 +469,6 @@
       "src/site.ts",
       "tests/e2e/site-sections.spec.ts"
     ],
-    "status": "pending"
+    "status": "done"
   }
 ]
