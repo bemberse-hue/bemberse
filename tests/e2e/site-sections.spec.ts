@@ -118,3 +118,23 @@ test('the hero wordmark is typographic, in the system font, with a single subtle
   const bg = await keyword.evaluate((el) => getComputedStyle(el).backgroundImage);
   expect(bg).toContain('linear-gradient');
 });
+
+test('the page scrolls with the mouse wheel, all the way down to the dump', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto(SITE_URL);
+  await page.mouse.move(640, 400);
+  await page.mouse.wheel(0, 1200);
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(600);
+
+  // Hasta el final del embudo, con la rueda y no por codigo.
+  for (let i = 0; i < 12; i++) await page.mouse.wheel(0, 1500);
+  await expect.poll(() => page.evaluate(() => window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 4)).toBe(true);
+});
+
+test('placeholder pages scroll too', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 600 });
+  await page.goto(SITE_URL + 'routes/');
+  await page.mouse.move(200, 300);
+  await page.mouse.wheel(0, 800);
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(100);
+});

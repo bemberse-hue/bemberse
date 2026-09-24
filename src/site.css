@@ -4,12 +4,28 @@
    layout de pagina scrollable y las 6 secciones que siguen al hero.
    ========================================================================== */
 
-/* El motor (app/index.html) es una sola pantalla fija; el sitio, en
-   cambio, se recorre con scroll normal de navegador. */
-body.site,
-body.site #app {
-  overflow-y: auto;
+/* El motor (app/index.html) es una sola pantalla fija (style.css bloquea el
+   scroll en html y body); el sitio, en cambio, se recorre con el scroll
+   normal del navegador. El desbloqueo tiene que empezar en <html>: si html
+   sigue en overflow:hidden, el scroll de body nunca llega al viewport y la
+   rueda no mueve nada.
+   Ojo: body debe quedar en overflow:visible en ambos ejes — "hidden" en un
+   eje convierte el otro en "auto" y body pasa a ser su propio contenedor
+   de scroll, sin altura limite, y la ventana deja de bajar. */
+html.site-root {
   overflow-x: hidden;
+  overflow-y: auto;
+  height: auto;
+  overscroll-behavior: auto;
+}
+html.site-root body.site {
+  overflow: visible;
+  height: auto;
+  min-height: 100%;
+  overscroll-behavior: auto;
+}
+body.site #app {
+  overflow: visible;
   height: auto;
   min-height: 100%;
 }
@@ -373,5 +389,5 @@ body.site #hero.landing { padding-top: 64px; }
 /* Saltos por ancla: la barra fija no tapa el titulo de la seccion. */
 body.site .site-section { scroll-margin-top: 64px; }
 @media (prefers-reduced-motion: no-preference) {
-  html:has(body.site) { scroll-behavior: smooth; }
+  html.site-root { scroll-behavior: smooth; }
 }
