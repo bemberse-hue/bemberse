@@ -7,7 +7,6 @@ export interface HudCallbacks {
 }
 
 export class Hud {
-  private readonly brandEl = document.getElementById('hud-brand') as HTMLElement;
   private readonly statusEl = document.getElementById('hud-status') as HTMLElement;
   private readonly newEntryBtn = document.getElementById('btn-new-entry') as HTMLButtonElement;
   private readonly resetBtn = document.getElementById('btn-reset') as HTMLButtonElement;
@@ -19,17 +18,13 @@ export class Hud {
     this.resetBtn.addEventListener('click', callbacks.onReset);
   }
 
-  setUserName(name: string): void {
-    this.brandEl.textContent = `EL UNIVERSO DE ${name.toUpperCase()}`;
-  }
-
   updateStats(graph: RuntimeGraph | null): void {
     if (!graph) {
-      this.statusEl.textContent = '0 tareas · 0 desbloqueadas';
+      this.statusEl.textContent = '0 tasks · 0 unlocked';
       return;
     }
     const { total, completed, unlocked, locked } = graphStats(graph);
-    this.statusEl.textContent = `${total} tareas · ${unlocked} activas · ${locked} bloqueadas · ${completed} completadas`;
+    this.statusEl.textContent = `${total} tasks · ${unlocked} unlocked · ${locked} locked · ${completed} done`;
   }
 
   showToast(message: string, durationMs = 3200): void {

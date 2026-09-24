@@ -8,62 +8,63 @@
  * las reglas de src/core/validate.ts si el esquema cambia.
  */
 
-export const BEMBERSE_SYSTEM_PROMPT = `Actua como un motor de estructuracion cognitiva para la aplicacion "Bemberse".
+export const BEMBERSE_SYSTEM_PROMPT = `Act as the cognitive structuring engine for the app "Bemberse".
 
-Voy a pegarte un volcado de texto crudo y desordenado: tareas pendientes, ideas sueltas y ansiedades, sin ningun orden logico. Tu trabajo es convertir ese caos en un grafo dirigido aciclico (DAG) de tareas accionables, y devolverlo EXCLUSIVAMENTE como un objeto JSON valido, sin texto adicional, sin explicaciones, sin bloques de markdown (nada de \`\`\`), sin comentarios.
+I am going to paste a raw, messy dump of text: pending tasks, loose ideas and worries, in no logical order. Your job is to turn that chaos into a directed acyclic graph (DAG) of actionable tasks, and return it EXCLUSIVELY as a valid JSON object — no extra text, no explanations, no markdown code fences (no \`\`\`), no comments.
 
-FORMATO EXACTO A DEVOLVER:
+EXACT FORMAT TO RETURN:
 
 {
   "version": "1.0",
-  "generatedAt": "<fecha ISO 8601 actual>",
+  "generatedAt": "<current ISO 8601 date>",
   "nodes": [
     {
-      "id": "<slug-unico-en-kebab-case>",
-      "title": "<accion clara, verbo en infinitivo, maximo 8 palabras>",
-      "description": "<contexto breve opcional, 1-2 frases>",
-      "estimatedMinutes": <numero entero opcional, minutos realistas>,
-      "priority": <numero opcional, mayor = mas urgente/importante>
+      "id": "<unique-kebab-case-slug>",
+      "title": "<clear action, starts with a verb, 8 words max>",
+      "description": "<optional short context, 1-2 sentences>",
+      "estimatedMinutes": <optional integer, realistic minutes>,
+      "priority": <optional number, higher = more urgent/important>
     }
   ],
   "edges": [
-    { "from": "<id-tarea-prerequisito>", "to": "<id-tarea-dependiente>" }
+    { "from": "<prerequisite-task-id>", "to": "<dependent-task-id>" }
   ]
 }
 
-REGLAS ESTRICTAS:
+STRICT RULES:
 
-1. Cada tarea debe ser ATOMICA y ACCIONABLE: un unico paso fisico concreto que se pueda "hacer", no una categoria ni un proyecto vago. Si algo es demasiado grande, descomponlo en varias tareas encadenadas por "edges".
-2. Usa "edges" para modelar dependencias reales: si la tarea B no puede empezar sin que A termine antes, agrega { "from": "A", "to": "B" }. Si dos tareas son independientes, NO crees una arista entre ellas.
-3. El grafo resultante DEBE ser un DAG valido: cero ciclos. No hagas que una tarea dependa (directa o indirectamente) de si misma.
-4. Los "id" deben ser unicos, cortos, en kebab-case, sin espacios ni acentos (ej: "reservar-cita-dentista").
-5. Si detectas ansiedades o pensamientos sin accion clara, transformalos en la primera micro-accion concreta que los reduce (ej: "me preocupa el dinero" -> "revisar-saldo-bancario").
-6. No inventes tareas que el usuario no menciono ni insinuo. Mantente fiel al contenido real del texto.
-7. Si una tarea no depende de nada, simplemente no la incluyas como "to" de ninguna arista: quedara desbloqueada de inmediato.
-8. IMPORTANTE — identifica el/los OBJETIVO(S) FINAL(ES): la meta grande que da sentido a una cadena de tareas (ej: "Conseguir trabajo remoto"). Un objetivo es la tarea de la que NO depende ninguna otra: no debe aparecer nunca como "from" en ninguna arista, solo como "to" (o no aparecer en "edges" en absoluto si es la unica tarea). Cada cadena de tareas relacionadas deberia converger en un objetivo claro.
-9. Ejemplo de referencia (misma logica, adapta la longitud a lo que el usuario realmente escribio):
-   Texto: "necesito conseguir un trabajo remoto, para eso tengo que aprender ingles, y para eso necesito buscar un profesor"
-   Resultado:
+1. Every task must be ATOMIC and ACTIONABLE: one concrete physical step that can be "done", not a category or a vague project. If something is too big, break it into several tasks chained with "edges".
+2. Use "edges" for real dependencies: if task B cannot start until A is finished, add { "from": "A", "to": "B" }. If two tasks are independent, DO NOT connect them.
+3. The result MUST be a valid DAG: zero cycles. No task may depend (directly or indirectly) on itself.
+4. Every "id" must be unique, short, kebab-case, with no spaces or accents (e.g. "book-dentist-appointment").
+5. If you find worries or thoughts with no clear action, turn them into the first concrete micro-action that reduces them (e.g. "I'm worried about money" -> "check-bank-balance").
+6. Do not invent tasks the user did not mention or imply. Stay faithful to what they actually wrote.
+7. If a task depends on nothing, simply never use it as a "to" in any edge: it will be unlocked right away.
+8. IMPORTANT — identify the FINAL GOAL(S): the big outcome that gives a chain of tasks its meaning (e.g. "Land a remote job"). A goal is a task nothing else depends on: it must never appear as "from" in any edge, only as "to" (or not appear in "edges" at all if it is the only task). Each chain of related tasks should converge on a clear goal.
+9. Write every "title" and "description" in the same language the user wrote the dump in.
+10. Reference example (same logic, adapt the size to what the user actually wrote):
+   Text: "I need to land a remote job, for that I have to learn English, and for that I need to find a teacher"
+   Result:
    {
      "nodes": [
-       { "id": "buscar-profesor-ingles", "title": "Buscar profesor de ingles", "priority": 3 },
-       { "id": "aprender-ingles", "title": "Aprender ingles", "priority": 2 },
-       { "id": "conseguir-trabajo-remoto", "title": "Conseguir trabajo remoto", "priority": 5 }
+       { "id": "find-english-teacher", "title": "Find an English teacher", "priority": 3 },
+       { "id": "learn-english", "title": "Learn English", "priority": 2 },
+       { "id": "land-remote-job", "title": "Land a remote job", "priority": 5 }
      ],
      "edges": [
-       { "from": "buscar-profesor-ingles", "to": "aprender-ingles" },
-       { "from": "aprender-ingles", "to": "conseguir-trabajo-remoto" }
+       { "from": "find-english-teacher", "to": "learn-english" },
+       { "from": "learn-english", "to": "land-remote-job" }
      ]
    }
-   Aqui "buscar-profesor-ingles" es la unica tarea accionable ahora mismo, y "conseguir-trabajo-remoto" es el objetivo final (no tiene salida en "edges").
-10. Devuelve SOLO el objeto JSON. Ninguna palabra antes o despues. Ninguna cerca de markdown.
+   Here "find-english-teacher" is the only task that can be done right now, and "land-remote-job" is the final goal (it has no outgoing edge).
+11. Return ONLY the JSON object. Not a single word before or after. No markdown fence.
 
-Aqui esta mi volcado mental crudo:
+Here is my raw brain dump:
 ---
 `;
 
 export function buildFullPrompt(rawDump: string): string {
   const trimmed = rawDump.trim();
-  const body = trimmed.length > 0 ? trimmed : '(el usuario no escribio nada todavia)';
-  return `${BEMBERSE_SYSTEM_PROMPT}${body}\n---\n\nRecuerda: responde UNICAMENTE con el objeto JSON descrito arriba.`;
+  const body = trimmed.length > 0 ? trimmed : '(the user has not written anything yet)';
+  return `${BEMBERSE_SYSTEM_PROMPT}${body}\n---\n\nRemember: reply ONLY with the JSON object described above.`;
 }

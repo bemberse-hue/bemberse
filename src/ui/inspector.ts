@@ -8,10 +8,10 @@ export interface InspectorCallbacks {
 }
 
 const STATUS_LABEL: Record<string, string> = {
-  locked: 'Bloqueada',
-  unlocked: 'Desbloqueada',
-  core: 'Tu próximo paso',
-  completed: 'Completada',
+  locked: 'Locked',
+  unlocked: 'Unlocked',
+  core: 'Your next step',
+  completed: 'Done',
 };
 
 /**
@@ -50,7 +50,7 @@ export class Inspector {
     this.currentId = node.id;
     const goal = isGoalNode(node);
 
-    this.kindEl.textContent = goal ? 'OBJETIVO' : 'TAREA';
+    this.kindEl.textContent = goal ? 'GOAL' : 'TASK';
     this.kindEl.classList.toggle('is-goal', goal);
     this.titleEl.textContent = node.title;
     this.descEl.textContent = node.description ?? '';
@@ -61,7 +61,7 @@ export class Inspector {
 
     if (node.status === 'locked') {
       const blockers = getBlockerTitles(graph, node.id);
-      this.blockersEl.textContent = blockers.length > 0 ? `Bloqueada por: ${blockers.join(', ')}` : 'Bloqueada.';
+      this.blockersEl.textContent = blockers.length > 0 ? `Locked by: ${blockers.join(', ')}` : 'Locked.';
       this.blockersEl.classList.remove('hidden');
     } else {
       this.blockersEl.classList.add('hidden');

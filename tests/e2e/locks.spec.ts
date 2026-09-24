@@ -1,19 +1,11 @@
 import { test, expect, type Page } from '@playwright/test';
+import { loadPreset } from './helpers';
+
+const loadSample = (page: Page) => loadPreset(page, 'product-launch', 2500);
 
 // Epic 04: la mecanica de candados. Un nodo bloqueado no abre el Inspector:
 // el sistema traza por que no se puede. Sin sonido, solo respuesta visual.
 
-async function loadSample(page: Page): Promise<void> {
-  await page.goto('./');
-  await page.evaluate(() => indexedDB.deleteDatabase('bemberse-db'));
-  await page.reload();
-  await page.waitForSelector('#onboarding:not(.hidden)', { timeout: 8000 });
-  await page.fill('#onboarding-name', 'Nico');
-  await page.click('#onboarding-form button[type=submit]');
-  await page.click('#btn-empty-sample');
-  await page.waitForFunction(() => document.getElementById('empty-state')?.classList.contains('hidden'));
-  await page.waitForTimeout(2500); // dejar que el layout de fuerzas se asiente
-}
 
 /** Devuelve el id del primer nodo con la clase dada (node--locked, etc). */
 async function firstNodeId(page: Page, selector: string): Promise<string> {
@@ -114,4 +106,39 @@ test('con prefers-reduced-motion, la cadena se marca pero no corre la animacion'
   await expect(traced).toBeVisible();
   const animationName = await traced.evaluate((el) => getComputedStyle(el).animationName);
   expect(animationName).toBe('none');
+});
+
+test('a locked node sits at 30% opacity and the single active node at 100% with a solid border', async ({ page }) => {
+  await loadSample(page);
+  const lockedOpacity = await page.$$eval('.nodes-layer .node--locked', (nodes) =>
+    [...new Set(nodes.map((n) => getComputedStyle(n).opacity))],
+  );
+  expect(lockedOpacity).toEqual(['0.3']);
+
+  const active = page.locator('.nodes-layer .node--next');
+  await expect(active).toHaveCount(1);
+  const style = await active.evaluate((g) => {
+    const dot = g.querySelector('.node__dot')!;
+    const s = getComputedStyle(dot);
+    return { opacity: getComputedStyle(g).opacity, dash: s.strokeDasharray, width: parseFloat(s.strokeWidth) };
+  });
+  expect(style.opacity).toBe('1');
+  expect(style.dash).toBe('none');
+  expect(style.width).toBeGreaterThanOrEqual(2.5);
+});
+
+test('clicking a locked node shows a static notice naming the task to finish first', async ({ page }) => {
+  await loadSample(page);
+  const lockedId = await firstNodeId(page, '.node--locked');
+  await clickNode(page, lockedId);
+
+  const toast = page.locator('#toast');
+  await expect(toast).toBeVisible();
+  await expect(toast).toHaveText(/^Locked: complete “.+” first\.$/);
+  // Estatico: sin animacion de entrada que distraiga.
+  expect(await toast.evaluate((el) => getComputedStyle(el).animationName)).toBe('none');
+  // La tarea nombrada es accionable: esta desbloqueada o es el proximo paso.
+  const title = (await toast.textContent())!.match(/“(.+)”/)![1];
+  const named = page.locator('.nodes-layer .node', { has: page.locator('title', { hasText: title }) }).first();
+  await expect(named).not.toHaveClass(/node--locked/);
 });

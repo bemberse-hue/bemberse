@@ -82,7 +82,7 @@ export interface UserProfile {
 export class GraphValidationError extends Error {
   issues: ValidationIssue[];
   constructor(issues: ValidationIssue[]) {
-    super(`JSON invalido: ${issues.length} problema(s) encontrados.`);
+    super(`Invalid JSON: ${issues.length} problem(s) found.`);
     this.issues = issues;
     this.name = 'GraphValidationError';
   }

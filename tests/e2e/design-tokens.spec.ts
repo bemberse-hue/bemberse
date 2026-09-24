@@ -51,10 +51,10 @@ test.describe('regla del acento: como maximo un elemento visible por pantalla', 
     await page.evaluate(() => indexedDB.deleteDatabase('bemberse-db'));
     await page.reload();
     await page.click('#btn-open-engine');
-    await page.waitForSelector('#onboarding:not(.hidden)');
+    await page.waitForSelector('#ingest:not(.hidden)');
 
     const accentCount = await page.evaluate((accent) => {
-      const all = document.querySelectorAll('#onboarding *');
+      const all = document.querySelectorAll('#ingest *');
       let count = 0;
       all.forEach((el) => {
         const s = getComputedStyle(el);

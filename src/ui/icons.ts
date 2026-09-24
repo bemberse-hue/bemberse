@@ -56,14 +56,12 @@ interface StaticIconSpec {
 
 const STATIC_ICONS: StaticIconSpec[] = [
   { selector: '#btn-inspector-close', name: 'close', size: 16, iconOnly: true },
-  { selector: '#btn-wizard-close', name: 'close', size: 16, iconOnly: true },
+  { selector: '#btn-ingest-close', name: 'close', size: 16, iconOnly: true },
   { selector: '#btn-mic', name: 'mic' },
   { selector: '#btn-complete', name: 'check' },
   { selector: '#btn-exit-cockpit', name: 'arrowLeft', size: 16 },
   { selector: '#btn-inspector-start', name: 'play', size: 16 },
-  { selector: '#btn-wizard-to-prompt', name: 'arrowRight', position: 'after' },
-  { selector: '#btn-wizard-to-import', name: 'arrowRight', position: 'after' },
-  { selector: '#btn-wizard-skip-to-json', name: 'arrowRight', position: 'after', size: 14 },
+  { selector: '#btn-next-bar-start', name: 'play', size: 16 },
   { selector: '#btn-open-engine', name: 'sparkle' },
 ];
 

@@ -3,7 +3,7 @@ import { buildRuntimeGraph } from '@/core/graph';
 import { validateRawGraph } from '@/core/validate';
 import { computeDendrogramLayout } from '@/viz/dendrogramLayout';
 import type { RawBemberseGraph } from '@/core/types';
-import sample from '../../sample-data/example-graph.json';
+import sample from '../../sample-data/presets/product-launch.json';
 
 // E5-T2: layout horizontal del dendrograma, puro y determinista.
 

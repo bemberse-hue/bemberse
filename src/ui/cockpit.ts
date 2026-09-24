@@ -35,7 +35,7 @@ export class CockpitView {
     this.descEl.textContent = node.description
       ? node.description
       : node.estimatedMinutes
-        ? `Estimado: ~${node.estimatedMinutes} min.`
+        ? `Estimated: ~${node.estimatedMinutes} min.`
         : '';
 
     this.pathEl.innerHTML = this.renderPath(node, graph);
@@ -47,6 +47,10 @@ export class CockpitView {
     this.currentNode = null;
   }
 
+  get currentId(): string | null {
+    return this.currentNode?.id ?? null;
+  }
+
   get isOpen(): boolean {
     return !this.root.classList.contains('hidden');
   }
@@ -54,7 +58,7 @@ export class CockpitView {
   private renderPath(node: RuntimeNode, graph: RuntimeGraph): string {
     const goalIcon = icon('target', 14);
     if (isGoalNode(node)) {
-      return `<span class="is-goal">${goalIcon} Este es tu objetivo final.</span>`;
+      return `<span class="is-goal">${goalIcon} This is your final goal.</span>`;
     }
 
     const path = getPathToGoal(graph, node.id);
@@ -67,7 +71,7 @@ export class CockpitView {
       return escaped;
     });
 
-    return `Este paso te acerca a: ${parts.join(' → ')}`;
+    return `This step moves you toward: ${parts.join(' → ')}`;
   }
 
   private escapeHtml(text: string): string {

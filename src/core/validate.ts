@@ -21,21 +21,21 @@ export function validateRawGraph(input: unknown): RawBemberseGraph {
 
   if (typeof input !== 'object' || input === null || Array.isArray(input)) {
     throw new GraphValidationError([
-      { path: '$', message: 'La raiz del JSON debe ser un objeto { version, nodes, edges }.' },
+      { path: '$', message: 'The JSON root must be an object { version, nodes, edges }.' },
     ]);
   }
 
   const obj = input as Record<string, unknown>;
 
   if (!isNonEmptyString(obj.version)) {
-    issues.push({ path: '$.version', message: 'Falta "version" (string), ej: "1.0".' });
+    issues.push({ path: '$.version', message: 'Missing "version" (string), e.g. "1.0".' });
   }
 
   if (!Array.isArray(obj.nodes)) {
-    issues.push({ path: '$.nodes', message: 'Falta "nodes" (array de nodos).' });
+    issues.push({ path: '$.nodes', message: 'Missing "nodes" (array of nodes).' });
   }
   if (!Array.isArray(obj.edges)) {
-    issues.push({ path: '$.edges', message: 'Falta "edges" (array de aristas). Usa [] si no hay dependencias.' });
+    issues.push({ path: '$.edges', message: 'Missing "edges" (array of edges). Use [] if there are no dependencies.' });
   }
 
   if (issues.length > 0) throw new GraphValidationError(issues);
@@ -49,31 +49,31 @@ export function validateRawGraph(input: unknown): RawBemberseGraph {
   rawNodes.forEach((n, i) => {
     const path = `$.nodes[${i}]`;
     if (typeof n !== 'object' || n === null) {
-      issues.push({ path, message: 'Cada nodo debe ser un objeto.' });
+      issues.push({ path, message: 'Each node must be an object.' });
       return;
     }
     const node = n as Record<string, unknown>;
     if (!isNonEmptyString(node.id)) {
-      issues.push({ path: `${path}.id`, message: 'Falta "id" (string unico).' });
+      issues.push({ path: `${path}.id`, message: 'Missing "id" (unique string).' });
       return;
     }
     if (seenIds.has(node.id)) {
-      issues.push({ path: `${path}.id`, message: `id duplicado: "${node.id}".` });
+      issues.push({ path: `${path}.id`, message: `Duplicate id: "${node.id}".` });
       return;
     }
     seenIds.add(node.id);
 
     if (!isNonEmptyString(node.title)) {
-      issues.push({ path: `${path}.title`, message: `El nodo "${node.id}" necesita "title" (string).` });
+      issues.push({ path: `${path}.title`, message: `Node "${node.id}" needs a "title" (string).` });
     }
     if (node.description !== undefined && typeof node.description !== 'string') {
-      issues.push({ path: `${path}.description`, message: 'description debe ser string si se incluye.' });
+      issues.push({ path: `${path}.description`, message: 'description must be a string when present.' });
     }
     if (node.estimatedMinutes !== undefined && typeof node.estimatedMinutes !== 'number') {
-      issues.push({ path: `${path}.estimatedMinutes`, message: 'estimatedMinutes debe ser number si se incluye.' });
+      issues.push({ path: `${path}.estimatedMinutes`, message: 'estimatedMinutes must be a number when present.' });
     }
     if (node.priority !== undefined && typeof node.priority !== 'number') {
-      issues.push({ path: `${path}.priority`, message: 'priority debe ser number si se incluye.' });
+      issues.push({ path: `${path}.priority`, message: 'priority must be a number when present.' });
     }
 
     nodes.push({
@@ -90,28 +90,28 @@ export function validateRawGraph(input: unknown): RawBemberseGraph {
   rawEdges.forEach((e, i) => {
     const path = `$.edges[${i}]`;
     if (typeof e !== 'object' || e === null) {
-      issues.push({ path, message: 'Cada arista debe ser un objeto { from, to }.' });
+      issues.push({ path, message: 'Each edge must be an object { from, to }.' });
       return;
     }
     const edge = e as Record<string, unknown>;
     if (!isNonEmptyString(edge.from) || !isNonEmptyString(edge.to)) {
-      issues.push({ path, message: 'La arista necesita "from" y "to" (ids de nodos).' });
+      issues.push({ path, message: 'The edge needs "from" and "to" (node ids).' });
       return;
     }
     if (!seenIds.has(edge.from)) {
-      issues.push({ path: `${path}.from`, message: `"${edge.from}" no corresponde a ningun nodo declarado.` });
+      issues.push({ path: `${path}.from`, message: `"${edge.from}" does not match any declared node.` });
     }
     if (!seenIds.has(edge.to)) {
-      issues.push({ path: `${path}.to`, message: `"${edge.to}" no corresponde a ningun nodo declarado.` });
+      issues.push({ path: `${path}.to`, message: `"${edge.to}" does not match any declared node.` });
     }
     if (edge.from === edge.to) {
-      issues.push({ path, message: `Una tarea no puede depender de si misma: "${edge.from}".` });
+      issues.push({ path, message: `A task cannot depend on itself: "${edge.from}".` });
     }
     edges.push({ from: edge.from as string, to: edge.to as string });
   });
 
   if (nodes.length === 0) {
-    issues.push({ path: '$.nodes', message: 'El grafo necesita al menos un nodo.' });
+    issues.push({ path: '$.nodes', message: 'The graph needs at least one node.' });
   }
 
   if (issues.length > 0) throw new GraphValidationError(issues);
@@ -122,7 +122,7 @@ export function validateRawGraph(input: unknown): RawBemberseGraph {
     throw new GraphValidationError([
       {
         path: '$.edges',
-        message: `Se detecto un ciclo de dependencias (no es un DAG valido): ${cycleNodes.join(' -> ')}`,
+        message: `Dependency cycle detected (not a valid DAG): ${cycleNodes.join(' -> ')}`,
       },
     ]);
   }

@@ -1,13 +1,18 @@
 import { buildFullPrompt } from '@/data/promptTemplate';
+import { PRESETS } from '@/data/presets';
 import { validateRawGraph } from '@/core/validate';
 import { GraphValidationError, type RawBemberseGraph } from '@/core/types';
 import { iconLabel } from './icons';
 
 /**
- * Asistente guiado de un unico camino: caos mental -> prompt para la IA ->
- * JSON de vuelta -> universo importado. Sustituye a los dos modales
- * separados (ingesta / importar) por un flujo con pasos numerados, para
- * que el usuario siempre sepa donde esta y que sigue.
+ * Pantalla de ingesta: la primera y unica pantalla de un visitante nuevo
+ * en /app/. Sin preguntas intermedias ni pasos numerados: un campo central
+ * para volcar todo (escrito o dictado), un boton que copia el prompt para
+ * la IA externa, la caja donde se pega el JSON que devuelve, y tres presets
+ * para quien no tiene una IA a mano.
+ *
+ * Sustituye al onboarding (nombre), al asistente de 4 pasos y al estado
+ * vacio.
  */
 
 // Tipado minimo de Web Speech API (no forma parte de lib.dom.d.ts estable).
@@ -27,26 +32,15 @@ function getSpeechRecognitionCtor(): (new () => MinimalSpeechRecognition) | null
   return w.SpeechRecognition ?? w.webkitSpeechRecognition ?? null;
 }
 
-const TOTAL_STEPS = 4; // 0..3
+export class Ingest {
+  private readonly root = document.getElementById('ingest') as HTMLElement;
+  private readonly closeBtn = document.getElementById('btn-ingest-close') as HTMLButtonElement;
 
-export class Wizard {
-  private readonly root = document.getElementById('wizard') as HTMLElement;
-  private readonly closeBtn = document.getElementById('btn-wizard-close') as HTMLButtonElement;
-  private readonly stepDots = Array.from(document.querySelectorAll('.wizard__step-dot')) as HTMLElement[];
-  private readonly stepPanels = Array.from(document.querySelectorAll('[data-step-panel]')) as HTMLElement[];
-
-  private readonly startBtn = document.getElementById('btn-wizard-start') as HTMLButtonElement;
-  private readonly skipToJsonBtn = document.getElementById('btn-wizard-skip-to-json') as HTMLButtonElement;
-  private readonly toPromptBtn = document.getElementById('btn-wizard-to-prompt') as HTMLButtonElement;
-  private readonly toImportBtn = document.getElementById('btn-wizard-to-import') as HTMLButtonElement;
-
-  private readonly ingestTextarea = document.getElementById('ingest-text') as HTMLTextAreaElement;
+  private readonly dumpTextarea = document.getElementById('ingest-text') as HTMLTextAreaElement;
   private readonly micBtn = document.getElementById('btn-mic') as HTMLButtonElement;
   private readonly micStatus = document.getElementById('mic-status') as HTMLElement;
-
   private readonly copyBtn = document.getElementById('btn-copy-prompt') as HTMLButtonElement;
-  private readonly promptPreview = document.getElementById('prompt-preview-text') as HTMLElement;
-  private readonly promptDetails = document.querySelector('.prompt-preview') as HTMLDetailsElement;
+  private readonly copyStatus = document.getElementById('copy-status') as HTMLElement;
 
   private readonly importTextarea = document.getElementById('import-text') as HTMLTextAreaElement;
   private readonly importFile = document.getElementById('import-file') as HTMLInputElement;
@@ -56,54 +50,61 @@ export class Wizard {
 
   private recognition: MinimalSpeechRecognition | null = null;
   private listening = false;
-  private currentStep = 0;
+  private closable = false;
 
   constructor(private readonly onImport: (raw: RawBemberseGraph) => void) {
     this.setupMic();
     this.closeBtn.addEventListener('click', () => this.close());
-    this.startBtn.addEventListener('click', () => this.goToStep(1));
-    this.skipToJsonBtn.addEventListener('click', () => this.goToStep(3));
-    this.toPromptBtn.addEventListener('click', () => this.goToStep(2));
     this.copyBtn.addEventListener('click', () => this.handleCopyPrompt());
-    this.toImportBtn.addEventListener('click', () => this.goToStep(3));
     this.doImportBtn.addEventListener('click', () => this.handleImportClick());
     this.importFile.addEventListener('change', () => this.handleFile());
-    this.ingestTextarea.addEventListener('input', () => this.refreshPromptPreview());
-    this.promptDetails?.addEventListener('toggle', () => this.refreshPromptPreview());
+
+    for (const btn of this.root.querySelectorAll<HTMLButtonElement>('[data-preset]')) {
+      btn.addEventListener('click', () => this.loadPreset(btn.dataset.preset ?? ''));
+    }
   }
 
-  open(startStep: 0 | 1 | 2 | 3 = 0): void {
+  /**
+   * `closable` = ya hay un mapa detras (se abrio con "+ New entry"). La
+   * primera vez no hay nada a lo que volver, asi que no hay boton de cerrar.
+   */
+  open(opts: { closable: boolean }): void {
+    this.closable = opts.closable;
+    this.closeBtn.classList.toggle('hidden', !opts.closable);
     this.root.classList.remove('hidden');
-    this.goToStep(startStep);
+    // Foco inmediato, nunca diferido: un setTimeout podia robarle el foco a
+    // quien ya estaba escribiendo en la caja del JSON.
+    const active = document.activeElement;
+    if (!active || active === document.body || !this.root.contains(active)) this.dumpTextarea.focus();
   }
 
   close(): void {
-    if (this.listening) this.stopListening();
-    this.root.classList.add('hidden');
+    if (!this.closable) return;
+    this.hide();
   }
 
   get isOpen(): boolean {
     return !this.root.classList.contains('hidden');
   }
 
-  private goToStep(step: number): void {
-    this.currentStep = Math.max(0, Math.min(TOTAL_STEPS - 1, step));
-    this.stepPanels.forEach((panel) => {
-      panel.classList.toggle('hidden', Number(panel.dataset.stepPanel) !== this.currentStep);
-    });
-    this.stepDots.forEach((dot) => {
-      const dotStep = Number(dot.dataset.step);
-      dot.classList.toggle('is-active', dotStep === this.currentStep);
-      dot.classList.toggle('is-done', dotStep < this.currentStep);
-    });
-    if (this.currentStep === 1) this.ingestTextarea.focus();
-    if (this.currentStep === 2) this.refreshPromptPreview();
-    if (this.currentStep === 3) this.importTextarea.focus();
+  get isClosable(): boolean {
+    return this.closable;
   }
 
-  private refreshPromptPreview(): void {
-    if (!this.promptDetails?.open) return;
-    this.promptPreview.textContent = buildFullPrompt(this.ingestTextarea.value);
+  private hide(): void {
+    if (this.listening) this.stopListening();
+    this.root.classList.add('hidden');
+  }
+
+  private finish(raw: RawBemberseGraph): void {
+    this.onImport(raw);
+    this.hide();
+    this.resetForm();
+  }
+
+  private loadPreset(id: string): void {
+    const preset = PRESETS[id];
+    if (preset) this.finish(validateRawGraph(preset));
   }
 
   // ---------------------------------------------------------------------
@@ -114,12 +115,12 @@ export class Wizard {
     const Ctor = getSpeechRecognitionCtor();
     if (!Ctor) {
       this.micBtn.disabled = true;
-      this.micStatus.textContent = 'Dictado no soportado en este navegador.';
+      this.micBtn.title = 'Voice dictation is not supported in this browser.';
       return;
     }
 
     this.recognition = new Ctor();
-    this.recognition.lang = 'es-ES';
+    this.recognition.lang = 'en-US';
     this.recognition.continuous = true;
     this.recognition.interimResults = true;
 
@@ -130,13 +131,13 @@ export class Wizard {
         if (result.isFinal) finalText += result[0].transcript + ' ';
       }
       if (finalText.trim().length > 0) {
-        const sep = this.ingestTextarea.value.trim().length > 0 ? '\n' : '';
-        this.ingestTextarea.value += sep + finalText.trim();
+        const sep = this.dumpTextarea.value.trim().length > 0 ? '\n' : '';
+        this.dumpTextarea.value += sep + finalText.trim();
       }
     };
 
     this.recognition.onerror = (event: any) => {
-      this.micStatus.textContent = `Error de dictado: ${event.error ?? 'desconocido'}.`;
+      this.micStatus.textContent = `Dictation error: ${event.error ?? 'unknown'}.`;
       this.stopListening();
     };
 
@@ -155,16 +156,18 @@ export class Wizard {
     try {
       this.recognition.start();
       this.listening = true;
-      this.micBtn.innerHTML = iconLabel('stop', 'Detener');
-      this.micStatus.textContent = 'Escuchando…';
+      this.micBtn.innerHTML = iconLabel('stop', 'Stop');
+      this.micBtn.setAttribute('aria-pressed', 'true');
+      this.micStatus.textContent = 'Listening…';
     } catch {
-      this.micStatus.textContent = 'No se pudo iniciar el microfono.';
+      this.micStatus.textContent = 'Could not start the microphone.';
     }
   }
 
   private stopListening(): void {
     this.listening = false;
-    this.micBtn.innerHTML = iconLabel('mic', 'Dictar');
+    this.micBtn.innerHTML = iconLabel('mic', 'Dictate');
+    this.micBtn.setAttribute('aria-pressed', 'false');
     this.micStatus.textContent = '';
     try {
       this.recognition?.stop();
@@ -174,20 +177,25 @@ export class Wizard {
   }
 
   // ---------------------------------------------------------------------
-  // Copiar prompt
+  // Copiar el prompt para la IA externa
   // ---------------------------------------------------------------------
 
   private async handleCopyPrompt(): Promise<void> {
-    const fullPrompt = buildFullPrompt(this.ingestTextarea.value);
+    const fullPrompt = buildFullPrompt(this.dumpTextarea.value);
+    let copied = false;
     try {
       await navigator.clipboard.writeText(fullPrompt);
-      this.flashCopyFeedback('Copiado ✓ Pégalo en ChatGPT o Claude.');
+      copied = true;
     } catch {
-      this.legacyCopyFallback(fullPrompt);
+      copied = this.legacyCopy(fullPrompt);
     }
+    this.copyStatus.textContent = copied
+      ? 'Copied. Paste it into ChatGPT or Claude, then paste the JSON it returns below.'
+      : 'Could not copy automatically. Select the text and copy it by hand.';
+    if (copied) this.importTextarea.focus();
   }
 
-  private legacyCopyFallback(text: string): void {
+  private legacyCopy(text: string): boolean {
     const helper = document.createElement('textarea');
     helper.value = text;
     helper.style.position = 'fixed';
@@ -195,27 +203,16 @@ export class Wizard {
     document.body.appendChild(helper);
     helper.select();
     try {
-      document.execCommand('copy');
-      this.flashCopyFeedback('Copiado ✓ Pégalo en ChatGPT o Claude.');
+      return document.execCommand('copy');
     } catch {
-      this.flashCopyFeedback('No se pudo copiar automaticamente. Selecciona y copia manualmente.');
+      return false;
     } finally {
       document.body.removeChild(helper);
     }
   }
 
-  private flashCopyFeedback(message: string): void {
-    const original = this.copyBtn.textContent;
-    this.copyBtn.textContent = message;
-    this.copyBtn.disabled = true;
-    setTimeout(() => {
-      this.copyBtn.textContent = original;
-      this.copyBtn.disabled = false;
-    }, 2200);
-  }
-
   // ---------------------------------------------------------------------
-  // Importar JSON
+  // Importar el JSON devuelto
   // ---------------------------------------------------------------------
 
   private handleFile(): void {
@@ -224,10 +221,10 @@ export class Wizard {
     const reader = new FileReader();
     reader.onload = () => {
       this.importTextarea.value = String(reader.result ?? '');
-      this.importStatus.textContent = `Cargado: ${file.name}`;
+      this.importStatus.textContent = `Loaded: ${file.name}`;
     };
     reader.onerror = () => {
-      this.importStatus.textContent = 'No se pudo leer el archivo.';
+      this.importStatus.textContent = 'Could not read the file.';
     };
     reader.readAsText(file);
   }
@@ -236,7 +233,7 @@ export class Wizard {
     this.clearImportError();
     const text = this.importTextarea.value.trim();
     if (!text) {
-      this.showImportError('Pega o sube un JSON primero.');
+      this.showImportError('Paste or upload the JSON first.');
       return;
     }
 
@@ -244,15 +241,12 @@ export class Wizard {
     try {
       parsed = JSON.parse(text);
     } catch (err) {
-      this.showImportError(`JSON malformado: ${(err as Error).message}`);
+      this.showImportError(`Malformed JSON: ${(err as Error).message}`);
       return;
     }
 
     try {
-      const raw = validateRawGraph(parsed);
-      this.onImport(raw);
-      this.close();
-      this.resetForm();
+      this.finish(validateRawGraph(parsed));
     } catch (err) {
       if (err instanceof GraphValidationError) {
         this.showImportError(err.issues.map((i) => `• ${i.path}: ${i.message}`).join('\n'));
@@ -263,9 +257,10 @@ export class Wizard {
   }
 
   private resetForm(): void {
-    this.ingestTextarea.value = '';
+    this.dumpTextarea.value = '';
     this.importTextarea.value = '';
     this.importStatus.textContent = '';
+    this.copyStatus.textContent = '';
     this.clearImportError();
   }
 

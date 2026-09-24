@@ -1,33 +1,29 @@
 import { test, expect, type Page } from '@playwright/test';
+import { freshApp, loadPreset, importJson, openTree } from './helpers';
+
+async function setup(page: Page): Promise<void> {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await freshApp(page);
+}
+
+async function loadSample(page: Page): Promise<void> {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await loadPreset(page, 'product-launch', 600);
+}
 
 // Zoom y desplazamiento del universo: con grafos grandes las ideas deben
 // poder leerse. Se mide por el viewBox del svg activo.
 
-async function setup(page: Page): Promise<void> {
-  await page.setViewportSize({ width: 1280, height: 800 });
-  await page.goto('./');
-  await page.evaluate(() => indexedDB.deleteDatabase('bemberse-db'));
-  await page.reload();
-  await page.waitForSelector('#onboarding:not(.hidden)', { timeout: 8000 });
-  await page.fill('#onboarding-name', 'Nico');
-  await page.click('#onboarding-form button[type=submit]');
-}
 
-async function loadSample(page: Page): Promise<void> {
-  await setup(page);
-  await page.click('#btn-empty-sample');
-  await page.waitForFunction(() => document.getElementById('empty-state')?.classList.contains('hidden'));
-  await page.waitForTimeout(600);
-}
 
 /** 120 tareas en 8 cadenas de 15 que convergen en un objetivo: un volcado grande de verdad. */
 function bigGraphJson(): string {
-  const nodes = [{ id: 'meta', title: 'Meta final de un volcado mental muy extenso' }];
+  const nodes = [{ id: 'meta', title: 'Final goal of a very long brain dump' }];
   const edges: { from: string; to: string }[] = [];
   for (let c = 0; c < 8; c++) {
     for (let i = 0; i < 15; i++) {
       const id = `c${c}-${i}`;
-      nodes.push({ id, title: `Rama ${c + 1}, paso ${i + 1}: una idea con un titulo largo` });
+      nodes.push({ id, title: `Branch ${c + 1}, step ${i + 1}: an idea with a long title` });
       if (i > 0) edges.push({ from: `c${c}-${i - 1}`, to: id });
     }
     edges.push({ from: `c${c}-14`, to: 'meta' });
@@ -123,14 +119,8 @@ test('acercado, las etiquetas muestran el titulo completo; un click sigue abrien
 
 test('un grafo de 120 tareas arranca legible en el arbol y se puede explorar', async ({ page }) => {
   await setup(page);
-  await page.click('#btn-empty-start');
-  await page.click('#btn-wizard-skip-to-json');
-  await page.fill('#import-text', bigGraphJson());
-  await page.click('#btn-do-import');
-  await page.waitForFunction(() => document.getElementById('empty-state')?.classList.contains('hidden'));
-
-  await page.click('#btn-view-toggle');
-  await page.waitForSelector('.dendrogram-svg');
+  await importJson(page, bigGraphJson());
+  await openTree(page);
   // Sin zoom automatico, 120 nodos en 16 columnas quedarian por debajo de 0.4.
   expect(await screenScale(page)).toBeGreaterThanOrEqual(0.8);
   // El proximo paso queda dentro de la pantalla.

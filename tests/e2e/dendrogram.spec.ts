@@ -2,30 +2,19 @@ import { test, expect, type Page } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import { buildRuntimeGraph, countDownstream, getCriticalPath } from '../../src/core/graph';
 import type { RawBemberseGraph } from '../../src/core/types';
+import { loadPreset, openTree, openGraph } from './helpers';
+
+const loadSample = (page: Page) => loadPreset(page, 'product-launch', 0);
 
 // Epic 05: vista Dendrograma. Las expectativas se calculan con el propio
 // motor (src/core, sin DOM) sobre el mismo grafo de muestra que carga la app.
 
 const sample = JSON.parse(
-  readFileSync(new URL('../../sample-data/example-graph.json', import.meta.url), 'utf-8'),
+  readFileSync(new URL('../../sample-data/presets/product-launch.json', import.meta.url), 'utf-8'),
 ) as RawBemberseGraph;
 const expectedGraph = buildRuntimeGraph(sample, new Set(), null);
 
-async function loadSample(page: Page): Promise<void> {
-  await page.goto('./');
-  await page.evaluate(() => indexedDB.deleteDatabase('bemberse-db'));
-  await page.reload();
-  await page.waitForSelector('#onboarding:not(.hidden)', { timeout: 8000 });
-  await page.fill('#onboarding-name', 'Nico');
-  await page.click('#onboarding-form button[type=submit]');
-  await page.click('#btn-empty-sample');
-  await page.waitForFunction(() => document.getElementById('empty-state')?.classList.contains('hidden'));
-}
 
-async function openTree(page: Page): Promise<void> {
-  await page.click('#btn-view-toggle');
-  await page.waitForSelector('.dendrogram-svg');
-}
 
 test('dibuja una curva Bezier cubica por arista', async ({ page }) => {
   await loadSample(page);
@@ -82,7 +71,8 @@ test('la vista elegida sobrevive a recargar (preferredView en el perfil)', async
   await page.waitForTimeout(300); // la escritura en IndexedDB es asincrona
   await page.reload();
   await page.waitForSelector('.dendrogram-svg', { timeout: 8000 });
-  await expect(page.locator('#btn-view-toggle')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('#btn-view-tree')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('#btn-view-graph')).toHaveAttribute('aria-pressed', 'false');
   const view = await page.evaluate(
     () =>
       new Promise<string | undefined>((resolve) => {
@@ -109,7 +99,7 @@ test('un perfil antiguo sin preferredView abre la red sin error ni subir la vers
           const store = req.result.transaction('profile', 'readwrite').objectStore('profile');
           const keys = store.getAllKeys();
           keys.onsuccess = () => {
-            store.put({ name: 'Nico', createdAt: '2025-01-01T00:00:00.000Z' }, keys.result[0]);
+            store.put({ name: 'Nico', createdAt: '2025-01-01T00:00:00.000Z' }, keys.result[0] ?? 'me');
             store.transaction.oncomplete = () => {
               req.result.close();
               resolve();
@@ -148,7 +138,6 @@ test('conmutar deja exactamente un svg raiz en el contenedor, en ambos sentidos'
   await loadSample(page);
   await openTree(page);
   expect(await page.locator('#universe-container > svg').count()).toBe(1);
-  await page.click('#btn-view-toggle');
-  await expect(page.locator('.dendrogram-svg')).toHaveCount(0);
+  await openGraph(page);
   expect(await page.locator('#universe-container > svg').count()).toBe(1);
 });

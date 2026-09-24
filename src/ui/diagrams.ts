@@ -6,7 +6,7 @@
  *   1. El enredo   (#working-memory): todo conectado con todo, sin jerarquia.
  *   2. La fila plana (#tools-trap): todo del mismo peso, en orden,
  *      sin relacion entre elementos — el otro fallo, el de los checklists.
- *   3. El camino    (motor, estado vacio): un DAG resuelto, con un unico nodo
+ *   3. El camino    (sin uso en el sitio; se conserva): un DAG resuelto, con un unico nodo
  *      accionable (mas grande, sin color) y el resto en cola.
  *
  * Son deliberadamente estaticos: sin animacion que respetar-o-desactivar
@@ -212,9 +212,4 @@ export function mountDiagrams(): void {
     wrapper.appendChild(build());
     section.appendChild(wrapper);
   }
-}
-
-/** Diagrama para el estado vacio del motor (paso 15) — mismo lenguaje visual. */
-export function buildEmptyStateDiagram(): SVGSVGElement {
-  return buildTangleDiagram();
 }

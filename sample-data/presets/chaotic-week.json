@@ -1,0 +1,35 @@
+{
+  "version": "1.0",
+  "generatedAt": "2026-09-24T00:00:00.000Z",
+  "nodes": [
+    { "id": "list-deadlines", "title": "List this week's real deadlines", "description": "Only the ones with a date and a person waiting on them.", "estimatedMinutes": 10, "priority": 5 },
+    { "id": "gather-numbers", "title": "Gather the numbers for the report", "estimatedMinutes": 45, "priority": 4 },
+    { "id": "finish-report", "title": "Finish the quarterly report", "estimatedMinutes": 120, "priority": 5 },
+    { "id": "send-report", "title": "Send the report to your manager", "estimatedMinutes": 5, "priority": 5 },
+    { "id": "check-balance", "title": "Check the bank balance", "estimatedMinutes": 5, "priority": 3 },
+    { "id": "pay-bills", "title": "Pay the overdue bills", "estimatedMinutes": 15, "priority": 4 },
+    { "id": "reply-landlord", "title": "Reply to the landlord", "estimatedMinutes": 10, "priority": 3 },
+    { "id": "book-dentist", "title": "Book the dentist appointment", "estimatedMinutes": 5, "priority": 2 },
+    { "id": "inbox-zero", "title": "Triage the inbox to zero", "description": "Archive, reply in under two minutes, or turn it into a task.", "estimatedMinutes": 40, "priority": 3 },
+    { "id": "plan-meals", "title": "Plan meals for the week", "estimatedMinutes": 15, "priority": 2 },
+    { "id": "buy-groceries", "title": "Buy the groceries", "estimatedMinutes": 45, "priority": 2 },
+    { "id": "do-laundry", "title": "Do the laundry", "estimatedMinutes": 30, "priority": 1 },
+    { "id": "call-mom", "title": "Call mom back", "estimatedMinutes": 20, "priority": 2 },
+    { "id": "close-week", "title": "Close the week with nothing pending", "priority": 8 }
+  ],
+  "edges": [
+    { "from": "list-deadlines", "to": "finish-report" },
+    { "from": "gather-numbers", "to": "finish-report" },
+    { "from": "finish-report", "to": "send-report" },
+    { "from": "check-balance", "to": "pay-bills" },
+    { "from": "plan-meals", "to": "buy-groceries" },
+    { "from": "send-report", "to": "close-week" },
+    { "from": "pay-bills", "to": "close-week" },
+    { "from": "reply-landlord", "to": "close-week" },
+    { "from": "book-dentist", "to": "close-week" },
+    { "from": "inbox-zero", "to": "close-week" },
+    { "from": "buy-groceries", "to": "close-week" },
+    { "from": "do-laundry", "to": "close-week" },
+    { "from": "call-mom", "to": "close-week" }
+  ]
+}

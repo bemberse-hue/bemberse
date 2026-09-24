@@ -1,212 +1,176 @@
-import { test, expect, type Page } from '@playwright/test';
+import { test, expect } from '@playwright/test';
+import { freshApp, loadPreset, importJson, openTree } from './helpers';
 
-// Suite de paridad del motor Constella ('/app/'), escrita en el paso 05
-// (split sitio/app, blueprint constella-v2 §9.1). Cubre las seis filas del
-// checklist de paridad: nada de lo que el motor ya hacia en '/' debe
-// perderse al mudarse a '/app/'.
+// Suite de paridad del motor Constella ('/app/'): lo que el motor hace de
+// punta a punta — ingesta, persistencia, modo ejecucion, Esc, reinicio y
+// navegacion — no debe perderse entre cambios.
 
-async function resetDb(page: Page): Promise<void> {
-  // Ruta relativa a proposito: baseURL ya es '/app/' por defecto, y
-  // page.goto('/') iria a la raiz del servidor (el sitio), no al motor.
-  await page.goto('./');
-  await page.evaluate(() => indexedDB.deleteDatabase('bemberse-db'));
-}
-
-async function completeOnboarding(page: Page, name = 'Nico'): Promise<void> {
-  await page.reload();
-  await page.waitForSelector('#onboarding:not(.hidden)', { timeout: 8000 });
-  await page.fill('#onboarding-name', name);
-  await page.click('#onboarding-form button[type=submit]');
-  await page.waitForFunction(
-    () => document.getElementById('onboarding')?.classList.contains('hidden'),
-    { timeout: 8000 },
-  );
-}
-
-test('la app carga sin errores de consola y arranca en el onboarding la primera vez', async ({ page }) => {
+test('the app loads without console errors and opens straight on the ingest screen', async ({ page }) => {
   const consoleErrors: string[] = [];
   page.on('console', (msg) => {
     if (msg.type() === 'error') consoleErrors.push(msg.text());
   });
   page.on('pageerror', (err) => consoleErrors.push(`pageerror: ${err.message}`));
 
-  await resetDb(page);
-  await page.reload();
-  await expect(page.locator('#onboarding')).not.toHaveClass(/hidden/, { timeout: 8000 });
-  expect(consoleErrors, `errores de consola: ${consoleErrors.join('\n')}`).toHaveLength(0);
+  await freshApp(page);
+  await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+  expect(consoleErrors, `console errors: ${consoleErrors.join('\n')}`).toHaveLength(0);
 });
 
-test('fila 1 — un perfil ya guardado salta el onboarding en la siguiente visita', async ({ page }) => {
-  await resetDb(page);
-  await completeOnboarding(page, 'Nico');
-
-  // Recargar simula "volver otro dia": el perfil ya esta en IndexedDB.
-  await page.reload();
-  await page.waitForTimeout(300);
-  await expect(page.locator('#onboarding')).toHaveClass(/hidden/);
-  await expect(page.locator('#hud-brand')).toContainText('NICO');
+test('ingest — one central field, no intermediate questions, no close button on first visit', async ({ page }) => {
+  await freshApp(page);
+  const field = page.locator('#ingest-text');
+  await expect(field).toBeVisible();
+  await expect(field).toHaveAttribute('placeholder', 'Dump everything on your mind. No order. No formatting.');
+  await expect(field).toBeFocused();
+  await expect(page.locator('#btn-mic')).toBeVisible();
+  await expect(page.locator('#btn-ingest-close')).toHaveClass(/hidden/);
+  // Un unico boton primario: copiar el prompt para la IA externa.
+  await expect(page.locator('#ingest .btn--primary')).toHaveCount(1);
+  await expect(page.locator('#btn-copy-prompt')).toHaveText('Copy prompt for your AI');
+  // Sin pregunta de nombre ni asistente de pasos.
+  await expect(page.locator('#onboarding, #wizard')).toHaveCount(0);
 });
 
-test('fila 2 — un grafo ya guardado se restaura y se dibuja al volver', async ({ page }) => {
-  await resetDb(page);
-  await completeOnboarding(page);
-
-  await page.click('#btn-empty-sample');
-  await page.waitForFunction(() => document.getElementById('empty-state')?.classList.contains('hidden'));
-  const statusBefore = await page.textContent('#hud-status');
-
-  await page.reload();
-  await page.waitForTimeout(500);
-  const statusAfter = await page.textContent('#hud-status');
-
-  expect(statusAfter).toBe(statusBefore);
-  const nodeCount = await page.locator('.nodes-layer .node').count();
-  expect(nodeCount).toBeGreaterThan(0);
+test('ingest — the copied prompt carries the dump and asks the AI for JSON', async ({ page, context }) => {
+  await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+  await freshApp(page);
+  await page.fill('#ingest-text', 'launch the newsletter, fix the bike');
+  await page.click('#btn-copy-prompt');
+  await expect(page.locator('#copy-status')).toContainText('Copied');
+  const clip = await page.evaluate(() => navigator.clipboard.readText());
+  expect(clip).toContain('launch the newsletter, fix the bike');
+  expect(clip).toContain('valid JSON object');
+  await expect(page.locator('#import-text')).toBeFocused();
 });
 
-test('fila 3 — el asistente guiado importa un JSON valido y crea el universo', async ({ page }) => {
-  await resetDb(page);
-  await completeOnboarding(page);
+test('ingest — the three presets each build a map', async ({ page }) => {
+  for (const [preset, expected] of [
+    ['product-launch', 15],
+    ['chaotic-week', 14],
+    ['break-the-freeze', 11],
+  ] as const) {
+    await loadPreset(page, preset, 0);
+    await expect(page.locator('.nodes-layer .node')).toHaveCount(expected);
+  }
+});
 
-  await page.click('#btn-empty-start');
-  await page.waitForSelector('#wizard:not(.hidden)');
-  await page.click('#btn-wizard-start');
-  await page.fill('#ingest-text', 'probar el asistente guiado');
-  await page.click('#btn-wizard-to-prompt');
-  await page.click('#btn-wizard-to-import');
+test('ingest — the pasted AI JSON builds the map', async ({ page }) => {
+  await freshApp(page);
+  await importJson(
+    page,
+    JSON.stringify({
+      version: '1.0',
+      nodes: [
+        { id: 'step-1', title: 'First step' },
+        { id: 'goal', title: 'Pasted goal' },
+      ],
+      edges: [{ from: 'step-1', to: 'goal' }],
+    }),
+  );
+  await expect(page.locator('.nodes-layer .node')).toHaveCount(2);
+  await expect(page.locator('#hud-status')).toHaveText('2 tasks · 1 unlocked · 1 locked · 0 done');
+});
 
-  const json = JSON.stringify({
-    version: '1.0',
-    nodes: [
-      { id: 'paso-1', title: 'Primer paso' },
-      { id: 'meta', title: 'Meta del asistente' },
-    ],
-    edges: [{ from: 'paso-1', to: 'meta' }],
-  });
-  await page.fill('#import-text', json);
+test('ingest — invalid JSON shows an English error and keeps the screen open', async ({ page }) => {
+  await freshApp(page);
+  await page.fill('#import-text', '{ "version": "1.0", "nodes": [] }');
   await page.click('#btn-do-import');
-
-  await page.waitForFunction(() => document.getElementById('empty-state')?.classList.contains('hidden'));
-  await expect(page.locator('#wizard')).toHaveClass(/hidden/);
-  const nodeCount = await page.locator('.nodes-layer .node').count();
-  expect(nodeCount).toBe(2);
+  await expect(page.locator('#import-error')).toBeVisible();
+  await expect(page.locator('#import-error')).toContainText('Missing "edges"');
+  await expect(page.locator('#ingest')).not.toHaveClass(/hidden/);
 });
 
-test('fila 4 — Espacio entra al modo ejecucion con el proximo paso activo', async ({ page }) => {
-  await resetDb(page);
-  await completeOnboarding(page);
-  await page.click('#btn-empty-sample');
-  await page.waitForFunction(() => document.getElementById('empty-state')?.classList.contains('hidden'));
-  await page.waitForTimeout(800);
+test('a saved map is restored on the next visit, without the ingest screen', async ({ page }) => {
+  await loadPreset(page);
+  const statusBefore = await page.textContent('#hud-status');
+  await page.reload();
+  await expect(page.locator('.nodes-layer .node').first()).toBeAttached();
+  await expect(page.locator('#ingest')).toHaveClass(/hidden/);
+  expect(await page.textContent('#hud-status')).toBe(statusBefore);
+});
 
+test('Space enters execution mode, and Space again completes the task', async ({ page }) => {
+  await loadPreset(page);
+  const coreId = await page.locator('.node--next').getAttribute('data-id');
   await page.keyboard.press('Space');
   await expect(page.locator('#cockpit')).not.toHaveClass(/hidden/, { timeout: 5000 });
+  await expect(page.locator('#cockpit')).toContainText('Press Space to complete');
   await expect(page.locator('#cockpit-title')).not.toHaveText('—');
+
+  await page.keyboard.press('Space');
+  await expect(page.locator('#cockpit')).toHaveClass(/hidden/);
+  await expect(page.locator(`.node[data-id="${coreId}"]`)).toHaveClass(/node--completed/);
+  await expect(page.locator('#hud-status')).toContainText('1 done');
 });
 
-test('fila 5 — Esc cierra el panel activo: cockpit, inspector y asistente, cada uno por separado', async ({ page }) => {
-  await resetDb(page);
-  await completeOnboarding(page);
-  await page.click('#btn-empty-sample');
-  await page.waitForFunction(() => document.getElementById('empty-state')?.classList.contains('hidden'));
-  await page.waitForTimeout(800);
+test('Esc closes the active panel: execution mode, inspector and new-entry screen, each on its own', async ({ page }) => {
+  await loadPreset(page);
 
-  // Cockpit.
   await page.keyboard.press('Space');
   await expect(page.locator('#cockpit')).not.toHaveClass(/hidden/);
   await page.keyboard.press('Escape');
   await expect(page.locator('#cockpit')).toHaveClass(/hidden/);
 
-  // Inspector: desde el paso 09 un nodo bloqueado ya no lo abre (traza su
-  // cadena), asi que se pulsa uno desbloqueado.
-  await page
-    .locator('.node:not(.node--locked):not(.node--goal) .node__dot')
-    .first()
-    .click({ force: true });
+  await page.locator('.node:not(.node--locked):not(.node--goal) .node__dot').first().click({ force: true });
   await expect(page.locator('#inspector')).not.toHaveClass(/hidden/, { timeout: 5000 });
   await page.keyboard.press('Escape');
   await expect(page.locator('#inspector')).toHaveClass(/hidden/);
 
-  // Asistente.
   await page.click('#btn-new-entry');
-  await expect(page.locator('#wizard')).not.toHaveClass(/hidden/);
+  await expect(page.locator('#ingest')).not.toHaveClass(/hidden/);
+  await expect(page.locator('#btn-ingest-close')).not.toHaveClass(/hidden/);
+  await page.locator('#ingest-text').blur();
   await page.keyboard.press('Escape');
-  await expect(page.locator('#wizard')).toHaveClass(/hidden/);
+  await expect(page.locator('#ingest')).toHaveClass(/hidden/);
 });
 
-test('fila 6 — Reiniciar borra el grafo, conserva el perfil, y recarga al estado vacio', async ({ page }) => {
-  await resetDb(page);
-  await completeOnboarding(page, 'Nico');
-  await page.click('#btn-empty-sample');
-  await page.waitForFunction(() => document.getElementById('empty-state')?.classList.contains('hidden'));
-
+test('Reset erases the map and returns to the ingest screen', async ({ page }) => {
+  await loadPreset(page);
   page.once('dialog', (dialog) => dialog.accept());
   await page.click('#btn-reset');
-
-  await page.waitForFunction(() => document.getElementById('empty-state') && !document.getElementById('empty-state')!.classList.contains('hidden'), { timeout: 8000 });
-  await expect(page.locator('#onboarding')).toHaveClass(/hidden/); // el perfil sigue ahi
-  await expect(page.locator('#hud-brand')).toContainText('NICO');
+  await expect(page.locator('#ingest')).not.toHaveClass(/hidden/, { timeout: 8000 });
+  await expect(page.locator('#btn-ingest-close')).toHaveClass(/hidden/);
 });
 
-test('estado vacio — diagrama en linea solo con trazo hueso, una accion primaria y un enlace a la muestra', async ({ page }) => {
-  await resetDb(page);
-  await completeOnboarding(page);
-  await expect(page.locator('#empty-state')).not.toHaveClass(/hidden/);
-
-  const diagram = await page.$$eval('#empty-state svg, #empty-state svg *', (els) =>
-    els.map((el) => {
-      const s = getComputedStyle(el);
-      return { tag: el.tagName, fill: s.fill, stroke: s.stroke };
-    }),
-  );
-  expect(diagram.length).toBeGreaterThan(1);
-  for (const { fill, stroke } of diagram) {
-    expect(fill).toBe('none');
-    expect(['none', 'rgb(245, 245, 240)']).toContain(stroke);
-  }
-
-  await expect(page.locator('#empty-state .btn--primary')).toHaveCount(1);
-  await page.click('#empty-state .btn--primary');
-  await expect(page.locator('#wizard')).not.toHaveClass(/hidden/);
-  await page.keyboard.press('Escape');
-
-  await page.click('#btn-empty-sample');
-  await expect(page.locator('#empty-state')).toHaveClass(/hidden/);
+test('a preset loaded while the tree is selected renders in the tree', async ({ page }) => {
+  await loadPreset(page);
+  await openTree(page);
+  await page.click('#btn-new-entry');
+  await page.click('#preset-chaotic-week');
+  await expect(page.locator('.dendrogram-svg .node')).toHaveCount(14);
 });
 
-test('estado vacio — la muestra se dibuja en la vista seleccionada', async ({ page }) => {
-  await resetDb(page);
-  await completeOnboarding(page);
-  await page.click('#btn-view-toggle');
-  await page.click('#btn-empty-sample');
-  await expect(page.locator('#empty-state')).toHaveClass(/hidden/);
-  await expect(page.locator('.dendrogram-svg .node')).not.toHaveCount(0);
+test('system texts are in English', async ({ page }) => {
+  await loadPreset(page);
+  await expect(page.locator('#hud-brand')).toHaveText('Your map');
+  await expect(page.locator('#hud-status')).toHaveText(/^\d+ tasks · \d+ unlocked · \d+ locked · \d+ done$/);
+  await expect(page.locator('#hint')).toContainText('Press Space to start your next step');
+  await expect(page.locator('#btn-view-graph')).toHaveText('Graph');
+  await expect(page.locator('#btn-view-tree')).toHaveText('LTR Tree');
 });
 
-test('navegacion — el enlace de retorno lleva a / y tiene nombre accesible', async ({ page }) => {
-  await resetDb(page);
-  await completeOnboarding(page);
+test('navigation — the back link goes to / and has an accessible name', async ({ page }) => {
+  await loadPreset(page, 'product-launch', 0);
   const link = page.locator('#link-back-site');
   await expect(link).toHaveAttribute('aria-label', /Bemberse/);
   await link.focus();
   await page.keyboard.press('Enter');
   await page.waitForURL((url) => url.pathname === '/');
-  // Con datos guardados, el sitio ya no redirige de vuelta al motor (E6-T3)
-  // y sigue ofreciendo el CTA hacia /app/.
+  // Con datos guardados, el sitio no redirige de vuelta al motor.
   await page.waitForTimeout(500);
   expect(new URL(page.url()).pathname).toBe('/');
   await expect(page.locator('#hero')).toBeVisible();
   await expect(page.locator('#btn-open-engine')).toHaveAttribute('href', 'app/');
 });
 
-test('navegacion — Tab recorre conmutador, nueva entrada y retorno con anillo de foco visible', async ({ page }) => {
-  await resetDb(page);
-  await completeOnboarding(page);
-  await page.click('#btn-empty-sample');
+test('navigation — Tab reaches the view switch, new entry and the back link with a visible focus ring', async ({ page }) => {
+  await loadPreset(page, 'product-launch', 0);
   await page.locator('body').click({ position: { x: 5, y: 5 } }).catch(() => {});
 
+  const wanted = ['btn-view-graph', 'btn-new-entry', 'link-back-site'];
   const seen = new Map<string, string>();
-  for (let i = 0; i < 12 && seen.size < 3; i++) {
+  for (let i = 0; i < 14 && seen.size < wanted.length; i++) {
     await page.keyboard.press('Tab');
     const info = await page.evaluate(() => {
       const el = document.activeElement as HTMLElement | null;
@@ -214,46 +178,37 @@ test('navegacion — Tab recorre conmutador, nueva entrada y retorno con anillo 
       const s = getComputedStyle(el);
       return { id: el.id, outline: `${s.outlineStyle} ${s.outlineWidth}` };
     });
-    if (info && ['btn-view-toggle', 'btn-new-entry', 'link-back-site'].includes(info.id)) seen.set(info.id, info.outline);
+    if (info && wanted.includes(info.id)) seen.set(info.id, info.outline);
   }
-  expect([...seen.keys()].sort()).toEqual(['btn-new-entry', 'btn-view-toggle', 'link-back-site']);
+  expect([...seen.keys()].sort()).toEqual([...wanted].sort());
   for (const outline of seen.values()) {
     expect(outline).not.toMatch(/^none/);
     expect(outline).not.toMatch(/ 0px$/);
   }
 });
 
-test('navegacion — Enter sobre un nodo enfocado hace lo mismo que un click', async ({ page }) => {
-  await resetDb(page);
-  await completeOnboarding(page);
-  await page.click('#btn-empty-sample');
-  await page.waitForTimeout(800);
-
-  // Un unico nodo tabulable (tabindex itinerante).
+test('navigation — Enter on a focused node does the same as a click', async ({ page }) => {
+  await loadPreset(page);
   await expect(page.locator('.nodes-layer .node[tabindex="0"]')).toHaveCount(1);
 
-  const unlocked = page.locator('.node:not(.node--locked):not(.node--goal)').first();
-  await unlocked.focus();
+  await page.locator('.node:not(.node--locked):not(.node--goal)').first().focus();
   await page.keyboard.press('Enter');
   await expect(page.locator('#inspector')).not.toHaveClass(/hidden/, { timeout: 5000 });
   await page.keyboard.press('Escape');
 
-  const locked = page.locator('.node--locked').first();
-  await locked.focus();
+  await page.locator('.node--locked').first().focus();
   await page.keyboard.press('Enter');
   await expect(page.locator('#inspector')).toHaveClass(/hidden/);
   expect(await page.locator('.edge.trace-active').count()).toBeGreaterThan(0);
 });
 
-test('navegacion — el logo arriba a la izquierda vuelve al inicio y las pestanas del sitio se ven en el canvas', async ({ page }) => {
+test('navigation — the logo top-left goes home and the site tabs are visible on the canvas', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
-  await resetDb(page);
-  await completeOnboarding(page);
+  await loadPreset(page, 'product-launch', 0);
 
   const logo = page.locator('#hud a#link-back-site');
   await expect(logo.locator('img')).toBeVisible();
-  const box = await logo.boundingBox();
-  expect(box!.x).toBeLessThan(80); // a la izquierda, donde se espera un logo
+  expect((await logo.boundingBox())!.x).toBeLessThan(80);
 
   const nav = page.locator('#hud .hud__nav');
   for (const [text, href] of [

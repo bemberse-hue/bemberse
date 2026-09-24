@@ -1,0 +1,29 @@
+{
+  "version": "1.0",
+  "generatedAt": "2026-09-24T00:00:00.000Z",
+  "nodes": [
+    { "id": "drink-water", "title": "Drink a glass of water", "estimatedMinutes": 2, "priority": 2 },
+    { "id": "phone-away", "title": "Put your phone in another room", "estimatedMinutes": 1, "priority": 4 },
+    { "id": "clear-desk", "title": "Clear only your desk surface", "description": "Not the room. Just the surface in front of you.", "estimatedMinutes": 5, "priority": 3 },
+    { "id": "name-the-fear", "title": "Write one line about what scares you", "description": "One sentence. Naming it shrinks it.", "estimatedMinutes": 3, "priority": 5 },
+    { "id": "pick-smallest", "title": "Pick the smallest task on your mind", "estimatedMinutes": 3, "priority": 5 },
+    { "id": "open-the-file", "title": "Open the file you have been avoiding", "description": "Just open it. You do not have to do anything yet.", "estimatedMinutes": 1, "priority": 5 },
+    { "id": "do-it-badly", "title": "Work on it badly for a few minutes", "description": "Permission to do it wrong. Progress, not quality.", "estimatedMinutes": 5, "priority": 5 },
+    { "id": "walk-outside", "title": "Take a short walk outside", "estimatedMinutes": 10, "priority": 3 },
+    { "id": "second-block", "title": "Do a second, longer block", "estimatedMinutes": 25, "priority": 4 },
+    { "id": "note-progress", "title": "Write down what you got done", "estimatedMinutes": 3, "priority": 3 },
+    { "id": "unfrozen", "title": "Get one real hour of focused work", "priority": 8 }
+  ],
+  "edges": [
+    { "from": "name-the-fear", "to": "pick-smallest" },
+    { "from": "pick-smallest", "to": "open-the-file" },
+    { "from": "clear-desk", "to": "open-the-file" },
+    { "from": "open-the-file", "to": "do-it-badly" },
+    { "from": "phone-away", "to": "do-it-badly" },
+    { "from": "do-it-badly", "to": "walk-outside" },
+    { "from": "walk-outside", "to": "second-block" },
+    { "from": "second-block", "to": "note-progress" },
+    { "from": "note-progress", "to": "unfrozen" },
+    { "from": "drink-water", "to": "unfrozen" }
+  ]
+}

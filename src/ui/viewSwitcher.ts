@@ -1,17 +1,23 @@
 export type ViewKind = 'network' | 'dendrogram';
 
 /**
- * Conmutador de vista del HUD: Red (que toca ahora) o Arbol (donde esta el
- * cuello de botella). Solo gestiona el boton; quien cambia el renderer es
- * main.ts, en el callback.
+ * Conmutador segmentado del HUD: [ Graph ] | [ LTR Tree ]. Graph es la red
+ * (que toca ahora); LTR Tree, el arbol de izquierda a derecha (donde esta el
+ * cuello de botella). Solo gestiona los botones; quien cambia el renderer
+ * es main.ts, en el callback.
  */
 export class ViewSwitcher {
-  private readonly button: HTMLButtonElement;
+  private readonly buttons: Record<ViewKind, HTMLButtonElement>;
   private current: ViewKind = 'network';
 
   constructor(private readonly onChange: (view: ViewKind) => void) {
-    this.button = document.getElementById('btn-view-toggle') as HTMLButtonElement;
-    this.button.addEventListener('click', () => this.toggle());
+    this.buttons = {
+      network: document.getElementById('btn-view-graph') as HTMLButtonElement,
+      dendrogram: document.getElementById('btn-view-tree') as HTMLButtonElement,
+    };
+    for (const view of Object.keys(this.buttons) as ViewKind[]) {
+      this.buttons[view].addEventListener('click', () => this.select(view));
+    }
     this.render();
   }
 
@@ -25,18 +31,18 @@ export class ViewSwitcher {
     this.render();
   }
 
-  toggle(): void {
-    this.current = this.current === 'network' ? 'dendrogram' : 'network';
+  private select(view: ViewKind): void {
+    if (view === this.current) return;
+    this.current = view;
     this.render();
-    this.onChange(this.current);
+    this.onChange(view);
   }
 
   private render(): void {
-    const toTree = this.current === 'network';
-    // El boton nombra la vista a la que lleva, no la actual.
-    this.button.textContent = toTree ? 'Ver árbol' : 'Ver red';
-    this.button.title = toTree ? 'Ver el árbol: dónde está el cuello de botella' : 'Volver a la red';
-    this.button.setAttribute('aria-pressed', String(this.current === 'dendrogram'));
-    this.button.dataset.view = this.current;
+    for (const view of Object.keys(this.buttons) as ViewKind[]) {
+      const active = view === this.current;
+      this.buttons[view].setAttribute('aria-pressed', String(active));
+      this.buttons[view].classList.toggle('is-active', active);
+    }
   }
 }

@@ -1,0 +1,41 @@
+{
+  "version": "1.0",
+  "generatedAt": "2026-09-24T00:00:00.000Z",
+  "nodes": [
+    { "id": "define-offer", "title": "Write the one-sentence offer", "description": "Who it is for, what it fixes, why now. One sentence, no jargon.", "estimatedMinutes": 20, "priority": 5 },
+    { "id": "pick-launch-date", "title": "Pick a launch date", "description": "A real date on the calendar, at least two weeks out.", "estimatedMinutes": 10, "priority": 3 },
+    { "id": "list-early-users", "title": "List 30 people who would use it", "description": "Names, not personas. Friends, past clients, communities you are in.", "estimatedMinutes": 30, "priority": 4 },
+    { "id": "finish-core-flow", "title": "Finish the MVP core flow", "description": "Only the one path a new user needs. Everything else waits.", "estimatedMinutes": 240, "priority": 5 },
+    { "id": "build-landing", "title": "Build the landing page", "description": "Offer, one screenshot, one button.", "estimatedMinutes": 120, "priority": 4 },
+    { "id": "setup-payments", "title": "Set up payments", "description": "One plan, one price. Test mode first.", "estimatedMinutes": 40, "priority": 3 },
+    { "id": "write-launch-copy", "title": "Write the launch announcement", "estimatedMinutes": 45, "priority": 3 },
+    { "id": "invite-beta", "title": "Invite 10 beta users", "estimatedMinutes": 20, "priority": 4 },
+    { "id": "collect-feedback", "title": "Collect beta feedback", "description": "Ask each person where they got stuck, not what they liked.", "estimatedMinutes": 30, "priority": 4 },
+    { "id": "fix-top-issues", "title": "Fix the top 3 issues", "estimatedMinutes": 120, "priority": 4 },
+    { "id": "record-demo", "title": "Record a 60-second demo", "estimatedMinutes": 40, "priority": 3 },
+    { "id": "test-checkout", "title": "Test checkout end to end", "description": "Pay with a real card, refund yourself.", "estimatedMinutes": 20, "priority": 3 },
+    { "id": "draft-email", "title": "Draft the launch email", "estimatedMinutes": 30, "priority": 2 },
+    { "id": "schedule-posts", "title": "Schedule the launch posts", "estimatedMinutes": 25, "priority": 2 },
+    { "id": "launch", "title": "Launch the product", "description": "Send the email, publish the posts, open the doors.", "priority": 9 }
+  ],
+  "edges": [
+    { "from": "define-offer", "to": "build-landing" },
+    { "from": "define-offer", "to": "write-launch-copy" },
+    { "from": "define-offer", "to": "setup-payments" },
+    { "from": "list-early-users", "to": "invite-beta" },
+    { "from": "finish-core-flow", "to": "invite-beta" },
+    { "from": "invite-beta", "to": "collect-feedback" },
+    { "from": "collect-feedback", "to": "fix-top-issues" },
+    { "from": "fix-top-issues", "to": "record-demo" },
+    { "from": "setup-payments", "to": "test-checkout" },
+    { "from": "build-landing", "to": "test-checkout" },
+    { "from": "write-launch-copy", "to": "draft-email" },
+    { "from": "record-demo", "to": "draft-email" },
+    { "from": "write-launch-copy", "to": "schedule-posts" },
+    { "from": "record-demo", "to": "schedule-posts" },
+    { "from": "pick-launch-date", "to": "schedule-posts" },
+    { "from": "draft-email", "to": "launch" },
+    { "from": "schedule-posts", "to": "launch" },
+    { "from": "test-checkout", "to": "launch" }
+  ]
+}
