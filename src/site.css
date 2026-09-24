@@ -175,14 +175,7 @@ body.site .landing__title { font-size: clamp(34px, 5.6vw, 72px); max-width: 1000
   border-bottom: 1px solid var(--border);
   backdrop-filter: blur(8px);
 }
-.site-nav__brand {
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 18px;
-  letter-spacing: 0.02em;
-  color: var(--bone);
-  text-decoration: none;
-}
+.site-nav__brand { font-size: 15px; }
 .site-nav__links { display: flex; gap: 26px; margin-right: auto; }
 .site-nav__links a {
   font-size: 11.5px;
@@ -294,3 +287,91 @@ body.site #hero.landing { padding-top: 64px; }
 .placeholder__actions { display: flex; flex-wrap: wrap; gap: 14px; }
 .placeholder__note { margin-top: 28px; font-size: 13px; color: var(--gray-2); }
 .site-diagram svg text { font-family: var(--font-body); }
+
+/* ---------- Autochequeo: cuatro afirmaciones de un toque ---------- */
+.check {
+  list-style: none;
+  margin: 36px 0 0;
+  padding: 0;
+  border-top: 1px solid var(--gray-4);
+}
+.check__item {
+  display: grid;
+  grid-template-columns: 32px 1fr auto;
+  align-items: center;
+  gap: 18px;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--gray-4);
+}
+.check__num { font-family: var(--font-display); font-weight: 600; color: var(--gray-3); font-size: 15px; }
+.check__q { margin: 0; font-size: 16px; line-height: 1.5; color: var(--bone); }
+.check__answers { display: flex; }
+.check__btn {
+  min-width: 96px;
+  min-height: 44px;
+  padding: 10px 14px;
+  background: transparent;
+  border: 1px solid var(--gray-3);
+  border-radius: 0;
+  color: var(--gray-1);
+  font-family: var(--font-body);
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease);
+}
+.check__btn + .check__btn { border-left: none; }
+.check__btn:hover { color: var(--bone); border-color: var(--gray-1); }
+/* La respuesta elegida, en hueso: nunca en acento. */
+.check__btn[aria-pressed='true'] { background: var(--bone); border-color: var(--bone); color: var(--bg); }
+.check__result {
+  margin: 30px 0 0;
+  font-family: var(--font-display);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  font-size: clamp(22px, 3.2vw, 30px);
+  color: var(--bone);
+}
+.check__result span { display: block; margin-top: 10px; font-family: var(--font-body); font-weight: 400; text-transform: none; letter-spacing: 0; font-size: 15px; line-height: 1.6; color: var(--gray-1); }
+.check__next { margin-top: 30px; }
+
+@media (max-width: 640px) {
+  .check__item { grid-template-columns: 24px 1fr; }
+  .check__answers { grid-column: 2; }
+  .check__btn { flex: 1; }
+}
+
+/* ---------- El volcado incrustado al final del scroll ---------- */
+.ingest.ingest--inline {
+  position: static;
+  inset: auto;
+  z-index: auto;
+  display: block;
+  overflow: visible;
+  background: none;
+  padding: 0;
+  margin-top: 34px;
+  animation: none;
+}
+.ingest--inline .ingest__panel { width: 100%; margin: 0; animation: none; }
+.site-section--start .site-section__trust { margin-top: 30px; }
+.start__alt {
+  margin: 26px 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  font-size: 13px;
+  color: var(--gray-2);
+}
+
+/* Saltos por ancla: la barra fija no tapa el titulo de la seccion. */
+body.site .site-section { scroll-margin-top: 64px; }
+@media (prefers-reduced-motion: no-preference) {
+  html:has(body.site) { scroll-behavior: smooth; }
+}

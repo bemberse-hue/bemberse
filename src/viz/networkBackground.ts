@@ -15,6 +15,8 @@ interface Particle {
   vy: number;
   r: number;
   hue: number;
+  /** Saturacion: 0 = hueso neutro. Solo unos pocos puntos llevan un tinte purpura apagado. */
+  sat: number;
 }
 
 const POINT_COUNT = 52;
@@ -91,8 +93,10 @@ export class NetworkBackground {
       vx: (Math.random() - 0.5) * 0.16,
       vy: (Math.random() - 0.5) * 0.16,
       r: 1.1 + Math.random() * 1.9,
-      // Familia purpura: de violeta (268) a magenta (310).
-      hue: 268 + Math.random() * 42,
+      // Base monocroma: casi todo hueso; 1 de cada 7 puntos, un purpura
+      // apagado — el acento de la pantalla es la palabra clave, no el fondo.
+      hue: 270 + Math.random() * 20,
+      sat: Math.random() < 0.14 ? 45 : 0,
     }));
   }
 
@@ -130,10 +134,10 @@ export class NetworkBackground {
         if (eased < threshold) continue;
 
         const proximity = 1 - dist / LINK_DISTANCE;
-        const alpha = proximity * 0.3 * eased;
+        const alpha = proximity * 0.16 * eased;
         const gradient = ctx.createLinearGradient(a.x, a.y, b.x, b.y);
-        gradient.addColorStop(0, `hsla(${a.hue}, 90%, 62%, ${alpha})`);
-        gradient.addColorStop(1, `hsla(${b.hue}, 90%, 62%, ${alpha})`);
+        gradient.addColorStop(0, `hsla(${a.hue}, ${a.sat}%, 88%, ${alpha})`);
+        gradient.addColorStop(1, `hsla(${b.hue}, ${b.sat}%, 88%, ${alpha})`);
         ctx.strokeStyle = gradient;
         ctx.lineWidth = 1;
         ctx.beginPath();
@@ -146,14 +150,14 @@ export class NetworkBackground {
     // Puntos (presentes desde el primer instante: el caos inicial).
     for (const p of this.particles) {
       const glow = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 6);
-      glow.addColorStop(0, `hsla(${p.hue}, 95%, 70%, ${0.55 + eased * 0.35})`);
-      glow.addColorStop(1, `hsla(${p.hue}, 95%, 70%, 0)`);
+      glow.addColorStop(0, `hsla(${p.hue}, ${p.sat}%, 80%, ${0.12 + eased * 0.1})`);
+      glow.addColorStop(1, `hsla(${p.hue}, ${p.sat}%, 80%, 0)`);
       ctx.fillStyle = glow;
       ctx.beginPath();
       ctx.arc(p.x, p.y, p.r * 6, 0, Math.PI * 2);
       ctx.fill();
 
-      ctx.fillStyle = `hsla(${p.hue}, 100%, 88%, ${0.7 + eased * 0.3})`;
+      ctx.fillStyle = `hsla(${p.hue}, ${p.sat}%, 92%, ${0.45 + eased * 0.25})`;
       ctx.beginPath();
       ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
       ctx.fill();

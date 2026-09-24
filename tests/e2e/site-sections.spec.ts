@@ -4,9 +4,10 @@ import { test, expect } from '@playwright/test';
 // proyecto es '/app/' — asi que estos tests usan la URL completa.
 const SITE_URL = 'http://localhost:5173/';
 
-// Orden del plan: golpe inicial, diagnostico, trampa de herramientas,
-// solucion, CTA, ecosistema (al final) y quienes somos.
-const REQUIRED_SECTIONS = ['hero', 'working-memory', 'tools-trap', 'precedence-lock', 'cta', 'ecosystem', 'about'];
+// Un solo embudo con scroll: golpe inicial, autochequeo, diagnostico,
+// trampa de herramientas, solucion, el volcado ahi mismo, ecosistema y
+// quienes somos.
+const REQUIRED_SECTIONS = ['hero', 'check', 'working-memory', 'tools-trap', 'precedence-lock', 'start', 'ecosystem', 'about'];
 
 test('the site renders every section in order, each with a visible heading', async ({ page }) => {
   await page.goto(SITE_URL);
@@ -33,7 +34,7 @@ test('the hero has no buttons: it pushes you to scroll and read the diagnosis fi
   await page.goto(SITE_URL);
   await expect(page.locator('#hero .btn')).toHaveCount(0);
   await expect(page.locator('#hero a[href="app/"]')).toHaveCount(0);
-  await expect(page.locator('#hero-scroll')).toHaveAttribute('href', '#working-memory');
+  await expect(page.locator('#hero-scroll')).toHaveAttribute('href', '#check');
 });
 
 test('the hero requests no network image (the background is a canvas)', async ({ page }) => {
@@ -47,11 +48,11 @@ test('the hero requests no network image (the background is a canvas)', async ({
   await expect(page.locator('#landing-bg canvas')).toBeVisible();
 });
 
-test('the CTA block opens the engine', async ({ page }) => {
+test('the start block still offers a direct way into the engine', async ({ page }) => {
   await page.goto(SITE_URL);
   const cta = page.locator('#btn-open-engine');
   await expect(cta).toHaveText('Open Constella Engine — Free');
-  await expect(page.locator('#cta')).toContainText('100% local · No account · No cloud tracking');
+  await expect(page.locator('#start')).toContainText('100% local · No account · No cloud tracking');
   await cta.click();
   await expect(page).toHaveURL(/\/app\/?$/);
 });
@@ -103,4 +104,17 @@ test('with prefers-reduced-motion, no diagram animation is running', async ({ pa
     return count;
   });
   expect(running).toBe(0);
+});
+
+test('the hero wordmark is typographic, in the system font, with a single subtle-gradient keyword', async ({ page }) => {
+  await page.goto(SITE_URL);
+  const brand = page.locator('#hero .landing__brand');
+  await expect(brand).toHaveText(/bemberse/i);
+  expect(await brand.evaluate((el) => getComputedStyle(el).fontFamily)).toContain('Oswald');
+  await expect(page.locator('#hero img')).toHaveCount(0);
+
+  const keyword = page.locator('#hero .grad-text');
+  await expect(keyword).toHaveCount(1);
+  const bg = await keyword.evaluate((el) => getComputedStyle(el).backgroundImage);
+  expect(bg).toContain('linear-gradient');
 });

@@ -19,7 +19,7 @@
     <div id="app">
       <!-- Navegacion del sitio -->
       <nav class="site-nav" aria-label="Main">
-        <a class="site-nav__brand" href="#hero">BEMBERSE</a>
+        <a class="site-nav__brand wordmark" href="#hero" aria-label="Bemberse: back to top">Bemberse</a>
         <div class="site-nav__links">
           <a href="#working-memory">The problem</a>
           <a href="#tools-trap">Your tools</a>
@@ -34,7 +34,7 @@
       <section id="hero" class="landing">
         <div id="landing-bg" class="landing__bg" aria-hidden="true"></div>
         <div class="landing__content">
-          <img src="logo.png" class="brand__logo" alt="bemberse" width="1400" height="212" />
+          <div class="landing__brand wordmark" aria-hidden="true">Bemberse</div>
 
           <h1 class="landing__title">
             You have 30 ideas trapped in your head. Your brain isn’t lazy: it’s <span class="grad-text">overloaded.</span>
@@ -45,7 +45,53 @@
             because you are weak — it crashes because it is full.
           </p>
 
-          <a href="#working-memory" class="landing__scroll" id="hero-scroll">Read the diagnosis ↓</a>
+          <a href="#check" class="landing__scroll" id="hero-scroll">Does this sound like you? ↓</a>
+        </div>
+      </section>
+
+      <!-- AUTOCHEQUEO: cuatro afirmaciones de un toque. Opcional, sin puntos,
+           sin reloj; las respuestas no se guardan ni salen del navegador. -->
+      <section id="check" class="site-section">
+        <div class="site-section__inner">
+          <div class="site-section__eyebrow">A quick check</div>
+          <h2 class="site-section__title">Sound familiar?</h2>
+          <p class="site-section__lead">Four questions, one tap each. Nothing is saved and nothing leaves your browser.</p>
+          <ol class="check">
+            <li class="check__item">
+              <span class="check__num">01</span>
+              <p class="check__q" id="check-q1">Do you have more than 10 things on your mind right now?</p>
+              <div class="check__answers" role="group" aria-labelledby="check-q1">
+                <button class="check__btn" data-answer="yes" aria-pressed="false">Yes</button>
+                <button class="check__btn" data-answer="no" aria-pressed="false">Not really</button>
+              </div>
+            </li>
+            <li class="check__item">
+              <span class="check__num">02</span>
+              <p class="check__q" id="check-q2">Do you reread your to-do list without starting anything on it?</p>
+              <div class="check__answers" role="group" aria-labelledby="check-q2">
+                <button class="check__btn" data-answer="yes" aria-pressed="false">Yes</button>
+                <button class="check__btn" data-answer="no" aria-pressed="false">Not really</button>
+              </div>
+            </li>
+            <li class="check__item">
+              <span class="check__num">03</span>
+              <p class="check__q" id="check-q3">Have you ever opened Notion to get organized… and ended up organizing Notion?</p>
+              <div class="check__answers" role="group" aria-labelledby="check-q3">
+                <button class="check__btn" data-answer="yes" aria-pressed="false">Yes</button>
+                <button class="check__btn" data-answer="no" aria-pressed="false">Not really</button>
+              </div>
+            </li>
+            <li class="check__item">
+              <span class="check__num">04</span>
+              <p class="check__q" id="check-q4">Do you end busy days feeling like you did nothing?</p>
+              <div class="check__answers" role="group" aria-labelledby="check-q4">
+                <button class="check__btn" data-answer="yes" aria-pressed="false">Yes</button>
+                <button class="check__btn" data-answer="no" aria-pressed="false">Not really</button>
+              </div>
+            </li>
+          </ol>
+          <p id="check-result" class="check__result" aria-live="polite" hidden></p>
+          <a href="#working-memory" class="landing__scroll check__next" id="check-next">Here’s what’s going on ↓</a>
         </div>
       </section>
 
@@ -116,14 +162,69 @@
         </div>
       </section>
 
-      <!-- BLOQUE 4: llamada a Constella -->
-      <section id="cta" class="site-section site-section--cta">
+      <!-- BLOQUE 4: el volcado, ahi mismo, al final del scroll -->
+      <section id="start" class="site-section site-section--start">
         <div class="site-section__inner">
           <div class="site-section__eyebrow">Constella engine</div>
           <h2 class="site-section__title">Clear your head in 60 seconds.</h2>
-          <p class="site-section__lead">Dump everything. Get a map. Do the one step that is unlocked.</p>
-          <a href="app/" id="btn-open-engine" class="btn btn--primary btn--xl">Open Constella Engine — Free</a>
+          <p class="site-section__lead">Dump everything below. Your AI turns it into a map, and the engine unlocks one step at a time.</p>
+
+          <div id="start-ingest" class="ingest ingest--inline">
+            <div class="ingest__panel">
+          <div class="ingest__field">
+            <label for="ingest-text" class="visually-hidden">Your brain dump</label>
+            <textarea
+              id="ingest-text"
+              class="ingest__textarea"
+              placeholder="Dump everything on your mind. No order. No formatting."
+              rows="8"
+            ></textarea>
+            <div class="ingest__field-bar">
+              <button id="btn-mic" class="ingest__mic" aria-pressed="false" title="Voice dictation">Dictate</button>
+              <span id="mic-status" class="mic-status" aria-live="polite"></span>
+            </div>
+          </div>
+
+          <div class="ingest__step">
+            <button id="btn-copy-prompt" class="btn btn--primary btn--lg">Copy prompt for your AI</button>
+            <p id="copy-status" class="ingest__note" aria-live="polite">Paste it into ChatGPT or Claude. It sends back your map as JSON.</p>
+          </div>
+
+          <div class="ingest__import">
+            <label for="import-text" class="ingest__label">Paste the JSON your AI returned</label>
+            <textarea
+              id="import-text"
+              class="ingest__textarea ingest__textarea--code"
+              placeholder='{ "version": "1.0", "nodes": [...], "edges": [...] }'
+              rows="3"
+            ></textarea>
+            <div class="ingest__row">
+              <button id="btn-do-import" class="btn btn--secondary">Build my map</button>
+              <label class="btn btn--ghost file-btn">
+                Upload .json
+                <input id="import-file" type="file" accept="application/json" hidden />
+              </label>
+              <span id="import-status" class="mic-status"></span>
+            </div>
+            <pre id="import-error" class="import-error hidden"></pre>
+          </div>
+
+          <div class="ingest__presets">
+            <span class="ingest__label">No AI at hand? Start from a preset</span>
+            <div class="ingest__row">
+              <button class="ingest__preset" data-preset="product-launch" id="preset-product-launch">Product Launch</button>
+              <button class="ingest__preset" data-preset="chaotic-week" id="preset-chaotic-week">Chaotic Week</button>
+              <button class="ingest__preset" data-preset="break-the-freeze" id="preset-break-the-freeze">Break the Freeze</button>
+            </div>
+          </div>
+            </div>
+          </div>
+
           <p class="site-section__trust">100% local · No account · No cloud tracking</p>
+          <p class="start__alt">
+            Already have a map?
+            <a href="app/" id="btn-open-engine" class="btn btn--secondary">Open Constella Engine — Free</a>
+          </p>
         </div>
       </section>
 

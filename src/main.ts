@@ -49,7 +49,7 @@ const hud = new Hud({
   onReset: () => handleReset(),
 });
 
-const ingest = new Ingest((raw) => handleImport(raw));
+const ingest = new Ingest(document.getElementById('ingest') as HTMLElement, (raw) => handleImport(raw));
 
 const cockpit = new CockpitView({
   onComplete: (nodeId) => handleComplete(nodeId),

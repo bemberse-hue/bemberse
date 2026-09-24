@@ -36,13 +36,18 @@ El púrpura aparece **exclusivamente** en:
 
 1. El nodo "próximo paso" y su halo.
 2. La arista activa y la ruta crítica del dendrograma.
-3. Un chip o subrayado de palabra clave, uno por sección del sitio.
+3. Un chip o subrayado de palabra clave, uno por sección del sitio. La palabra clave del
+   hero va en un degradado sutil de `--bone` a `--accent` (`.grad-text`): el púrpura
+   solo llega al final de la palabra. Es el único degradado permitido.
 
 **Nunca** como fondo de botón, fondo de panel ni superficie grande. **Máximo un elemento
 con acento visible por pantalla.** `tests/e2e/design-tokens.spec.ts` lo cuenta y falla si
 se incumple.
 
 ## Tipografía
+
+- Wordmark: **tipográfico**, clase `.wordmark` (Oswald 600, caja alta, tracking amplio,
+  `--bone`). Nunca el PNG del logo en la interfaz: su familia no casa con Oswald.
 
 - Display: **Oswald** 600, `text-transform: uppercase`, `letter-spacing: -0.03em`
   (`-0.05em` a partir de 64px), `line-height: 0.95`. Sólo titulares.

@@ -11,8 +11,9 @@ import { iconLabel } from './icons';
  * la IA externa, la caja donde se pega el JSON que devuelve, y tres presets
  * para quien no tiene una IA a mano.
  *
- * Sustituye al onboarding (nombre), al asistente de 4 pasos y al estado
- * vacio.
+ * Vive en dos sitios con el mismo marcado: al final del embudo del sitio
+ * ('/', incrustada en el scroll) y en /app/ (superpuesta, para "+ New entry"
+ * y para quien entra directo al motor).
  */
 
 // Tipado minimo de Web Speech API (no forma parte de lib.dom.d.ts estable).
@@ -32,29 +33,54 @@ function getSpeechRecognitionCtor(): (new () => MinimalSpeechRecognition) | null
   return w.SpeechRecognition ?? w.webkitSpeechRecognition ?? null;
 }
 
+export interface IngestOptions {
+  /**
+   * Incrustada en una pagina que se desplaza (el embudo del sitio) en vez de
+   * superpuesta: nunca se oculta, y "cerrar" no tiene sentido.
+   */
+  inline?: boolean;
+}
+
 export class Ingest {
-  private readonly root = document.getElementById('ingest') as HTMLElement;
-  private readonly closeBtn = document.getElementById('btn-ingest-close') as HTMLButtonElement;
+  private readonly closeBtn: HTMLButtonElement | null;
 
-  private readonly dumpTextarea = document.getElementById('ingest-text') as HTMLTextAreaElement;
-  private readonly micBtn = document.getElementById('btn-mic') as HTMLButtonElement;
-  private readonly micStatus = document.getElementById('mic-status') as HTMLElement;
-  private readonly copyBtn = document.getElementById('btn-copy-prompt') as HTMLButtonElement;
-  private readonly copyStatus = document.getElementById('copy-status') as HTMLElement;
+  private readonly dumpTextarea: HTMLTextAreaElement;
+  private readonly micBtn: HTMLButtonElement;
+  private readonly micStatus: HTMLElement;
+  private readonly copyBtn: HTMLButtonElement;
+  private readonly copyStatus: HTMLElement;
 
-  private readonly importTextarea = document.getElementById('import-text') as HTMLTextAreaElement;
-  private readonly importFile = document.getElementById('import-file') as HTMLInputElement;
-  private readonly importStatus = document.getElementById('import-status') as HTMLElement;
-  private readonly importErrorBox = document.getElementById('import-error') as HTMLElement;
-  private readonly doImportBtn = document.getElementById('btn-do-import') as HTMLButtonElement;
+  private readonly importTextarea: HTMLTextAreaElement;
+  private readonly importFile: HTMLInputElement;
+  private readonly importStatus: HTMLElement;
+  private readonly importErrorBox: HTMLElement;
+  private readonly doImportBtn: HTMLButtonElement;
 
   private recognition: MinimalSpeechRecognition | null = null;
   private listening = false;
   private closable = false;
 
-  constructor(private readonly onImport: (raw: RawBemberseGraph) => void) {
+  /** `root` contiene el marcado de la ingesta (mismos ids en /app/ y en el sitio). */
+  constructor(
+    private readonly root: HTMLElement,
+    private readonly onImport: (raw: RawBemberseGraph) => void,
+    private readonly opts: IngestOptions = {},
+  ) {
+    const $ = <T extends HTMLElement>(id: string): T => root.querySelector(`#${id}`) as T;
+    this.closeBtn = $<HTMLButtonElement>('btn-ingest-close');
+    this.dumpTextarea = $('ingest-text');
+    this.micBtn = $('btn-mic');
+    this.micStatus = $('mic-status');
+    this.copyBtn = $('btn-copy-prompt');
+    this.copyStatus = $('copy-status');
+    this.importTextarea = $('import-text');
+    this.importFile = $('import-file');
+    this.importStatus = $('import-status');
+    this.importErrorBox = $('import-error');
+    this.doImportBtn = $('btn-do-import');
+
     this.setupMic();
-    this.closeBtn.addEventListener('click', () => this.close());
+    this.closeBtn?.addEventListener('click', () => this.close());
     this.copyBtn.addEventListener('click', () => this.handleCopyPrompt());
     this.doImportBtn.addEventListener('click', () => this.handleImportClick());
     this.importFile.addEventListener('change', () => this.handleFile());
@@ -70,7 +96,7 @@ export class Ingest {
    */
   open(opts: { closable: boolean }): void {
     this.closable = opts.closable;
-    this.closeBtn.classList.toggle('hidden', !opts.closable);
+    this.closeBtn?.classList.toggle('hidden', !opts.closable);
     this.root.classList.remove('hidden');
     // Foco inmediato, nunca diferido: un setTimeout podia robarle el foco a
     // quien ya estaba escribiendo en la caja del JSON.
@@ -93,7 +119,7 @@ export class Ingest {
 
   private hide(): void {
     if (this.listening) this.stopListening();
-    this.root.classList.add('hidden');
+    if (!this.opts.inline) this.root.classList.add('hidden');
   }
 
   private finish(raw: RawBemberseGraph): void {

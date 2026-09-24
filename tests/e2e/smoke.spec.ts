@@ -207,7 +207,8 @@ test('navigation — the logo top-left goes home and the site tabs are visible o
   await loadPreset(page, 'product-launch', 0);
 
   const logo = page.locator('#hud a#link-back-site');
-  await expect(logo.locator('img')).toBeVisible();
+  await expect(logo).toBeVisible();
+  await expect(logo).toHaveText(/bemberse/i);
   expect((await logo.boundingBox())!.x).toBeLessThan(80);
 
   const nav = page.locator('#hud .hud__nav');
