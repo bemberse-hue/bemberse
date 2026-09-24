@@ -21,6 +21,8 @@ import { Hud } from '@/ui/hud';
 import { Inspector } from '@/ui/inspector';
 import { NextBar } from '@/ui/nextBar';
 import { decorateStaticIcons } from '@/ui/icons';
+import { t } from '@/i18n/ui';
+import { mountLangSwitch } from '@/ui/langSwitch';
 
 /**
  * Bemberse — orquestador del motor Constella (vive en /app/).
@@ -71,6 +73,7 @@ const nextBar = new NextBar((nodeId) => {
 });
 
 decorateStaticIcons();
+mountLangSwitch();
 
 const ZOOM_STEP = 1.35;
 document.getElementById('btn-zoom-in')?.addEventListener('click', () => graphView.zoomBy(ZOOM_STEP));
@@ -83,7 +86,7 @@ init();
 
 async function init(): Promise<void> {
   if (!db.isPersistenceAvailable()) {
-    hud.showToast('IndexedDB is not available: your progress will not be saved in this browser.', 5000);
+    hud.showToast(t('app.noStorage'), 5000);
   }
 
   let profile = await db.loadProfile().catch(() => null);
@@ -165,7 +168,7 @@ function handleImport(raw: RawBemberseGraph): void {
   persist();
   inspector.close();
 
-  hud.showToast(`Imported: ${raw.nodes.length} tasks · ${raw.edges.length} dependencies.`);
+  hud.showToast(t('app.imported', { tasks: raw.nodes.length, edges: raw.edges.length }));
 }
 
 function handleNodeClick(nodeId: string): void {
@@ -181,7 +184,7 @@ function handleNodeClick(nodeId: string): void {
     const blocker = chain[chain.length - 1];
     inspector.close();
     hud.showToast(
-      blocker && blocker.id !== nodeId ? `Locked: complete “${blocker.title}” first.` : 'Locked.',
+      blocker && blocker.id !== nodeId ? t('app.lockedFirst', { title: blocker.title }) : t('app.locked'),
       4200,
     );
     return;
@@ -233,11 +236,11 @@ function handleComplete(nodeId: string): void {
   if (unlockedTitles.length > 0) {
     hud.showToast(
       unlockedTitles.length === 1
-        ? `Done. Unlocked: “${unlockedTitles[0]}”`
-        : `Done. ${unlockedTitles.length} new tasks unlocked.`,
+        ? t('app.doneUnlockedOne', { title: unlockedTitles[0] })
+        : t('app.doneUnlockedMany', { count: unlockedTitles.length }),
     );
   } else {
-    hud.showToast('Task done.');
+    hud.showToast(t('app.done'));
   }
 }
 
@@ -249,11 +252,11 @@ function handleUndo(nodeId: string): void {
   nextBar.update(graph);
   persist();
   inspector.refreshIfOpen(graph);
-  hud.showToast('Task marked as pending again.');
+  hud.showToast(t('app.undone'));
 }
 
 async function handleReset(): Promise<void> {
-  const confirmed = window.confirm('Erase your whole map and all progress? This cannot be undone.');
+  const confirmed = window.confirm(t('app.resetConfirm'));
   if (!confirmed) return;
   await db.clearGraphState();
   location.reload();

@@ -1,6 +1,7 @@
 import type { RuntimeGraph, RuntimeNode } from '@/core/types';
 import { getPathToGoal, isGoalNode } from '@/core/graph';
 import { icon } from './icons';
+import { t } from '@/i18n/ui';
 
 export interface CockpitCallbacks {
   onComplete: (nodeId: string) => void;
@@ -35,7 +36,7 @@ export class CockpitView {
     this.descEl.textContent = node.description
       ? node.description
       : node.estimatedMinutes
-        ? `Estimated: ~${node.estimatedMinutes} min.`
+        ? t('cockpit.estimated', { minutes: node.estimatedMinutes })
         : '';
 
     this.pathEl.innerHTML = this.renderPath(node, graph);
@@ -58,7 +59,7 @@ export class CockpitView {
   private renderPath(node: RuntimeNode, graph: RuntimeGraph): string {
     const goalIcon = icon('target', 14);
     if (isGoalNode(node)) {
-      return `<span class="is-goal">${goalIcon} This is your final goal.</span>`;
+      return `<span class="is-goal">${goalIcon} ${t('cockpit.finalGoal')}</span>`;
     }
 
     const path = getPathToGoal(graph, node.id);
@@ -71,7 +72,7 @@ export class CockpitView {
       return escaped;
     });
 
-    return `This step moves you toward: ${parts.join(' → ')}`;
+    return t('cockpit.toward', { path: parts.join(' → ') });
   }
 
   private escapeHtml(text: string): string {

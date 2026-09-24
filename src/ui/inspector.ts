@@ -1,5 +1,6 @@
 import type { RuntimeGraph, RuntimeNode } from '@/core/types';
 import { isGoalNode, getBlockerTitles } from '@/core/graph';
+import { t, type UiKey } from '@/i18n/ui';
 
 export interface InspectorCallbacks {
   onSetNext: (nodeId: string) => void;
@@ -7,11 +8,11 @@ export interface InspectorCallbacks {
   onUndo: (nodeId: string) => void;
 }
 
-const STATUS_LABEL: Record<string, string> = {
-  locked: 'Locked',
-  unlocked: 'Unlocked',
-  core: 'Your next step',
-  completed: 'Done',
+const STATUS_LABEL: Record<string, UiKey> = {
+  locked: 'inspector.locked',
+  unlocked: 'inspector.unlocked',
+  core: 'inspector.core',
+  completed: 'inspector.completed',
 };
 
 /**
@@ -50,18 +51,19 @@ export class Inspector {
     this.currentId = node.id;
     const goal = isGoalNode(node);
 
-    this.kindEl.textContent = goal ? 'GOAL' : 'TASK';
+    this.kindEl.textContent = goal ? t('inspector.goal') : t('inspector.task');
     this.kindEl.classList.toggle('is-goal', goal);
     this.titleEl.textContent = node.title;
     this.descEl.textContent = node.description ?? '';
 
-    const metaParts: string[] = [STATUS_LABEL[node.status] ?? node.status];
+    const statusKey = STATUS_LABEL[node.status];
+    const metaParts: string[] = [statusKey ? t(statusKey) : node.status];
     if (node.estimatedMinutes) metaParts.push(`~${node.estimatedMinutes} min`);
     this.metaEl.textContent = metaParts.join(' · ');
 
     if (node.status === 'locked') {
       const blockers = getBlockerTitles(graph, node.id);
-      this.blockersEl.textContent = blockers.length > 0 ? `Locked by: ${blockers.join(', ')}` : 'Locked.';
+      this.blockersEl.textContent = blockers.length > 0 ? t('inspector.lockedBy', { list: blockers.join(', ') }) : t('app.locked');
       this.blockersEl.classList.remove('hidden');
     } else {
       this.blockersEl.classList.add('hidden');

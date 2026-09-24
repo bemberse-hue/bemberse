@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="{{page.lang}}">
+  <head>
+{{> head}}
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+    <meta name="description" content="{{meta.appDescription}}" />
+    <meta name="robots" content="noindex" />
+    <title>{{meta.appTitle}}</title>
+  </head>
+  <body>
+    <div id="app">
+      <!-- Capa 2D: el mapa de tareas (SVG montado aqui por la vista activa) -->
+      <div id="universe-container" class="universe-container"></div>
+
+      <!-- HUD superior: wordmark (vuelve al inicio) + pestanas del sitio | acciones del motor -->
+      <header id="hud" class="hud">
+        <div class="hud__bar">
+          <a id="link-back-site" class="hud__logo wordmark" href="../" aria-label="{{nav.homeAria}}">Bemberse</a>
+          <nav class="hud__nav" aria-label="{{app.sectionsAria}}">
+            <a href="../#working-memory">{{nav.problem}}</a>
+            <a href="../#tools-trap">{{nav.tools}}</a>
+            <a href="../#precedence-lock">{{nav.lock}}</a>
+            <a href="../#ecosystem">{{nav.ecosystem}}</a>
+            <a href="../#about">{{nav.about}}</a>
+          </nav>
+          <div class="hud__actions">
+            <div id="view-switch" class="view-switch" role="group" aria-label="{{app.viewAria}}">
+              <button id="btn-view-graph" class="view-switch__btn" aria-pressed="true">{{app.graph}}</button>
+              <button id="btn-view-tree" class="view-switch__btn" aria-pressed="false">{{app.tree}}</button>
+            </div>
+            <button id="btn-new-entry" class="hud__btn hud__btn--primary" title="{{app.newEntryTitle}}" aria-label="{{app.newEntryAria}}">{{app.newShort}}<span class="hud__btn-long">{{app.newLong}}</span></button>
+            <button id="btn-reset" class="hud__btn hud__btn--danger" title="{{app.resetTitle}}">{{app.reset}}</button>
+            {{> lang-switch}}
+          </div>
+        </div>
+        <div class="hud__meta">
+          <span id="hud-brand" class="hud__brand">{{app.brand}}</span>
+          <span class="hud__sep" aria-hidden="true">·</span>
+          <span id="hud-status" class="hud__status">{{app.status0}}</span>
+        </div>
+      </header>
+
+      <!-- Zoom (tambien rueda, pellizco, arrastre y teclas + - 0) -->
+      <div id="zoom-controls" class="zoom-controls" role="group" aria-label="Zoom">
+        <button id="btn-zoom-in" class="zoom-controls__btn" aria-label="{{app.zoomIn}} (+)" title="{{app.zoomIn}} (+)">+</button>
+        <button id="btn-zoom-out" class="zoom-controls__btn" aria-label="{{app.zoomOut}} (-)" title="{{app.zoomOut}} (-)">−</button>
+        <button id="btn-zoom-fit" class="zoom-controls__btn zoom-controls__btn--text" aria-label="{{app.fitLabel}} (0)" title="{{app.fitLabel}} (0)">{{app.fit}}</button>
+      </div>
+
+      <!-- Hint inferior -->
+      <div id="hint" class="hint">{{app.hint}}</div>
+
+      <!-- Movil: el proximo paso siempre a mano, en una barra inferior fija -->
+      <div id="next-bar" class="next-bar hidden" aria-live="polite">
+        <div class="next-bar__text">
+          <span class="next-bar__eyebrow">{{app.nextStep}}</span>
+          <span id="next-bar-title" class="next-bar__title">—</span>
+        </div>
+        <button id="btn-next-bar-start" class="btn btn--primary">{{app.start}}</button>
+      </div>
+
+      <!-- Toast global -->
+      <div id="toast" class="toast hidden" role="status"></div>
+
+      <!-- Inspector -->
+      <aside id="inspector" class="inspector hidden" aria-live="polite">
+        <button id="btn-inspector-close" class="icon-btn inspector__close" aria-label="{{app.close}}"></button>
+        <div id="inspector-kind" class="inspector__kind">{{app.task}}</div>
+        <h3 id="inspector-title" class="inspector__title">—</h3>
+        <p id="inspector-desc" class="inspector__desc"></p>
+        <p id="inspector-meta" class="inspector__meta"></p>
+        <div id="inspector-blockers" class="inspector__blockers hidden"></div>
+        <div class="inspector__actions">
+          <button id="btn-inspector-set-next" class="btn btn--primary hidden">{{app.setNext}}</button>
+          <button id="btn-inspector-start" class="btn btn--complete hidden">{{app.startNow}}</button>
+          <button id="btn-inspector-undo" class="btn btn--ghost hidden">{{app.undo}}</button>
+        </div>
+      </aside>
+
+      <!-- Ingesta: pantalla negra, un solo campo, sin preguntas intermedias -->
+      <section id="ingest" class="ingest hidden" role="dialog" aria-modal="true" aria-labelledby="ingest-title">
+        <div class="ingest__panel">
+          <button id="btn-ingest-close" class="icon-btn ingest__close hidden" aria-label="{{app.close}}"></button>
+          <div class="ingest__top">
+            <a class="ingest__home wordmark" href="../" aria-label="{{nav.homeAria}}">Bemberse</a>
+            {{> lang-switch}}
+          </div>
+          <div class="ingest__eyebrow">{{ingest.eyebrow}}</div>
+          <h1 id="ingest-title" class="ingest__title">{{ingest.title}}</h1>
+
+{{> ingest-fields}}
+        </div>
+      </section>
+
+      <!-- Modo ejecucion -->
+      <section id="cockpit" class="cockpit hidden" aria-live="polite">
+        <div class="cockpit__panel">
+          <div class="cockpit__eyebrow">{{app.nextStep}}</div>
+          <h2 id="cockpit-title" class="cockpit__title">—</h2>
+          <p id="cockpit-desc" class="cockpit__desc"></p>
+          <div id="cockpit-path" class="cockpit__path"></div>
+
+          <div class="cockpit__actions">
+            <button id="btn-complete" class="btn btn--complete btn--lg">{{app.markDone}}</button>
+            <button id="btn-exit-cockpit" class="btn btn--ghost">{{app.backToMap}}</button>
+          </div>
+          <p class="cockpit__hint">{{app.spaceHint}}</p>
+        </div>
+      </section>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

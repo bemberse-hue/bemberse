@@ -1,19 +1,23 @@
 <!doctype html>
+<!-- GENERADO por scripts/i18n-pages.mjs desde src/pages/site.html: edita la plantilla y src/i18n/pages.en.json, no este archivo. -->
 <html lang="en" class="site-root">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#050505" />
-    <meta name="description" content="Bemberse turns the 30 ideas trapped in your head into a map where only one step is unlocked at a time. 100% local, no account, no cloud." />
     <meta name="color-scheme" content="dark" />
-    <title>Bemberse — Your brain isn’t lazy, it’s overloaded</title>
     <link rel="icon" href="data:," />
+    <link rel="alternate" hreflang="en" href="https://bemberse.vercel.app/" />
+    <link rel="alternate" hreflang="es" href="https://bemberse.vercel.app/es/" />
+    <link rel="alternate" hreflang="x-default" href="https://bemberse.vercel.app/" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="description" content="Bemberse turns the 30 ideas trapped in your head into a map where only one step is unlocked at a time. 100% local, no account, no cloud." />
+    <title>Bemberse — Your brain isn’t lazy, it’s overloaded</title>
   </head>
   <body class="site">
     <div id="app">
@@ -27,6 +31,7 @@
           <a href="#ecosystem">Ecosystem</a>
           <a href="#about">About</a>
         </div>
+        <a class="lang-switch" href="es/" hreflang="es" lang="es" aria-label="Ver en español" title="Ver en español">ES</a>
         <a class="btn btn--secondary site-nav__cta" href="app/">Open Constella</a>
       </nav>
 
@@ -36,21 +41,16 @@
         <div class="landing__content">
           <div class="landing__brand wordmark" aria-hidden="true">Bemberse</div>
 
-          <h1 class="landing__title">
-            You have 30 ideas trapped in your head. Your brain isn’t lazy: it’s <span class="grad-text">overloaded.</span>
-          </h1>
-          <p class="landing__sub">
-            Neuroscience puts the working memory buffer at about four items, give
-            or take one. You are asking it to juggle thirty. It doesn’t fail
-            because you are weak — it crashes because it is full.
-          </p>
+          <h1 class="landing__title">You have 30 ideas trapped in your head. Your brain isn’t lazy: it’s <span class="grad-text">overloaded.</span></h1>
+          <p class="landing__sub">Neuroscience puts the working memory buffer at about four items, give or take one. You are asking it to juggle thirty. It doesn’t fail because you are weak — it crashes because it is full.</p>
 
           <a href="#check" class="landing__scroll" id="hero-scroll">Does this sound like you? ↓</a>
         </div>
       </section>
 
       <!-- AUTOCHEQUEO: cuatro afirmaciones de un toque. Opcional, sin puntos,
-           sin reloj; las respuestas no se guardan ni salen del navegador. -->
+           sin reloj; las respuestas no se guardan ni salen del navegador.
+           Cada bloque del diagnostico retoma una de estas preguntas. -->
       <section id="check" class="site-section">
         <div class="site-section__inner">
           <div class="site-section__eyebrow">A quick check</div>
@@ -95,31 +95,22 @@
         </div>
       </section>
 
-      <!-- BLOQUE 1: el diagnostico -->
+      <!-- BLOQUE 1: el diagnostico (retoma las preguntas 1 y 2) -->
       <section id="working-memory" class="site-section">
         <div class="site-section__inner">
           <div class="site-section__eyebrow">The diagnosis</div>
           <h2 class="site-section__title">The working memory crash.</h2>
-          <p class="site-section__lead">
-            Your day starts with thirty open loops and a buffer that holds four.
-            Ten minutes in, the buffer overflows and your brain does the only
-            thing it can: it disconnects.
-          </p>
-          <p class="site-section__body">
-            A flat list forces you to answer the same question twenty times:
-            <em>“What should I do first?”</em> Every one of those micro-decisions
-            burns prefrontal glucose. You spend your energy choosing, and by the
-            time you pick something there is nothing left to execute the first
-            task.
-          </p>
+          <p class="site-section__lead">More than ten things on your mind? Your working memory holds about four. Ten minutes into the day the buffer overflows, and your brain does the only thing it can: it disconnects.</p>
+          <p class="site-section__body">That list you reread without starting anything? Every reread asks the same question again: <em>“What should I do first?”</em> Each of those micro-decisions burns prefrontal glucose. You spend your energy choosing, and by the time you pick something there is nothing left to execute the first task.</p>
         </div>
       </section>
 
-      <!-- BLOQUE 2: por que fallan tus herramientas -->
+      <!-- BLOQUE 2: por que fallan tus herramientas (retoma la pregunta 3) -->
       <section id="tools-trap" class="site-section">
         <div class="site-section__inner">
           <div class="site-section__eyebrow">Why your tools fail</div>
           <h2 class="site-section__title">The Notion &amp; to-do list trap.</h2>
+          <p class="site-section__lead">If you have ever opened Notion to get organized and ended up organizing Notion, the problem was never you. It was the tool.</p>
           <ol class="site-section__steps">
             <li>
               <span class="site-section__step-num">01</span>
@@ -146,19 +137,13 @@
         </div>
       </section>
 
-      <!-- BLOQUE 3: la solucion -->
+      <!-- BLOQUE 3: la solucion (retoma la pregunta 4) -->
       <section id="precedence-lock" class="site-section">
         <div class="site-section__inner">
           <div class="site-section__eyebrow">The solution</div>
           <h2 class="site-section__title">The precedence lock.</h2>
-          <p class="site-section__lead">
-            Bemberse has one rule: if B needs A, B stays under a strict lock.
-          </p>
-          <p class="site-section__body">
-            Your brain gets biological permission to forget step 2 until step 1
-            is done. One task is lit. Everything else waits — out of sight, out
-            of the buffer.
-          </p>
+          <p class="site-section__lead">Bemberse has one rule: if B needs A, B stays under a strict lock.</p>
+          <p class="site-section__body">Busy all day and still feel you did nothing? That’s what thirty open tasks do: they all look urgent, so none of them gets finished. With the lock, your brain gets biological permission to forget step 2 until step 1 is done. One task is lit. Everything else waits — out of sight, out of the buffer.</p>
         </div>
       </section>
 
@@ -167,7 +152,7 @@
         <div class="site-section__inner">
           <div class="site-section__eyebrow">Constella engine</div>
           <h2 class="site-section__title">Clear your head in 60 seconds.</h2>
-          <p class="site-section__lead">Dump everything below. Your AI turns it into a map, and the engine unlocks one step at a time.</p>
+          <p class="site-section__lead">Everything you just recognized, out of your head and onto a map. Dump it below: your AI turns it into a map, and the engine unlocks one step at a time.</p>
 
           <div id="start-ingest" class="ingest ingest--inline">
             <div class="ingest__panel">
@@ -233,10 +218,7 @@
         <div class="site-section__inner site-section__inner--wide">
           <div class="site-section__eyebrow">The Bemberse ecosystem</div>
           <h2 class="site-section__title">One engine. More on the way.</h2>
-          <p class="site-section__body">
-            Constella is the core. Everything else in the ecosystem is built on
-            top of the same precedence lock.
-          </p>
+          <p class="site-section__body">Constella is the core. Everything else in the ecosystem is built on top of the same precedence lock.</p>
           <ul class="hub-grid">
             <li>
               <a class="hub-card" href="app/" id="hub-card-constella">
@@ -279,12 +261,7 @@
         <div class="site-section__inner">
           <div class="site-section__eyebrow">About</div>
           <h2 class="site-section__title">An engine, not a software company.</h2>
-          <p class="site-section__body">
-            Bemberse is built by a small team convinced that productivity doesn’t
-            need more boards or more subscriptions — it needs clarity about what
-            comes next. The whole engine runs in your browser: no servers reading
-            your tasks, no account to create, no cloud to trust.
-          </p>
+          <p class="site-section__body">Bemberse is built by a small team convinced that productivity doesn’t need more boards or more subscriptions — it needs clarity about what comes next. The whole engine runs in your browser: no servers reading your tasks, no account to create, no cloud to trust.</p>
         </div>
       </section>
     </div>

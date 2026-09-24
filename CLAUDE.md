@@ -8,6 +8,7 @@ backend, sin cuentas, sin telemetría. Este archivo manda sobre cualquier defaul
 | Qué | Comando |
 |---|---|
 | Desarrollo | `npm run dev` (sitio y motor en http://localhost:5173) |
+| Regenerar páginas (i18n) | `npm run pages` |
 | Tipos | `npm run typecheck` |
 | Tests unitarios | `npm test` · un archivo: `npx vitest run tests/unit/<x>.test.ts` |
 | Tests de navegador | `npm run test:e2e` · un archivo: `npx playwright test tests/e2e/<x>.spec.ts` |
@@ -49,7 +50,13 @@ src/site.ts   Entry del sitio explicativo (/)
 ## Convenciones
 
 - Alias `@/` → `src/`.
-- Comentarios en español; copy de interfaz (sitio y motor) en inglés; identificadores en inglés.
+- Comentarios en español; identificadores en inglés.
+- **Sitio bilingüe:** inglés en `/` (principal) y español en `/es/`. Los HTML de las páginas
+  (`index.html`, `app/`, `routes/`, `templates/`, `circle/` y todo `es/`) son **generados**:
+  se editan las plantillas de `src/pages/` y los textos de `src/i18n/pages.{en,es}.json`, y
+  luego `npm run pages` (también corre solo antes de `dev` y `build`). Los textos que genera
+  el código van en `src/i18n/ui.ts`. `tests/unit/i18n.test.ts` falla si falta una traducción
+  o si una página quedó desactualizada.
 - Sin linter ni formatter en el repo: sigue el estilo del archivo que estás tocando.
 - Cada paso del build deja una etiqueta `step-NN-<slug>`; es el objetivo de rollback.
 

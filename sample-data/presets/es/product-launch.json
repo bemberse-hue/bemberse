@@ -1,0 +1,41 @@
+{
+  "version": "1.0",
+  "generatedAt": "2026-09-24T00:00:00.000Z",
+  "nodes": [
+    { "id": "define-offer", "title": "Escribir la oferta en una frase", "description": "Para quién es, qué resuelve y por qué ahora. Una frase, sin jerga.", "estimatedMinutes": 20, "priority": 5 },
+    { "id": "pick-launch-date", "title": "Elegir la fecha de lanzamiento", "description": "Una fecha real en el calendario, al menos a dos semanas.", "estimatedMinutes": 10, "priority": 3 },
+    { "id": "list-early-users", "title": "Listar 30 personas que lo usarían", "description": "Nombres, no perfiles. Amigos, clientes anteriores, comunidades donde estás.", "estimatedMinutes": 30, "priority": 4 },
+    { "id": "finish-core-flow", "title": "Terminar el flujo central del MVP", "description": "Solo el camino que necesita un usuario nuevo. Todo lo demás espera.", "estimatedMinutes": 240, "priority": 5 },
+    { "id": "build-landing", "title": "Construir la landing page", "description": "Oferta, una captura, un botón.", "estimatedMinutes": 120, "priority": 4 },
+    { "id": "setup-payments", "title": "Configurar los pagos", "description": "Un plan, un precio. Primero en modo de prueba.", "estimatedMinutes": 40, "priority": 3 },
+    { "id": "write-launch-copy", "title": "Escribir el anuncio de lanzamiento", "estimatedMinutes": 45, "priority": 3 },
+    { "id": "invite-beta", "title": "Invitar a 10 usuarios beta", "estimatedMinutes": 20, "priority": 4 },
+    { "id": "collect-feedback", "title": "Recoger el feedback de la beta", "description": "Pregunta a cada persona dónde se trabó, no qué le gustó.", "estimatedMinutes": 30, "priority": 4 },
+    { "id": "fix-top-issues", "title": "Arreglar los 3 problemas principales", "estimatedMinutes": 120, "priority": 4 },
+    { "id": "record-demo", "title": "Grabar una demo de 60 segundos", "estimatedMinutes": 40, "priority": 3 },
+    { "id": "test-checkout", "title": "Probar el pago de punta a punta", "description": "Paga con una tarjeta real y reembólsate.", "estimatedMinutes": 20, "priority": 3 },
+    { "id": "draft-email", "title": "Redactar el email de lanzamiento", "estimatedMinutes": 30, "priority": 2 },
+    { "id": "schedule-posts", "title": "Programar las publicaciones del lanzamiento", "estimatedMinutes": 25, "priority": 2 },
+    { "id": "launch", "title": "Lanzar el producto", "description": "Envía el email, publica los posts, abre las puertas.", "priority": 9 }
+  ],
+  "edges": [
+    { "from": "define-offer", "to": "build-landing" },
+    { "from": "define-offer", "to": "write-launch-copy" },
+    { "from": "define-offer", "to": "setup-payments" },
+    { "from": "list-early-users", "to": "invite-beta" },
+    { "from": "finish-core-flow", "to": "invite-beta" },
+    { "from": "invite-beta", "to": "collect-feedback" },
+    { "from": "collect-feedback", "to": "fix-top-issues" },
+    { "from": "fix-top-issues", "to": "record-demo" },
+    { "from": "setup-payments", "to": "test-checkout" },
+    { "from": "build-landing", "to": "test-checkout" },
+    { "from": "write-launch-copy", "to": "draft-email" },
+    { "from": "record-demo", "to": "draft-email" },
+    { "from": "write-launch-copy", "to": "schedule-posts" },
+    { "from": "record-demo", "to": "schedule-posts" },
+    { "from": "pick-launch-date", "to": "schedule-posts" },
+    { "from": "draft-email", "to": "launch" },
+    { "from": "schedule-posts", "to": "launch" },
+    { "from": "test-checkout", "to": "launch" }
+  ]
+}

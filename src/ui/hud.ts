@@ -1,5 +1,6 @@
 import type { RuntimeGraph } from '@/core/types';
 import { graphStats } from '@/core/graph';
+import { t } from '@/i18n/ui';
 
 export interface HudCallbacks {
   onNewEntry: () => void;
@@ -20,11 +21,11 @@ export class Hud {
 
   updateStats(graph: RuntimeGraph | null): void {
     if (!graph) {
-      this.statusEl.textContent = '0 tasks · 0 unlocked';
+      this.statusEl.textContent = t('hud.status0');
       return;
     }
     const { total, completed, unlocked, locked } = graphStats(graph);
-    this.statusEl.textContent = `${total} tasks · ${unlocked} unlocked · ${locked} locked · ${completed} done`;
+    this.statusEl.textContent = t('hud.status', { total, unlocked, locked, done: completed });
   }
 
   showToast(message: string, durationMs = 3200): void {

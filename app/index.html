@@ -1,27 +1,31 @@
 <!doctype html>
+<!-- GENERADO por scripts/i18n-pages.mjs desde src/pages/app.html: edita la plantilla y src/i18n/pages.en.json, no este archivo. -->
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
     <meta name="theme-color" content="#050505" />
-    <meta name="description" content="Constella — the Bemberse engine. Dump your noise, unlock one step at a time. 100% local." />
     <meta name="color-scheme" content="dark" />
-    <meta name="robots" content="noindex" />
-    <title>Constella — Bemberse</title>
     <link rel="icon" href="data:," />
+    <link rel="alternate" hreflang="en" href="https://bemberse.vercel.app/app/" />
+    <link rel="alternate" hreflang="es" href="https://bemberse.vercel.app/es/app/" />
+    <link rel="alternate" hreflang="x-default" href="https://bemberse.vercel.app/app/" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+    <meta name="description" content="Constella — the Bemberse engine. Dump your noise, unlock one step at a time. 100% local." />
+    <meta name="robots" content="noindex" />
+    <title>Constella — Bemberse</title>
   </head>
   <body>
     <div id="app">
       <!-- Capa 2D: el mapa de tareas (SVG montado aqui por la vista activa) -->
       <div id="universe-container" class="universe-container"></div>
 
-      <!-- HUD superior: logo (vuelve al inicio) + pestanas del sitio | acciones del motor -->
+      <!-- HUD superior: wordmark (vuelve al inicio) + pestanas del sitio | acciones del motor -->
       <header id="hud" class="hud">
         <div class="hud__bar">
           <a id="link-back-site" class="hud__logo wordmark" href="../" aria-label="Bemberse: back to home">Bemberse</a>
@@ -39,6 +43,7 @@
             </div>
             <button id="btn-new-entry" class="hud__btn hud__btn--primary" title="Dump more tasks (N)" aria-label="New entry">+ New<span class="hud__btn-long"> entry</span></button>
             <button id="btn-reset" class="hud__btn hud__btn--danger" title="Erase everything">Reset</button>
+            <a class="lang-switch" href="../es/app/" hreflang="es" lang="es" aria-label="Ver en español" title="Ver en español">ES</a>
           </div>
         </div>
         <div class="hud__meta">
@@ -89,7 +94,10 @@
       <section id="ingest" class="ingest hidden" role="dialog" aria-modal="true" aria-labelledby="ingest-title">
         <div class="ingest__panel">
           <button id="btn-ingest-close" class="icon-btn ingest__close hidden" aria-label="Close"></button>
-          <a class="ingest__home wordmark" href="../" aria-label="Bemberse: back to home">Bemberse</a>
+          <div class="ingest__top">
+            <a class="ingest__home wordmark" href="../" aria-label="Bemberse: back to home">Bemberse</a>
+            <a class="lang-switch" href="../es/app/" hreflang="es" lang="es" aria-label="Ver en español" title="Ver en español">ES</a>
+          </div>
           <div class="ingest__eyebrow">Constella engine</div>
           <h1 id="ingest-title" class="ingest__title">Clear your head.</h1>
 

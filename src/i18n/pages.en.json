@@ -1,0 +1,166 @@
+{
+  "meta": {
+    "switchTo": "View in English",
+    "siteTitle": "Bemberse — Your brain isn’t lazy, it’s overloaded",
+    "siteDescription": "Bemberse turns the 30 ideas trapped in your head into a map where only one step is unlocked at a time. 100% local, no account, no cloud.",
+    "appTitle": "Constella — Bemberse",
+    "appDescription": "Constella — the Bemberse engine. Dump your noise, unlock one step at a time. 100% local."
+  },
+  "nav": {
+    "aria": "Main",
+    "brandAria": "Bemberse: back to top",
+    "homeAria": "Bemberse: back to home",
+    "problem": "The problem",
+    "tools": "Your tools",
+    "lock": "The lock",
+    "ecosystem": "Ecosystem",
+    "about": "About",
+    "openConstella": "Open Constella"
+  },
+  "hero": {
+    "title": "You have 30 ideas trapped in your head. Your brain isn’t lazy: it’s <span class=\"grad-text\">overloaded.</span>",
+    "sub": "Neuroscience puts the working memory buffer at about four items, give or take one. You are asking it to juggle thirty. It doesn’t fail because you are weak — it crashes because it is full.",
+    "scroll": "Does this sound like you? ↓"
+  },
+  "check": {
+    "eyebrow": "A quick check",
+    "title": "Sound familiar?",
+    "lead": "Four questions, one tap each. Nothing is saved and nothing leaves your browser.",
+    "q1": "Do you have more than 10 things on your mind right now?",
+    "q2": "Do you reread your to-do list without starting anything on it?",
+    "q3": "Have you ever opened Notion to get organized… and ended up organizing Notion?",
+    "q4": "Do you end busy days feeling like you did nothing?",
+    "yes": "Yes",
+    "no": "Not really",
+    "next": "Here’s what’s going on ↓"
+  },
+  "memory": {
+    "eyebrow": "The diagnosis",
+    "title": "The working memory crash.",
+    "lead": "More than ten things on your mind? Your working memory holds about four. Ten minutes into the day the buffer overflows, and your brain does the only thing it can: it disconnects.",
+    "body": "That list you reread without starting anything? Every reread asks the same question again: <em>“What should I do first?”</em> Each of those micro-decisions burns prefrontal glucose. You spend your energy choosing, and by the time you pick something there is nothing left to execute the first task."
+  },
+  "tools": {
+    "eyebrow": "Why your tools fail",
+    "title": "The Notion &amp; to-do list trap.",
+    "lead": "If you have ever opened Notion to get organized and ended up organizing Notion, the problem was never you. It was the tool.",
+    "s1Title": "Flat lists.",
+    "s1Body": "They treat a five-minute task exactly like a three-week project. They have no idea what causes what.",
+    "s2Title": "Notion &amp; Trello.",
+    "s2Body": "Tags, columns and databases before your first idea. You end up working for the app instead of moving forward.",
+    "s3Title": "The ambiguity trap.",
+    "s3Body": "If task B depends on task A, showing B as open is an alarm your amygdala can’t switch off — and the fastest way out is to procrastinate."
+  },
+  "lock": {
+    "eyebrow": "The solution",
+    "title": "The precedence lock.",
+    "lead": "Bemberse has one rule: if B needs A, B stays under a strict lock.",
+    "body": "Busy all day and still feel you did nothing? That’s what thirty open tasks do: they all look urgent, so none of them gets finished. With the lock, your brain gets biological permission to forget step 2 until step 1 is done. One task is lit. Everything else waits — out of sight, out of the buffer."
+  },
+  "start": {
+    "eyebrow": "Constella engine",
+    "title": "Clear your head in 60 seconds.",
+    "lead": "Everything you just recognized, out of your head and onto a map. Dump it below: your AI turns it into a map, and the engine unlocks one step at a time.",
+    "trust": "100% local · No account · No cloud tracking",
+    "alt": "Already have a map?",
+    "openEngine": "Open Constella Engine — Free"
+  },
+  "ingest": {
+    "eyebrow": "Constella engine",
+    "title": "Clear your head.",
+    "dumpLabel": "Your brain dump",
+    "placeholder": "Dump everything on your mind. No order. No formatting.",
+    "dictate": "Dictate",
+    "dictateTitle": "Voice dictation",
+    "copy": "Copy prompt for your AI",
+    "copyNote": "Paste it into ChatGPT or Claude. It sends back your map as JSON.",
+    "importLabel": "Paste the JSON your AI returned",
+    "build": "Build my map",
+    "upload": "Upload .json",
+    "presetsLabel": "No AI at hand? Start from a preset",
+    "presetLaunch": "Product Launch",
+    "presetWeek": "Chaotic Week",
+    "presetFreeze": "Break the Freeze"
+  },
+  "eco": {
+    "eyebrow": "The Bemberse ecosystem",
+    "title": "One engine. More on the way.",
+    "body": "Constella is the core. Everything else in the ecosystem is built on top of the same precedence lock.",
+    "available": "Available",
+    "soon": "Coming soon",
+    "constellaName": "Constella Engine",
+    "constellaDesc": "The core spatial engine. Dump your noise, unlock one step at a time.",
+    "constellaGo": "Launch engine →",
+    "routesDesc": "Pre-built dependency graphs for launches, habits and complex goals.",
+    "templatesDesc": "Standard operating workflows for repeatable weekly execution.",
+    "circleDesc": "A private accountability network. Share your graph, not your noise.",
+    "preview": "Preview →"
+  },
+  "about": {
+    "eyebrow": "About",
+    "title": "An engine, not a software company.",
+    "body": "Bemberse is built by a small team convinced that productivity doesn’t need more boards or more subscriptions — it needs clarity about what comes next. The whole engine runs in your browser: no servers reading your tasks, no account to create, no cloud to trust."
+  },
+  "placeholder": {
+    "titleSuffix": "Bemberse Ecosystem",
+    "eyebrow": "Bemberse ecosystem · Coming soon",
+    "primary": "Open Constella Engine",
+    "back": "Back to the ecosystem",
+    "routes": {
+      "name": "Routes",
+      "description": "Routes, part of the Bemberse ecosystem. Coming soon.",
+      "lead": "Pre-built dependency graphs for the goals almost everyone chases at some point. Instead of starting from zero, you import the route and your map appears already ordered, with the first step unlocked.",
+      "item1": "Product launches, new habits, complex goals: curated routes with the dependencies already worked out.",
+      "item2": "Every route imports as a Constella map — same dependencies, same locks.",
+      "item3": "Tweak it before you start: remove what you have already done, add what is missing.",
+      "note": "The whole ecosystem runs on Constella: whatever you start there today will still work when Routes arrives."
+    },
+    "templates": {
+      "name": "Templates",
+      "description": "Templates, part of the Bemberse ecosystem. Coming soon.",
+      "lead": "Standard operating workflows for the things you repeat. The weekly review, the month-end close, a launch checklist: the order is already thought through, you just walk it.",
+      "item1": "Cyclical templates that reset when you finish, without rebuilding them.",
+      "item2": "They load into Constella as a new map, right next to your own.",
+      "item3": "Zero setup: no properties, views or relations to configure by hand.",
+      "note": "The whole ecosystem runs on Constella: whatever you start there today will still work when Templates arrives."
+    },
+    "circle": {
+      "name": "Circle",
+      "description": "Circle, part of the Bemberse ecosystem. Coming soon.",
+      "lead": "A private accountability network for people who would rather untangle together. You share your graph and your next step with a few people you trust — not your noise.",
+      "item1": "Small, invite-only groups. No feed, no likes, no public metrics.",
+      "item2": "You see which step each person is on, never how long it took: zero time pressure.",
+      "item3": "Your maps stay yours and local; sharing is always explicit and revocable.",
+      "note": "The whole ecosystem runs on Constella: whatever you start there today will still work when Circle arrives."
+    }
+  },
+  "app": {
+    "sectionsAria": "Bemberse sections",
+    "viewAria": "View",
+    "graph": "Graph",
+    "tree": "LTR Tree",
+    "newEntryTitle": "Dump more tasks (N)",
+    "newEntryAria": "New entry",
+    "newShort": "+ New",
+    "newLong": " entry",
+    "reset": "Reset",
+    "resetTitle": "Erase everything",
+    "brand": "Your map",
+    "status0": "0 tasks · 0 unlocked",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
+    "fit": "Fit",
+    "fitLabel": "Fit to screen",
+    "hint": "Tap a node to inspect · drag and scroll to move · Press <kbd>Space</kbd> to start your next step",
+    "nextStep": "Next step",
+    "start": "Start",
+    "close": "Close",
+    "task": "TASK",
+    "setNext": "Make it my next step",
+    "startNow": "Start now",
+    "undo": "Undo completion",
+    "markDone": "Mark as done",
+    "backToMap": "Back to the map (Esc)",
+    "spaceHint": "Press <kbd>Space</kbd> to complete"
+  }
+}

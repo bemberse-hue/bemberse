@@ -1,0 +1,270 @@
+<!doctype html>
+<!-- GENERADO por scripts/i18n-pages.mjs desde src/pages/site.html: edita la plantilla y src/i18n/pages.es.json, no este archivo. -->
+<html lang="es" class="site-root">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="theme-color" content="#050505" />
+    <meta name="color-scheme" content="dark" />
+    <link rel="icon" href="data:," />
+    <link rel="alternate" hreflang="en" href="https://bemberse.vercel.app/" />
+    <link rel="alternate" hreflang="es" href="https://bemberse.vercel.app/es/" />
+    <link rel="alternate" hreflang="x-default" href="https://bemberse.vercel.app/" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="description" content="Bemberse convierte las 30 ideas atrapadas en tu cabeza en un mapa donde solo se desbloquea un paso a la vez. 100% local, sin cuenta, sin nube." />
+    <title>Bemberse — No es pereza: tu cerebro está saturado</title>
+  </head>
+  <body class="site">
+    <div id="app">
+      <!-- Navegacion del sitio -->
+      <nav class="site-nav" aria-label="Principal">
+        <a class="site-nav__brand wordmark" href="#hero" aria-label="Bemberse: volver arriba">Bemberse</a>
+        <div class="site-nav__links">
+          <a href="#working-memory">El problema</a>
+          <a href="#tools-trap">Tus herramientas</a>
+          <a href="#precedence-lock">El candado</a>
+          <a href="#ecosystem">Ecosistema</a>
+          <a href="#about">Nosotros</a>
+        </div>
+        <a class="lang-switch" href="../" hreflang="en" lang="en" aria-label="View in English" title="View in English">EN</a>
+        <a class="btn btn--secondary site-nav__cta" href="app/">Abrir Constella</a>
+      </nav>
+
+      <!-- HERO: el golpe inicial. Sin boton a proposito: primero se lee el diagnostico. -->
+      <section id="hero" class="landing">
+        <div id="landing-bg" class="landing__bg" aria-hidden="true"></div>
+        <div class="landing__content">
+          <div class="landing__brand wordmark" aria-hidden="true">Bemberse</div>
+
+          <h1 class="landing__title">Tienes 30 ideas atrapadas en la cabeza. No es pereza: tu cerebro está <span class="grad-text">saturado.</span></h1>
+          <p class="landing__sub">La neurociencia calcula que la memoria de trabajo sostiene unos cuatro elementos, uno más o uno menos. Le estás pidiendo que sostenga treinta. No falla porque seas débil: colapsa porque está lleno.</p>
+
+          <a href="#check" class="landing__scroll" id="hero-scroll">¿Te pasa esto? ↓</a>
+        </div>
+      </section>
+
+      <!-- AUTOCHEQUEO: cuatro afirmaciones de un toque. Opcional, sin puntos,
+           sin reloj; las respuestas no se guardan ni salen del navegador.
+           Cada bloque del diagnostico retoma una de estas preguntas. -->
+      <section id="check" class="site-section">
+        <div class="site-section__inner">
+          <div class="site-section__eyebrow">Un chequeo rápido</div>
+          <h2 class="site-section__title">¿Te suena?</h2>
+          <p class="site-section__lead">Cuatro preguntas, un toque cada una. No se guarda nada y nada sale de tu navegador.</p>
+          <ol class="check">
+            <li class="check__item">
+              <span class="check__num">01</span>
+              <p class="check__q" id="check-q1">¿Tienes más de 10 cosas en la cabeza ahora mismo?</p>
+              <div class="check__answers" role="group" aria-labelledby="check-q1">
+                <button class="check__btn" data-answer="yes" aria-pressed="false">Sí</button>
+                <button class="check__btn" data-answer="no" aria-pressed="false">No tanto</button>
+              </div>
+            </li>
+            <li class="check__item">
+              <span class="check__num">02</span>
+              <p class="check__q" id="check-q2">¿Relees tu lista de pendientes sin empezar nada de ella?</p>
+              <div class="check__answers" role="group" aria-labelledby="check-q2">
+                <button class="check__btn" data-answer="yes" aria-pressed="false">Sí</button>
+                <button class="check__btn" data-answer="no" aria-pressed="false">No tanto</button>
+              </div>
+            </li>
+            <li class="check__item">
+              <span class="check__num">03</span>
+              <p class="check__q" id="check-q3">¿Alguna vez abriste Notion para organizarte… y terminaste organizando Notion?</p>
+              <div class="check__answers" role="group" aria-labelledby="check-q3">
+                <button class="check__btn" data-answer="yes" aria-pressed="false">Sí</button>
+                <button class="check__btn" data-answer="no" aria-pressed="false">No tanto</button>
+              </div>
+            </li>
+            <li class="check__item">
+              <span class="check__num">04</span>
+              <p class="check__q" id="check-q4">¿Terminas días llenos de trabajo sintiendo que no hiciste nada?</p>
+              <div class="check__answers" role="group" aria-labelledby="check-q4">
+                <button class="check__btn" data-answer="yes" aria-pressed="false">Sí</button>
+                <button class="check__btn" data-answer="no" aria-pressed="false">No tanto</button>
+              </div>
+            </li>
+          </ol>
+          <p id="check-result" class="check__result" aria-live="polite" hidden></p>
+          <a href="#working-memory" class="landing__scroll check__next" id="check-next">Esto es lo que está pasando ↓</a>
+        </div>
+      </section>
+
+      <!-- BLOQUE 1: el diagnostico (retoma las preguntas 1 y 2) -->
+      <section id="working-memory" class="site-section">
+        <div class="site-section__inner">
+          <div class="site-section__eyebrow">El diagnóstico</div>
+          <h2 class="site-section__title">El colapso de la memoria de trabajo.</h2>
+          <p class="site-section__lead">¿Más de diez cosas en la cabeza? Tu memoria de trabajo sostiene unas cuatro. A los diez minutos de empezar el día el búfer se desborda, y tu cerebro hace lo único que puede: se desconecta.</p>
+          <p class="site-section__body">¿Esa lista que relees sin empezar nada? Cada relectura vuelve a hacer la misma pregunta: <em>«¿Qué hago primero?»</em> Cada una de esas microdecisiones quema glucosa prefrontal. Gastas tu energía eligiendo, y cuando por fin eliges ya no queda nada para ejecutar la primera tarea.</p>
+        </div>
+      </section>
+
+      <!-- BLOQUE 2: por que fallan tus herramientas (retoma la pregunta 3) -->
+      <section id="tools-trap" class="site-section">
+        <div class="site-section__inner">
+          <div class="site-section__eyebrow">Por qué fallan tus herramientas</div>
+          <h2 class="site-section__title">La trampa de Notion y las listas de pendientes.</h2>
+          <p class="site-section__lead">Si alguna vez abriste Notion para organizarte y terminaste organizando Notion, el problema nunca fuiste tú. Era la herramienta.</p>
+          <ol class="site-section__steps">
+            <li>
+              <span class="site-section__step-num">01</span>
+              <div>
+                <strong>Listas planas.</strong>
+                <p>Tratan una tarea de cinco minutos exactamente igual que un proyecto de tres semanas. No saben qué causa qué.</p>
+              </div>
+            </li>
+            <li>
+              <span class="site-section__step-num">02</span>
+              <div>
+                <strong>Notion y Trello.</strong>
+                <p>Etiquetas, columnas y bases de datos antes de tu primera idea. Terminas trabajando para la app en vez de avanzar.</p>
+              </div>
+            </li>
+            <li>
+              <span class="site-section__step-num">03</span>
+              <div>
+                <strong>La trampa de la ambigüedad.</strong>
+                <p>Si la tarea B depende de la A, mostrar la B abierta es una alarma que tu amígdala no puede apagar, y la salida más rápida es procrastinar.</p>
+              </div>
+            </li>
+          </ol>
+        </div>
+      </section>
+
+      <!-- BLOQUE 3: la solucion (retoma la pregunta 4) -->
+      <section id="precedence-lock" class="site-section">
+        <div class="site-section__inner">
+          <div class="site-section__eyebrow">La solución</div>
+          <h2 class="site-section__title">El candado de precedencia.</h2>
+          <p class="site-section__lead">Bemberse tiene una sola regla: si B necesita de A, B queda bajo candado estricto.</p>
+          <p class="site-section__body">¿Todo el día ocupado y aun así sientes que no hiciste nada? Eso hacen treinta tareas abiertas: todas parecen urgentes, así que ninguna se termina. Con el candado, tu cerebro recibe permiso biológico para olvidar el paso 2 hasta que el paso 1 esté hecho. Una sola tarea encendida. Todo lo demás espera: fuera de la vista, fuera del búfer.</p>
+        </div>
+      </section>
+
+      <!-- BLOQUE 4: el volcado, ahi mismo, al final del scroll -->
+      <section id="start" class="site-section site-section--start">
+        <div class="site-section__inner">
+          <div class="site-section__eyebrow">Motor Constella</div>
+          <h2 class="site-section__title">Vacía tu cabeza en 60 segundos.</h2>
+          <p class="site-section__lead">Todo lo que acabas de reconocer, fuera de tu cabeza y dentro de un mapa. Vuélcalo abajo: tu IA lo convierte en un mapa y el motor desbloquea un paso a la vez.</p>
+
+          <div id="start-ingest" class="ingest ingest--inline">
+            <div class="ingest__panel">
+          <div class="ingest__field">
+            <label for="ingest-text" class="visually-hidden">Tu volcado mental</label>
+            <textarea
+              id="ingest-text"
+              class="ingest__textarea"
+              placeholder="Vuelca todo lo que tienes en la cabeza. Sin orden. Sin formato."
+              rows="8"
+            ></textarea>
+            <div class="ingest__field-bar">
+              <button id="btn-mic" class="ingest__mic" aria-pressed="false" title="Dictado por voz">Dictar</button>
+              <span id="mic-status" class="mic-status" aria-live="polite"></span>
+            </div>
+          </div>
+
+          <div class="ingest__step">
+            <button id="btn-copy-prompt" class="btn btn--primary btn--lg">Copiar prompt para tu IA</button>
+            <p id="copy-status" class="ingest__note" aria-live="polite">Pégalo en ChatGPT o Claude. Te devuelve tu mapa en JSON.</p>
+          </div>
+
+          <div class="ingest__import">
+            <label for="import-text" class="ingest__label">Pega el JSON que te devolvió tu IA</label>
+            <textarea
+              id="import-text"
+              class="ingest__textarea ingest__textarea--code"
+              placeholder='{ "version": "1.0", "nodes": [...], "edges": [...] }'
+              rows="3"
+            ></textarea>
+            <div class="ingest__row">
+              <button id="btn-do-import" class="btn btn--secondary">Construir mi mapa</button>
+              <label class="btn btn--ghost file-btn">
+                Subir .json
+                <input id="import-file" type="file" accept="application/json" hidden />
+              </label>
+              <span id="import-status" class="mic-status"></span>
+            </div>
+            <pre id="import-error" class="import-error hidden"></pre>
+          </div>
+
+          <div class="ingest__presets">
+            <span class="ingest__label">¿Sin IA a mano? Empieza con un mapa listo</span>
+            <div class="ingest__row">
+              <button class="ingest__preset" data-preset="product-launch" id="preset-product-launch">Lanzar un producto</button>
+              <button class="ingest__preset" data-preset="chaotic-week" id="preset-chaotic-week">Semana caótica</button>
+              <button class="ingest__preset" data-preset="break-the-freeze" id="preset-break-the-freeze">Romper el bloqueo</button>
+            </div>
+          </div>
+            </div>
+          </div>
+
+          <p class="site-section__trust">100% local · Sin cuenta · Sin rastreo en la nube</p>
+          <p class="start__alt">
+            ¿Ya tienes un mapa?
+            <a href="app/" id="btn-open-engine" class="btn btn--secondary">Abrir el motor Constella — Gratis</a>
+          </p>
+        </div>
+      </section>
+
+      <!-- BLOQUE 5: el ecosistema (al final, para no cortar el flujo dolor -> solucion) -->
+      <section id="ecosystem" class="site-section">
+        <div class="site-section__inner site-section__inner--wide">
+          <div class="site-section__eyebrow">El ecosistema Bemberse</div>
+          <h2 class="site-section__title">Un motor. Más en camino.</h2>
+          <p class="site-section__body">Constella es el núcleo. Todo lo demás en el ecosistema se construye sobre el mismo candado de precedencia.</p>
+          <ul class="hub-grid">
+            <li>
+              <a class="hub-card" href="app/" id="hub-card-constella">
+                <span class="hub-card__status">Disponible</span>
+                <strong class="hub-card__name">Motor Constella</strong>
+                <span class="hub-card__desc">El motor espacial central. Vuelca tu ruido y desbloquea un paso a la vez.</span>
+                <span class="hub-card__go">Abrir el motor →</span>
+              </a>
+            </li>
+            <li>
+              <a class="hub-card hub-card--soon" href="routes/" id="hub-card-routes">
+                <span class="hub-card__status">Próximamente</span>
+                <strong class="hub-card__name">Rutas</strong>
+                <span class="hub-card__desc">Grafos de dependencias ya armados para lanzamientos, hábitos y metas complejas.</span>
+                <span class="hub-card__go">Ver adelanto →</span>
+              </a>
+            </li>
+            <li>
+              <a class="hub-card hub-card--soon" href="templates/" id="hub-card-templates">
+                <span class="hub-card__status">Próximamente</span>
+                <strong class="hub-card__name">Plantillas</strong>
+                <span class="hub-card__desc">Flujos de trabajo estándar para una ejecución semanal que se repite.</span>
+                <span class="hub-card__go">Ver adelanto →</span>
+              </a>
+            </li>
+            <li>
+              <a class="hub-card hub-card--soon" href="circle/" id="hub-card-circle">
+                <span class="hub-card__status">Próximamente</span>
+                <strong class="hub-card__name">Círculo</strong>
+                <span class="hub-card__desc">Una red privada de acompañamiento. Comparte tu grafo, no tu ruido.</span>
+                <span class="hub-card__go">Ver adelanto →</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- QUIENES SOMOS -->
+      <section id="about" class="site-section">
+        <div class="site-section__inner">
+          <div class="site-section__eyebrow">Nosotros</div>
+          <h2 class="site-section__title">Un motor, no una empresa de software.</h2>
+          <p class="site-section__body">Bemberse lo construye un equipo pequeño convencido de que la productividad no necesita más tableros ni más suscripciones: necesita claridad sobre qué sigue. Todo el motor corre en tu navegador: sin servidores que lean tus tareas, sin cuenta que crear, sin nube en la que confiar.</p>
+        </div>
+      </section>
+    </div>
+    <script type="module" src="/src/site.ts"></script>
+  </body>
+</html>

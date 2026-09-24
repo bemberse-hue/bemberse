@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="{{page.lang}}" class="site-root">
+  <head>
+{{> head}}
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="description" content="{{p.description}}" />
+    <title>{{p.name}} — {{placeholder.titleSuffix}}</title>
+  </head>
+  <body class="site">
+    <div id="app">
+{{> site-nav}}
+
+      <!-- Placeholder provisional: el producto aun no existe. -->
+      <main id="placeholder" class="placeholder" data-product="{{page.slug}}">
+        <div class="placeholder__inner">
+          <div class="site-section__eyebrow">{{placeholder.eyebrow}}</div>
+          <h1 class="placeholder__title">{{p.name}}</h1>
+          <p class="site-section__lead">{{p.lead}}</p>
+          <ul class="placeholder__list">
+            <li><span>01</span>{{p.item1}}</li>
+            <li><span>02</span>{{p.item2}}</li>
+            <li><span>03</span>{{p.item3}}</li>
+          </ul>
+          <div class="placeholder__actions">
+            <a href="../app/" class="btn btn--primary btn--lg">{{placeholder.primary}}</a>
+            <a href="../#ecosystem" class="btn btn--ghost btn--lg">{{placeholder.back}}</a>
+          </div>
+          <p class="placeholder__note">{{p.note}}</p>
+        </div>
+      </main>
+    </div>
+    <script type="module" src="/src/placeholder.ts"></script>
+  </body>
+</html>

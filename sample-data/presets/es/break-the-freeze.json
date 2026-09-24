@@ -1,0 +1,29 @@
+{
+  "version": "1.0",
+  "generatedAt": "2026-09-24T00:00:00.000Z",
+  "nodes": [
+    { "id": "drink-water", "title": "Tomar un vaso de agua", "estimatedMinutes": 2, "priority": 2 },
+    { "id": "phone-away", "title": "Dejar el celular en otra habitación", "estimatedMinutes": 1, "priority": 4 },
+    { "id": "clear-desk", "title": "Despejar solo la superficie del escritorio", "description": "No el cuarto. Solo la superficie que tienes enfrente.", "estimatedMinutes": 5, "priority": 3 },
+    { "id": "name-the-fear", "title": "Escribir una línea sobre lo que te asusta", "description": "Una frase. Ponerle nombre lo achica.", "estimatedMinutes": 3, "priority": 5 },
+    { "id": "pick-smallest", "title": "Elegir la tarea más pequeña que tienes en mente", "estimatedMinutes": 3, "priority": 5 },
+    { "id": "open-the-file", "title": "Abrir el archivo que vienes evitando", "description": "Solo ábrelo. Todavía no tienes que hacer nada.", "estimatedMinutes": 1, "priority": 5 },
+    { "id": "do-it-badly", "title": "Trabajar en eso mal durante unos minutos", "description": "Permiso para hacerlo mal. Avance, no calidad.", "estimatedMinutes": 5, "priority": 5 },
+    { "id": "walk-outside", "title": "Dar una caminata corta afuera", "estimatedMinutes": 10, "priority": 3 },
+    { "id": "second-block", "title": "Hacer un segundo bloque, más largo", "estimatedMinutes": 25, "priority": 4 },
+    { "id": "note-progress", "title": "Anotar lo que lograste", "estimatedMinutes": 3, "priority": 3 },
+    { "id": "unfrozen", "title": "Conseguir una hora real de trabajo enfocado", "priority": 8 }
+  ],
+  "edges": [
+    { "from": "name-the-fear", "to": "pick-smallest" },
+    { "from": "pick-smallest", "to": "open-the-file" },
+    { "from": "clear-desk", "to": "open-the-file" },
+    { "from": "open-the-file", "to": "do-it-badly" },
+    { "from": "phone-away", "to": "do-it-badly" },
+    { "from": "do-it-badly", "to": "walk-outside" },
+    { "from": "walk-outside", "to": "second-block" },
+    { "from": "second-block", "to": "note-progress" },
+    { "from": "note-progress", "to": "unfrozen" },
+    { "from": "drink-water", "to": "unfrozen" }
+  ]
+}

@@ -1,3 +1,5 @@
+import { t } from '@/i18n/ui';
+
 /**
  * Autochequeo del sitio: cuatro afirmaciones de un toque ("Yes" / "Not
  * really"). Es un espejo, no un test: opcional, sin puntos ni reloj, y las
@@ -19,12 +21,9 @@ export function mountSelfCheck(): void {
     }
     const yes = [...answers.values()].filter((a) => a === 'yes').length;
     const total = items.length;
-    const [headline, detail] =
-      yes >= 3
-        ? [`${yes} of ${total}. That’s not laziness — that’s a full buffer.`, 'Keep scrolling: here is why it happens, and how to empty it.']
-        : yes >= 1
-          ? [`${yes} of ${total}. Your buffer is filling up.`, 'It gets heavier every day nothing is written down. Here is why.']
-          : [`0 of ${total}. Good — keep it that way.`, 'The lock still helps when the load comes back. Here is how it works.'];
+    const level = yes >= 3 ? 'high' : yes >= 1 ? 'mid' : 'zero';
+    const headline = t(`check.${level}`, { yes, total });
+    const detail = t(`check.${level}Detail`);
     result.innerHTML = '';
     result.append(headline);
     if (answers.size === total) {

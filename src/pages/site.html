@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="{{page.lang}}" class="site-root">
+  <head>
+{{> head}}
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="description" content="{{meta.siteDescription}}" />
+    <title>{{meta.siteTitle}}</title>
+  </head>
+  <body class="site">
+    <div id="app">
+{{> site-nav}}
+
+      <!-- HERO: el golpe inicial. Sin boton a proposito: primero se lee el diagnostico. -->
+      <section id="hero" class="landing">
+        <div id="landing-bg" class="landing__bg" aria-hidden="true"></div>
+        <div class="landing__content">
+          <div class="landing__brand wordmark" aria-hidden="true">Bemberse</div>
+
+          <h1 class="landing__title">{{hero.title}}</h1>
+          <p class="landing__sub">{{hero.sub}}</p>
+
+          <a href="#check" class="landing__scroll" id="hero-scroll">{{hero.scroll}}</a>
+        </div>
+      </section>
+
+      <!-- AUTOCHEQUEO: cuatro afirmaciones de un toque. Opcional, sin puntos,
+           sin reloj; las respuestas no se guardan ni salen del navegador.
+           Cada bloque del diagnostico retoma una de estas preguntas. -->
+      <section id="check" class="site-section">
+        <div class="site-section__inner">
+          <div class="site-section__eyebrow">{{check.eyebrow}}</div>
+          <h2 class="site-section__title">{{check.title}}</h2>
+          <p class="site-section__lead">{{check.lead}}</p>
+          <ol class="check">
+            <li class="check__item">
+              <span class="check__num">01</span>
+              <p class="check__q" id="check-q1">{{check.q1}}</p>
+              <div class="check__answers" role="group" aria-labelledby="check-q1">
+                <button class="check__btn" data-answer="yes" aria-pressed="false">{{check.yes}}</button>
+                <button class="check__btn" data-answer="no" aria-pressed="false">{{check.no}}</button>
+              </div>
+            </li>
+            <li class="check__item">
+              <span class="check__num">02</span>
+              <p class="check__q" id="check-q2">{{check.q2}}</p>
+              <div class="check__answers" role="group" aria-labelledby="check-q2">
+                <button class="check__btn" data-answer="yes" aria-pressed="false">{{check.yes}}</button>
+                <button class="check__btn" data-answer="no" aria-pressed="false">{{check.no}}</button>
+              </div>
+            </li>
+            <li class="check__item">
+              <span class="check__num">03</span>
+              <p class="check__q" id="check-q3">{{check.q3}}</p>
+              <div class="check__answers" role="group" aria-labelledby="check-q3">
+                <button class="check__btn" data-answer="yes" aria-pressed="false">{{check.yes}}</button>
+                <button class="check__btn" data-answer="no" aria-pressed="false">{{check.no}}</button>
+              </div>
+            </li>
+            <li class="check__item">
+              <span class="check__num">04</span>
+              <p class="check__q" id="check-q4">{{check.q4}}</p>
+              <div class="check__answers" role="group" aria-labelledby="check-q4">
+                <button class="check__btn" data-answer="yes" aria-pressed="false">{{check.yes}}</button>
+                <button class="check__btn" data-answer="no" aria-pressed="false">{{check.no}}</button>
+              </div>
+            </li>
+          </ol>
+          <p id="check-result" class="check__result" aria-live="polite" hidden></p>
+          <a href="#working-memory" class="landing__scroll check__next" id="check-next">{{check.next}}</a>
+        </div>
+      </section>
+
+      <!-- BLOQUE 1: el diagnostico (retoma las preguntas 1 y 2) -->
+      <section id="working-memory" class="site-section">
+        <div class="site-section__inner">
+          <div class="site-section__eyebrow">{{memory.eyebrow}}</div>
+          <h2 class="site-section__title">{{memory.title}}</h2>
+          <p class="site-section__lead">{{memory.lead}}</p>
+          <p class="site-section__body">{{memory.body}}</p>
+        </div>
+      </section>
+
+      <!-- BLOQUE 2: por que fallan tus herramientas (retoma la pregunta 3) -->
+      <section id="tools-trap" class="site-section">
+        <div class="site-section__inner">
+          <div class="site-section__eyebrow">{{tools.eyebrow}}</div>
+          <h2 class="site-section__title">{{tools.title}}</h2>
+          <p class="site-section__lead">{{tools.lead}}</p>
+          <ol class="site-section__steps">
+            <li>
+              <span class="site-section__step-num">01</span>
+              <div>
+                <strong>{{tools.s1Title}}</strong>
+                <p>{{tools.s1Body}}</p>
+              </div>
+            </li>
+            <li>
+              <span class="site-section__step-num">02</span>
+              <div>
+                <strong>{{tools.s2Title}}</strong>
+                <p>{{tools.s2Body}}</p>
+              </div>
+            </li>
+            <li>
+              <span class="site-section__step-num">03</span>
+              <div>
+                <strong>{{tools.s3Title}}</strong>
+                <p>{{tools.s3Body}}</p>
+              </div>
+            </li>
+          </ol>
+        </div>
+      </section>
+
+      <!-- BLOQUE 3: la solucion (retoma la pregunta 4) -->
+      <section id="precedence-lock" class="site-section">
+        <div class="site-section__inner">
+          <div class="site-section__eyebrow">{{lock.eyebrow}}</div>
+          <h2 class="site-section__title">{{lock.title}}</h2>
+          <p class="site-section__lead">{{lock.lead}}</p>
+          <p class="site-section__body">{{lock.body}}</p>
+        </div>
+      </section>
+
+      <!-- BLOQUE 4: el volcado, ahi mismo, al final del scroll -->
+      <section id="start" class="site-section site-section--start">
+        <div class="site-section__inner">
+          <div class="site-section__eyebrow">{{start.eyebrow}}</div>
+          <h2 class="site-section__title">{{start.title}}</h2>
+          <p class="site-section__lead">{{start.lead}}</p>
+
+          <div id="start-ingest" class="ingest ingest--inline">
+            <div class="ingest__panel">
+{{> ingest-fields}}
+            </div>
+          </div>
+
+          <p class="site-section__trust">{{start.trust}}</p>
+          <p class="start__alt">
+            {{start.alt}}
+            <a href="app/" id="btn-open-engine" class="btn btn--secondary">{{start.openEngine}}</a>
+          </p>
+        </div>
+      </section>
+
+      <!-- BLOQUE 5: el ecosistema (al final, para no cortar el flujo dolor -> solucion) -->
+      <section id="ecosystem" class="site-section">
+        <div class="site-section__inner site-section__inner--wide">
+          <div class="site-section__eyebrow">{{eco.eyebrow}}</div>
+          <h2 class="site-section__title">{{eco.title}}</h2>
+          <p class="site-section__body">{{eco.body}}</p>
+          <ul class="hub-grid">
+            <li>
+              <a class="hub-card" href="app/" id="hub-card-constella">
+                <span class="hub-card__status">{{eco.available}}</span>
+                <strong class="hub-card__name">{{eco.constellaName}}</strong>
+                <span class="hub-card__desc">{{eco.constellaDesc}}</span>
+                <span class="hub-card__go">{{eco.constellaGo}}</span>
+              </a>
+            </li>
+            <li>
+              <a class="hub-card hub-card--soon" href="routes/" id="hub-card-routes">
+                <span class="hub-card__status">{{eco.soon}}</span>
+                <strong class="hub-card__name">{{placeholder.routes.name}}</strong>
+                <span class="hub-card__desc">{{eco.routesDesc}}</span>
+                <span class="hub-card__go">{{eco.preview}}</span>
+              </a>
+            </li>
+            <li>
+              <a class="hub-card hub-card--soon" href="templates/" id="hub-card-templates">
+                <span class="hub-card__status">{{eco.soon}}</span>
+                <strong class="hub-card__name">{{placeholder.templates.name}}</strong>
+                <span class="hub-card__desc">{{eco.templatesDesc}}</span>
+                <span class="hub-card__go">{{eco.preview}}</span>
+              </a>
+            </li>
+            <li>
+              <a class="hub-card hub-card--soon" href="circle/" id="hub-card-circle">
+                <span class="hub-card__status">{{eco.soon}}</span>
+                <strong class="hub-card__name">{{placeholder.circle.name}}</strong>
+                <span class="hub-card__desc">{{eco.circleDesc}}</span>
+                <span class="hub-card__go">{{eco.preview}}</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- QUIENES SOMOS -->
+      <section id="about" class="site-section">
+        <div class="site-section__inner">
+          <div class="site-section__eyebrow">{{about.eyebrow}}</div>
+          <h2 class="site-section__title">{{about.title}}</h2>
+          <p class="site-section__body">{{about.body}}</p>
+        </div>
+      </section>
+    </div>
+    <script type="module" src="/src/site.ts"></script>
+  </body>
+</html>

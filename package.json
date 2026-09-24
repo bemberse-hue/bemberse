@@ -5,7 +5,10 @@
   "type": "module",
   "private": true,
   "scripts": {
+    "pages": "node scripts/i18n-pages.mjs",
+    "predev": "node scripts/i18n-pages.mjs",
     "dev": "vite",
+    "prebuild": "node scripts/i18n-pages.mjs",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",

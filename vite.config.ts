@@ -1,5 +1,7 @@
 import { defineConfig } from 'vite';
 import path from 'node:path';
+// @ts-expect-error: modulo JS del propio repo, sin tipos.
+import { viteInputs } from './scripts/i18n-pages.mjs';
 
 // Bemberse: build estatico puro, sin SSR, sin backend.
 // Salida a dist/ lista para hosting estatico (Vercel, Netlify, GitHub Pages...).
@@ -21,15 +23,9 @@ export default defineConfig({
       // Multipagina: '/' es el sitio explicativo, '/app/' es el motor
       // Constella. Cada uno es su propio documento HTML con su propio
       // entry de JS — no comparten estado de runtime, solo el CSS/tokens.
-      input: {
-        site: path.resolve(__dirname, 'index.html'),
-        app: path.resolve(__dirname, 'app/index.html'),
-        // Placeholders provisionales del hub: productos anunciados que aun
-        // no existen. Estaticos, comparten tokens y layout con el sitio.
-        routes: path.resolve(__dirname, 'routes/index.html'),
-        templates: path.resolve(__dirname, 'templates/index.html'),
-        circle: path.resolve(__dirname, 'circle/index.html'),
-      },
+      // Una entrada por pagina generada (scripts/i18n-pages.mjs): sitio, motor
+      // y placeholders del ecosistema, en ingles ('/') y espanol ('/es/').
+      input: viteInputs(),
     },
   },
   server: {

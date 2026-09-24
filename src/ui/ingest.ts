@@ -3,6 +3,7 @@ import { PRESETS } from '@/data/presets';
 import { validateRawGraph } from '@/core/validate';
 import { GraphValidationError, type RawBemberseGraph } from '@/core/types';
 import { iconLabel } from './icons';
+import { currentLocale, t } from '@/i18n/ui';
 
 /**
  * Pantalla de ingesta: la primera y unica pantalla de un visitante nuevo
@@ -129,8 +130,9 @@ export class Ingest {
   }
 
   private loadPreset(id: string): void {
-    const preset = PRESETS[id];
-    if (preset) this.finish(validateRawGraph(preset));
+    const locale = currentLocale();
+    const preset = PRESETS[locale][id];
+    if (preset) this.finish(validateRawGraph(preset, locale));
   }
 
   // ---------------------------------------------------------------------
@@ -141,12 +143,12 @@ export class Ingest {
     const Ctor = getSpeechRecognitionCtor();
     if (!Ctor) {
       this.micBtn.disabled = true;
-      this.micBtn.title = 'Voice dictation is not supported in this browser.';
+      this.micBtn.title = t('ingest.micUnsupported');
       return;
     }
 
     this.recognition = new Ctor();
-    this.recognition.lang = 'en-US';
+    this.recognition.lang = currentLocale() === 'es' ? 'es-ES' : 'en-US';
     this.recognition.continuous = true;
     this.recognition.interimResults = true;
 
@@ -163,7 +165,7 @@ export class Ingest {
     };
 
     this.recognition.onerror = (event: any) => {
-      this.micStatus.textContent = `Dictation error: ${event.error ?? 'unknown'}.`;
+      this.micStatus.textContent = t('ingest.dictationError', { error: event.error ?? t('ingest.unknown') });
       this.stopListening();
     };
 
@@ -182,17 +184,17 @@ export class Ingest {
     try {
       this.recognition.start();
       this.listening = true;
-      this.micBtn.innerHTML = iconLabel('stop', 'Stop');
+      this.micBtn.innerHTML = iconLabel('stop', t('ingest.stop'));
       this.micBtn.setAttribute('aria-pressed', 'true');
-      this.micStatus.textContent = 'Listening…';
+      this.micStatus.textContent = t('ingest.listening');
     } catch {
-      this.micStatus.textContent = 'Could not start the microphone.';
+      this.micStatus.textContent = t('ingest.micFailed');
     }
   }
 
   private stopListening(): void {
     this.listening = false;
-    this.micBtn.innerHTML = iconLabel('mic', 'Dictate');
+    this.micBtn.innerHTML = iconLabel('mic', t('ingest.dictate'));
     this.micBtn.setAttribute('aria-pressed', 'false');
     this.micStatus.textContent = '';
     try {
@@ -207,7 +209,7 @@ export class Ingest {
   // ---------------------------------------------------------------------
 
   private async handleCopyPrompt(): Promise<void> {
-    const fullPrompt = buildFullPrompt(this.dumpTextarea.value);
+    const fullPrompt = buildFullPrompt(this.dumpTextarea.value, currentLocale());
     let copied = false;
     try {
       await navigator.clipboard.writeText(fullPrompt);
@@ -215,9 +217,7 @@ export class Ingest {
     } catch {
       copied = this.legacyCopy(fullPrompt);
     }
-    this.copyStatus.textContent = copied
-      ? 'Copied. Paste it into ChatGPT or Claude, then paste the JSON it returns below.'
-      : 'Could not copy automatically. Select the text and copy it by hand.';
+    this.copyStatus.textContent = copied ? t('ingest.copied') : t('ingest.copyFailed');
     if (copied) this.importTextarea.focus();
   }
 
@@ -247,10 +247,10 @@ export class Ingest {
     const reader = new FileReader();
     reader.onload = () => {
       this.importTextarea.value = String(reader.result ?? '');
-      this.importStatus.textContent = `Loaded: ${file.name}`;
+      this.importStatus.textContent = t('ingest.loaded', { name: file.name });
     };
     reader.onerror = () => {
-      this.importStatus.textContent = 'Could not read the file.';
+      this.importStatus.textContent = t('ingest.readFailed');
     };
     reader.readAsText(file);
   }
@@ -259,7 +259,7 @@ export class Ingest {
     this.clearImportError();
     const text = this.importTextarea.value.trim();
     if (!text) {
-      this.showImportError('Paste or upload the JSON first.');
+      this.showImportError(t('ingest.pasteFirst'));
       return;
     }
 
@@ -267,12 +267,12 @@ export class Ingest {
     try {
       parsed = JSON.parse(text);
     } catch (err) {
-      this.showImportError(`Malformed JSON: ${(err as Error).message}`);
+      this.showImportError(t('ingest.malformed', { message: (err as Error).message }));
       return;
     }
 
     try {
-      this.finish(validateRawGraph(parsed));
+      this.finish(validateRawGraph(parsed, currentLocale()));
     } catch (err) {
       if (err instanceof GraphValidationError) {
         this.showImportError(err.issues.map((i) => `• ${i.path}: ${i.message}`).join('\n'));

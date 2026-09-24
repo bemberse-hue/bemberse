@@ -1,0 +1,171 @@
+<!doctype html>
+<!-- GENERADO por scripts/i18n-pages.mjs desde src/pages/app.html: edita la plantilla y src/i18n/pages.es.json, no este archivo. -->
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="theme-color" content="#050505" />
+    <meta name="color-scheme" content="dark" />
+    <link rel="icon" href="data:," />
+    <link rel="alternate" hreflang="en" href="https://bemberse.vercel.app/app/" />
+    <link rel="alternate" hreflang="es" href="https://bemberse.vercel.app/es/app/" />
+    <link rel="alternate" hreflang="x-default" href="https://bemberse.vercel.app/app/" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+    <meta name="description" content="Constella, el motor de Bemberse. Vuelca tu ruido y desbloquea un paso a la vez. 100% local." />
+    <meta name="robots" content="noindex" />
+    <title>Constella — Bemberse</title>
+  </head>
+  <body>
+    <div id="app">
+      <!-- Capa 2D: el mapa de tareas (SVG montado aqui por la vista activa) -->
+      <div id="universe-container" class="universe-container"></div>
+
+      <!-- HUD superior: wordmark (vuelve al inicio) + pestanas del sitio | acciones del motor -->
+      <header id="hud" class="hud">
+        <div class="hud__bar">
+          <a id="link-back-site" class="hud__logo wordmark" href="../" aria-label="Bemberse: volver al inicio">Bemberse</a>
+          <nav class="hud__nav" aria-label="Secciones de Bemberse">
+            <a href="../#working-memory">El problema</a>
+            <a href="../#tools-trap">Tus herramientas</a>
+            <a href="../#precedence-lock">El candado</a>
+            <a href="../#ecosystem">Ecosistema</a>
+            <a href="../#about">Nosotros</a>
+          </nav>
+          <div class="hud__actions">
+            <div id="view-switch" class="view-switch" role="group" aria-label="Vista">
+              <button id="btn-view-graph" class="view-switch__btn" aria-pressed="true">Red</button>
+              <button id="btn-view-tree" class="view-switch__btn" aria-pressed="false">Árbol</button>
+            </div>
+            <button id="btn-new-entry" class="hud__btn hud__btn--primary" title="Volcar más tareas (N)" aria-label="Nueva entrada">+ Nueva<span class="hud__btn-long"> entrada</span></button>
+            <button id="btn-reset" class="hud__btn hud__btn--danger" title="Borrar todo">Reiniciar</button>
+            <a class="lang-switch" href="../../app/" hreflang="en" lang="en" aria-label="View in English" title="View in English">EN</a>
+          </div>
+        </div>
+        <div class="hud__meta">
+          <span id="hud-brand" class="hud__brand">Tu mapa</span>
+          <span class="hud__sep" aria-hidden="true">·</span>
+          <span id="hud-status" class="hud__status">0 tareas · 0 desbloqueadas</span>
+        </div>
+      </header>
+
+      <!-- Zoom (tambien rueda, pellizco, arrastre y teclas + - 0) -->
+      <div id="zoom-controls" class="zoom-controls" role="group" aria-label="Zoom">
+        <button id="btn-zoom-in" class="zoom-controls__btn" aria-label="Acercar (+)" title="Acercar (+)">+</button>
+        <button id="btn-zoom-out" class="zoom-controls__btn" aria-label="Alejar (-)" title="Alejar (-)">−</button>
+        <button id="btn-zoom-fit" class="zoom-controls__btn zoom-controls__btn--text" aria-label="Ajustar a la pantalla (0)" title="Ajustar a la pantalla (0)">Ajustar</button>
+      </div>
+
+      <!-- Hint inferior -->
+      <div id="hint" class="hint">Toca un nodo para verlo · arrastra y usa la rueda para moverte · Pulsa <kbd>Espacio</kbd> para empezar tu próximo paso</div>
+
+      <!-- Movil: el proximo paso siempre a mano, en una barra inferior fija -->
+      <div id="next-bar" class="next-bar hidden" aria-live="polite">
+        <div class="next-bar__text">
+          <span class="next-bar__eyebrow">Próximo paso</span>
+          <span id="next-bar-title" class="next-bar__title">—</span>
+        </div>
+        <button id="btn-next-bar-start" class="btn btn--primary">Empezar</button>
+      </div>
+
+      <!-- Toast global -->
+      <div id="toast" class="toast hidden" role="status"></div>
+
+      <!-- Inspector -->
+      <aside id="inspector" class="inspector hidden" aria-live="polite">
+        <button id="btn-inspector-close" class="icon-btn inspector__close" aria-label="Cerrar"></button>
+        <div id="inspector-kind" class="inspector__kind">TAREA</div>
+        <h3 id="inspector-title" class="inspector__title">—</h3>
+        <p id="inspector-desc" class="inspector__desc"></p>
+        <p id="inspector-meta" class="inspector__meta"></p>
+        <div id="inspector-blockers" class="inspector__blockers hidden"></div>
+        <div class="inspector__actions">
+          <button id="btn-inspector-set-next" class="btn btn--primary hidden">Hacerla mi próximo paso</button>
+          <button id="btn-inspector-start" class="btn btn--complete hidden">Empezar ahora</button>
+          <button id="btn-inspector-undo" class="btn btn--ghost hidden">Deshacer completada</button>
+        </div>
+      </aside>
+
+      <!-- Ingesta: pantalla negra, un solo campo, sin preguntas intermedias -->
+      <section id="ingest" class="ingest hidden" role="dialog" aria-modal="true" aria-labelledby="ingest-title">
+        <div class="ingest__panel">
+          <button id="btn-ingest-close" class="icon-btn ingest__close hidden" aria-label="Cerrar"></button>
+          <div class="ingest__top">
+            <a class="ingest__home wordmark" href="../" aria-label="Bemberse: volver al inicio">Bemberse</a>
+            <a class="lang-switch" href="../../app/" hreflang="en" lang="en" aria-label="View in English" title="View in English">EN</a>
+          </div>
+          <div class="ingest__eyebrow">Motor Constella</div>
+          <h1 id="ingest-title" class="ingest__title">Vacía tu cabeza.</h1>
+
+          <div class="ingest__field">
+            <label for="ingest-text" class="visually-hidden">Tu volcado mental</label>
+            <textarea
+              id="ingest-text"
+              class="ingest__textarea"
+              placeholder="Vuelca todo lo que tienes en la cabeza. Sin orden. Sin formato."
+              rows="8"
+            ></textarea>
+            <div class="ingest__field-bar">
+              <button id="btn-mic" class="ingest__mic" aria-pressed="false" title="Dictado por voz">Dictar</button>
+              <span id="mic-status" class="mic-status" aria-live="polite"></span>
+            </div>
+          </div>
+
+          <div class="ingest__step">
+            <button id="btn-copy-prompt" class="btn btn--primary btn--lg">Copiar prompt para tu IA</button>
+            <p id="copy-status" class="ingest__note" aria-live="polite">Pégalo en ChatGPT o Claude. Te devuelve tu mapa en JSON.</p>
+          </div>
+
+          <div class="ingest__import">
+            <label for="import-text" class="ingest__label">Pega el JSON que te devolvió tu IA</label>
+            <textarea
+              id="import-text"
+              class="ingest__textarea ingest__textarea--code"
+              placeholder='{ "version": "1.0", "nodes": [...], "edges": [...] }'
+              rows="3"
+            ></textarea>
+            <div class="ingest__row">
+              <button id="btn-do-import" class="btn btn--secondary">Construir mi mapa</button>
+              <label class="btn btn--ghost file-btn">
+                Subir .json
+                <input id="import-file" type="file" accept="application/json" hidden />
+              </label>
+              <span id="import-status" class="mic-status"></span>
+            </div>
+            <pre id="import-error" class="import-error hidden"></pre>
+          </div>
+
+          <div class="ingest__presets">
+            <span class="ingest__label">¿Sin IA a mano? Empieza con un mapa listo</span>
+            <div class="ingest__row">
+              <button class="ingest__preset" data-preset="product-launch" id="preset-product-launch">Lanzar un producto</button>
+              <button class="ingest__preset" data-preset="chaotic-week" id="preset-chaotic-week">Semana caótica</button>
+              <button class="ingest__preset" data-preset="break-the-freeze" id="preset-break-the-freeze">Romper el bloqueo</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Modo ejecucion -->
+      <section id="cockpit" class="cockpit hidden" aria-live="polite">
+        <div class="cockpit__panel">
+          <div class="cockpit__eyebrow">Próximo paso</div>
+          <h2 id="cockpit-title" class="cockpit__title">—</h2>
+          <p id="cockpit-desc" class="cockpit__desc"></p>
+          <div id="cockpit-path" class="cockpit__path"></div>
+
+          <div class="cockpit__actions">
+            <button id="btn-complete" class="btn btn--complete btn--lg">Marcar como hecha</button>
+            <button id="btn-exit-cockpit" class="btn btn--ghost">Volver al mapa (Esc)</button>
+          </div>
+          <p class="cockpit__hint">Pulsa <kbd>Espacio</kbd> para completarla</p>
+        </div>
+      </section>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

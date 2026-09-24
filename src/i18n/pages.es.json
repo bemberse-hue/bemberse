@@ -1,0 +1,166 @@
+{
+  "meta": {
+    "switchTo": "Ver en español",
+    "siteTitle": "Bemberse — No es pereza: tu cerebro está saturado",
+    "siteDescription": "Bemberse convierte las 30 ideas atrapadas en tu cabeza en un mapa donde solo se desbloquea un paso a la vez. 100% local, sin cuenta, sin nube.",
+    "appTitle": "Constella — Bemberse",
+    "appDescription": "Constella, el motor de Bemberse. Vuelca tu ruido y desbloquea un paso a la vez. 100% local."
+  },
+  "nav": {
+    "aria": "Principal",
+    "brandAria": "Bemberse: volver arriba",
+    "homeAria": "Bemberse: volver al inicio",
+    "problem": "El problema",
+    "tools": "Tus herramientas",
+    "lock": "El candado",
+    "ecosystem": "Ecosistema",
+    "about": "Nosotros",
+    "openConstella": "Abrir Constella"
+  },
+  "hero": {
+    "title": "Tienes 30 ideas atrapadas en la cabeza. No es pereza: tu cerebro está <span class=\"grad-text\">saturado.</span>",
+    "sub": "La neurociencia calcula que la memoria de trabajo sostiene unos cuatro elementos, uno más o uno menos. Le estás pidiendo que sostenga treinta. No falla porque seas débil: colapsa porque está lleno.",
+    "scroll": "¿Te pasa esto? ↓"
+  },
+  "check": {
+    "eyebrow": "Un chequeo rápido",
+    "title": "¿Te suena?",
+    "lead": "Cuatro preguntas, un toque cada una. No se guarda nada y nada sale de tu navegador.",
+    "q1": "¿Tienes más de 10 cosas en la cabeza ahora mismo?",
+    "q2": "¿Relees tu lista de pendientes sin empezar nada de ella?",
+    "q3": "¿Alguna vez abriste Notion para organizarte… y terminaste organizando Notion?",
+    "q4": "¿Terminas días llenos de trabajo sintiendo que no hiciste nada?",
+    "yes": "Sí",
+    "no": "No tanto",
+    "next": "Esto es lo que está pasando ↓"
+  },
+  "memory": {
+    "eyebrow": "El diagnóstico",
+    "title": "El colapso de la memoria de trabajo.",
+    "lead": "¿Más de diez cosas en la cabeza? Tu memoria de trabajo sostiene unas cuatro. A los diez minutos de empezar el día el búfer se desborda, y tu cerebro hace lo único que puede: se desconecta.",
+    "body": "¿Esa lista que relees sin empezar nada? Cada relectura vuelve a hacer la misma pregunta: <em>«¿Qué hago primero?»</em> Cada una de esas microdecisiones quema glucosa prefrontal. Gastas tu energía eligiendo, y cuando por fin eliges ya no queda nada para ejecutar la primera tarea."
+  },
+  "tools": {
+    "eyebrow": "Por qué fallan tus herramientas",
+    "title": "La trampa de Notion y las listas de pendientes.",
+    "lead": "Si alguna vez abriste Notion para organizarte y terminaste organizando Notion, el problema nunca fuiste tú. Era la herramienta.",
+    "s1Title": "Listas planas.",
+    "s1Body": "Tratan una tarea de cinco minutos exactamente igual que un proyecto de tres semanas. No saben qué causa qué.",
+    "s2Title": "Notion y Trello.",
+    "s2Body": "Etiquetas, columnas y bases de datos antes de tu primera idea. Terminas trabajando para la app en vez de avanzar.",
+    "s3Title": "La trampa de la ambigüedad.",
+    "s3Body": "Si la tarea B depende de la A, mostrar la B abierta es una alarma que tu amígdala no puede apagar, y la salida más rápida es procrastinar."
+  },
+  "lock": {
+    "eyebrow": "La solución",
+    "title": "El candado de precedencia.",
+    "lead": "Bemberse tiene una sola regla: si B necesita de A, B queda bajo candado estricto.",
+    "body": "¿Todo el día ocupado y aun así sientes que no hiciste nada? Eso hacen treinta tareas abiertas: todas parecen urgentes, así que ninguna se termina. Con el candado, tu cerebro recibe permiso biológico para olvidar el paso 2 hasta que el paso 1 esté hecho. Una sola tarea encendida. Todo lo demás espera: fuera de la vista, fuera del búfer."
+  },
+  "start": {
+    "eyebrow": "Motor Constella",
+    "title": "Vacía tu cabeza en 60 segundos.",
+    "lead": "Todo lo que acabas de reconocer, fuera de tu cabeza y dentro de un mapa. Vuélcalo abajo: tu IA lo convierte en un mapa y el motor desbloquea un paso a la vez.",
+    "trust": "100% local · Sin cuenta · Sin rastreo en la nube",
+    "alt": "¿Ya tienes un mapa?",
+    "openEngine": "Abrir el motor Constella — Gratis"
+  },
+  "ingest": {
+    "eyebrow": "Motor Constella",
+    "title": "Vacía tu cabeza.",
+    "dumpLabel": "Tu volcado mental",
+    "placeholder": "Vuelca todo lo que tienes en la cabeza. Sin orden. Sin formato.",
+    "dictate": "Dictar",
+    "dictateTitle": "Dictado por voz",
+    "copy": "Copiar prompt para tu IA",
+    "copyNote": "Pégalo en ChatGPT o Claude. Te devuelve tu mapa en JSON.",
+    "importLabel": "Pega el JSON que te devolvió tu IA",
+    "build": "Construir mi mapa",
+    "upload": "Subir .json",
+    "presetsLabel": "¿Sin IA a mano? Empieza con un mapa listo",
+    "presetLaunch": "Lanzar un producto",
+    "presetWeek": "Semana caótica",
+    "presetFreeze": "Romper el bloqueo"
+  },
+  "eco": {
+    "eyebrow": "El ecosistema Bemberse",
+    "title": "Un motor. Más en camino.",
+    "body": "Constella es el núcleo. Todo lo demás en el ecosistema se construye sobre el mismo candado de precedencia.",
+    "available": "Disponible",
+    "soon": "Próximamente",
+    "constellaName": "Motor Constella",
+    "constellaDesc": "El motor espacial central. Vuelca tu ruido y desbloquea un paso a la vez.",
+    "constellaGo": "Abrir el motor →",
+    "routesDesc": "Grafos de dependencias ya armados para lanzamientos, hábitos y metas complejas.",
+    "templatesDesc": "Flujos de trabajo estándar para una ejecución semanal que se repite.",
+    "circleDesc": "Una red privada de acompañamiento. Comparte tu grafo, no tu ruido.",
+    "preview": "Ver adelanto →"
+  },
+  "about": {
+    "eyebrow": "Nosotros",
+    "title": "Un motor, no una empresa de software.",
+    "body": "Bemberse lo construye un equipo pequeño convencido de que la productividad no necesita más tableros ni más suscripciones: necesita claridad sobre qué sigue. Todo el motor corre en tu navegador: sin servidores que lean tus tareas, sin cuenta que crear, sin nube en la que confiar."
+  },
+  "placeholder": {
+    "titleSuffix": "Ecosistema Bemberse",
+    "eyebrow": "Ecosistema Bemberse · Próximamente",
+    "primary": "Abrir el motor Constella",
+    "back": "Volver al ecosistema",
+    "routes": {
+      "name": "Rutas",
+      "description": "Rutas, parte del ecosistema Bemberse. Próximamente.",
+      "lead": "Grafos de dependencias ya armados para las metas que casi todo el mundo persigue alguna vez. En vez de empezar de cero, importas la ruta y tu mapa aparece ya ordenado, con el primer paso desbloqueado.",
+      "item1": "Lanzamientos, hábitos nuevos, metas complejas: rutas curadas con las dependencias ya resueltas.",
+      "item2": "Cada ruta se importa como un mapa de Constella: mismas dependencias, mismos candados.",
+      "item3": "La ajustas antes de empezar: quitas lo que ya hiciste y agregas lo que falta.",
+      "note": "Todo el ecosistema corre sobre Constella: lo que empieces ahí hoy seguirá sirviendo cuando lleguen las Rutas."
+    },
+    "templates": {
+      "name": "Plantillas",
+      "description": "Plantillas, parte del ecosistema Bemberse. Próximamente.",
+      "lead": "Flujos de trabajo estándar para lo que repites. La revisión semanal, el cierre de mes, la lista de un lanzamiento: el orden ya está pensado, tú solo lo recorres.",
+      "item1": "Plantillas cíclicas que se reinician cuando terminas, sin volver a armarlas.",
+      "item2": "Se cargan en Constella como un mapa nuevo, junto a los tuyos.",
+      "item3": "Cero configuración: nada de propiedades, vistas ni relaciones que montar a mano.",
+      "note": "Todo el ecosistema corre sobre Constella: lo que empieces ahí hoy seguirá sirviendo cuando lleguen las Plantillas."
+    },
+    "circle": {
+      "name": "Círculo",
+      "description": "Círculo, parte del ecosistema Bemberse. Próximamente.",
+      "lead": "Una red privada de acompañamiento para quienes prefieren desenredarse en compañía. Compartes tu grafo y tu próximo paso con pocas personas de confianza, no tu ruido.",
+      "item1": "Grupos pequeños y por invitación. Sin feed, sin likes, sin métricas públicas.",
+      "item2": "Ves en qué paso está cada persona, nunca cuánto tardó: cero presión de tiempo.",
+      "item3": "Tus mapas siguen siendo tuyos y locales; compartir siempre es explícito y revocable.",
+      "note": "Todo el ecosistema corre sobre Constella: lo que empieces ahí hoy seguirá sirviendo cuando llegue Círculo."
+    }
+  },
+  "app": {
+    "sectionsAria": "Secciones de Bemberse",
+    "viewAria": "Vista",
+    "graph": "Red",
+    "tree": "Árbol",
+    "newEntryTitle": "Volcar más tareas (N)",
+    "newEntryAria": "Nueva entrada",
+    "newShort": "+ Nueva",
+    "newLong": " entrada",
+    "reset": "Reiniciar",
+    "resetTitle": "Borrar todo",
+    "brand": "Tu mapa",
+    "status0": "0 tareas · 0 desbloqueadas",
+    "zoomIn": "Acercar",
+    "zoomOut": "Alejar",
+    "fit": "Ajustar",
+    "fitLabel": "Ajustar a la pantalla",
+    "hint": "Toca un nodo para verlo · arrastra y usa la rueda para moverte · Pulsa <kbd>Espacio</kbd> para empezar tu próximo paso",
+    "nextStep": "Próximo paso",
+    "start": "Empezar",
+    "close": "Cerrar",
+    "task": "TAREA",
+    "setNext": "Hacerla mi próximo paso",
+    "startNow": "Empezar ahora",
+    "undo": "Deshacer completada",
+    "markDone": "Marcar como hecha",
+    "backToMap": "Volver al mapa (Esc)",
+    "spaceHint": "Pulsa <kbd>Espacio</kbd> para completarla"
+  }
+}

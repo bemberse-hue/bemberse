@@ -13,6 +13,8 @@
  * bajo `prefers-reduced-motion`, sin estado que montar dos veces.
  */
 
+import { t } from '@/i18n/ui';
+
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
 function svg(viewBox: string): SVGSVGElement {
@@ -130,9 +132,9 @@ function buildResolvedDiagram(): SVGSVGElement {
 function buildPrecedenceLockDiagram(): SVGSVGElement {
   const el = svg('0 0 480 120');
   const boxes: Array<{ x: number; title: string; state: string; active: boolean }> = [
-    { x: 10, title: 'Task A', state: 'Active', active: true },
-    { x: 170, title: 'Task B', state: 'Locked', active: false },
-    { x: 330, title: 'Task C', state: 'Locked', active: false },
+    { x: 10, title: t('diagram.task', { letter: 'A' }), state: t('diagram.active'), active: true },
+    { x: 170, title: t('diagram.task', { letter: 'B' }), state: t('diagram.locked'), active: false },
+    { x: 330, title: t('diagram.task', { letter: 'C' }), state: t('diagram.locked'), active: false },
   ];
   const w = 140;
   const h = 64;
@@ -192,7 +194,7 @@ function buildPrecedenceLockDiagram(): SVGSVGElement {
     }
   }
   el.setAttribute('aria-hidden', 'false');
-  el.setAttribute('aria-label', 'Task A is active. Task B and Task C are locked until the task before them is done.');
+  el.setAttribute('aria-label', t('diagram.aria'));
   return el;
 }
 

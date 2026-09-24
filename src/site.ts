@@ -5,6 +5,7 @@ import { decorateStaticIcons } from '@/ui/icons';
 import { mountSiteSections } from '@/ui/siteSections';
 import { mountDiagrams } from '@/ui/diagrams';
 import { mountSelfCheck } from '@/ui/selfCheck';
+import { mountLangOffer, mountLangSwitch } from '@/ui/langSwitch';
 import { Ingest } from '@/ui/ingest';
 import { buildRuntimeGraph, toPersisted } from '@/core/graph';
 import * as db from '@/db/database';
@@ -27,6 +28,8 @@ decorateStaticIcons();
 mountSiteSections();
 mountDiagrams();
 mountSelfCheck();
+mountLangSwitch();
+mountLangOffer();
 
 const startIngest = document.getElementById('start-ingest');
 if (startIngest) new Ingest(startIngest, (raw) => void openMap(raw), { inline: true });
