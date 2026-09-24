@@ -182,3 +182,59 @@ test('estado vacio — la muestra se dibuja en la vista seleccionada', async ({ 
   await expect(page.locator('#empty-state')).toHaveClass(/hidden/);
   await expect(page.locator('.dendrogram-svg .node')).not.toHaveCount(0);
 });
+
+test('navegacion — el enlace de retorno lleva a / y tiene nombre accesible', async ({ page }) => {
+  await resetDb(page);
+  await completeOnboarding(page);
+  const link = page.locator('#link-back-site');
+  await expect(link).toHaveAttribute('aria-label', /Bemberse/);
+  await link.focus();
+  await page.keyboard.press('Enter');
+  await page.waitForURL((url) => url.pathname === '/');
+});
+
+test('navegacion — Tab recorre conmutador, nueva entrada y retorno con anillo de foco visible', async ({ page }) => {
+  await resetDb(page);
+  await completeOnboarding(page);
+  await page.click('#btn-empty-sample');
+  await page.locator('body').click({ position: { x: 5, y: 5 } }).catch(() => {});
+
+  const seen = new Map<string, string>();
+  for (let i = 0; i < 12 && seen.size < 3; i++) {
+    await page.keyboard.press('Tab');
+    const info = await page.evaluate(() => {
+      const el = document.activeElement as HTMLElement | null;
+      if (!el) return null;
+      const s = getComputedStyle(el);
+      return { id: el.id, outline: `${s.outlineStyle} ${s.outlineWidth}` };
+    });
+    if (info && ['btn-view-toggle', 'btn-new-entry', 'link-back-site'].includes(info.id)) seen.set(info.id, info.outline);
+  }
+  expect([...seen.keys()].sort()).toEqual(['btn-new-entry', 'btn-view-toggle', 'link-back-site']);
+  for (const outline of seen.values()) {
+    expect(outline).not.toMatch(/^none/);
+    expect(outline).not.toMatch(/ 0px$/);
+  }
+});
+
+test('navegacion — Enter sobre un nodo enfocado hace lo mismo que un click', async ({ page }) => {
+  await resetDb(page);
+  await completeOnboarding(page);
+  await page.click('#btn-empty-sample');
+  await page.waitForTimeout(800);
+
+  // Un unico nodo tabulable (tabindex itinerante).
+  await expect(page.locator('.nodes-layer .node[tabindex="0"]')).toHaveCount(1);
+
+  const unlocked = page.locator('.node:not(.node--locked):not(.node--goal)').first();
+  await unlocked.focus();
+  await page.keyboard.press('Enter');
+  await expect(page.locator('#inspector')).not.toHaveClass(/hidden/, { timeout: 5000 });
+  await page.keyboard.press('Escape');
+
+  const locked = page.locator('.node--locked').first();
+  await locked.focus();
+  await page.keyboard.press('Enter');
+  await expect(page.locator('#inspector')).toHaveClass(/hidden/);
+  expect(await page.locator('.edge.trace-active').count()).toBeGreaterThan(0);
+});

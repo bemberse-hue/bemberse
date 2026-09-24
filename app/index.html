@@ -53,6 +53,8 @@
         <div class="hud__actions">
           <button id="btn-view-toggle" class="hud__btn" aria-pressed="false">Ver árbol</button>
           <button id="btn-new-entry" class="hud__btn hud__btn--primary" title="Traer nuevas tareas (N)">+ Nueva entrada</button>
+          <!-- Enlace real a '/', no history.back(): quien abrio /app/ directo no tiene historial. -->
+          <a id="link-back-site" class="hud__btn hud__link" href="../" aria-label="Volver al sitio de Bemberse">← Bemberse</a>
           <button id="btn-reset" class="hud__btn hud__btn--danger" title="Borrar todo">Reiniciar</button>
         </div>
       </header>

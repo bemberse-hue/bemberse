@@ -4,6 +4,7 @@ import { computeDendrogramLayout, COLUMN_GAP, type DendrogramNode } from './dend
 import { nodeFillColor, nodeStrokeColor } from './colors';
 import { GLYPH_PATHS, GOAL_GLYPH, truncate } from './GraphView';
 import type { GraphRenderer } from './renderer';
+import { attachNodeKeyboard, updateRovingTabindex } from './nodeKeyboard';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 const RADIUS = 13;
@@ -32,6 +33,7 @@ export class DendrogramView implements GraphRenderer {
   private onNodeClick: ((nodeId: string) => void) | null = null;
   private dimmed = false;
   private traceTimeoutId: number | null = null;
+  private detachKeyboard: () => void = () => {};
 
   constructor(private readonly container: HTMLElement) {
     this.svg = document.createElementNS(SVG_NS, 'svg');
@@ -46,6 +48,7 @@ export class DendrogramView implements GraphRenderer {
     this.svg.append(this.edgesLayer, this.nodesLayer);
     this.container.appendChild(this.svg);
     this.nodesLayer.addEventListener('click', this.handleClick);
+    this.detachKeyboard = attachNodeKeyboard(this.nodesLayer, (id) => this.activate(id));
   }
 
   setNodeClickHandler(handler: (nodeId: string) => void): void {
@@ -149,6 +152,7 @@ export class DendrogramView implements GraphRenderer {
       else if (fromNode?.status === 'completed') path.classList.add('edge--done');
       else path.classList.add('edge--future');
     }
+    updateRovingTabindex(this.nodesLayer, graph.coreId);
   }
 
   private styleNode(g: SVGGElement, node: RuntimeNode): void {
@@ -215,15 +219,21 @@ export class DendrogramView implements GraphRenderer {
   }
 
   private handleClick = (event: MouseEvent): void => {
-    if (this.dimmed || !this.onNodeClick) return;
     const target = (event.target as Element).closest('.node') as SVGGElement | null;
     const id = target?.dataset.id;
-    if (id) this.onNodeClick(id);
+    if (id) this.activate(id);
   };
+
+  /** Click y Enter pasan por aqui: mismo enrutado para raton y teclado. */
+  private activate(id: string): void {
+    if (this.dimmed || !this.onNodeClick) return;
+    this.onNodeClick(id);
+  }
 
   dispose(): void {
     this.clearTrace();
     this.nodesLayer.removeEventListener('click', this.handleClick);
+    this.detachKeyboard();
     this.svg.remove();
   }
 }

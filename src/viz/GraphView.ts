@@ -12,6 +12,7 @@ import {
 } from './layout';
 import { HALO_GRADIENTS, nodeFillColor, nodeHaloId, nodeStrokeColor } from './colors';
 import type { GraphRenderer } from './renderer';
+import { attachNodeKeyboard, updateRovingTabindex } from './nodeKeyboard';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
@@ -60,6 +61,7 @@ export class GraphView implements GraphRenderer {
   private dimmed = false;
   private size: LayoutSize = computeLayoutSize(0);
   private traceTimeoutId: number | null = null;
+  private detachKeyboard: () => void = () => {};
 
   constructor(private readonly container: HTMLElement) {
     this.svg = document.createElementNS(SVG_NS, 'svg');
@@ -79,6 +81,7 @@ export class GraphView implements GraphRenderer {
     this.container.appendChild(this.svg);
 
     this.nodesLayer.addEventListener('click', this.handleClick);
+    this.detachKeyboard = attachNodeKeyboard(this.nodesLayer, (id) => this.activate(id));
   }
 
   setNodeClickHandler(handler: NodeClickHandler): void {
@@ -232,6 +235,7 @@ export class GraphView implements GraphRenderer {
     }
 
     void activePathIds;
+    updateRovingTabindex(this.nodesLayer, graph.coreId);
   }
 
   private styleNode(g: SVGGElement, node: RuntimeNode, layoutNode: LayoutNode): void {
@@ -351,16 +355,22 @@ export class GraphView implements GraphRenderer {
   }
 
   private handleClick = (event: MouseEvent): void => {
-    if (this.dimmed || !this.onNodeClick) return;
     const target = (event.target as Element).closest('.node') as SVGGElement | null;
     const id = target?.dataset.id;
-    if (id) this.onNodeClick(id);
+    if (id) this.activate(id);
   };
+
+  /** Click y Enter pasan por aqui: mismo enrutado para raton y teclado. */
+  private activate(id: string): void {
+    if (this.dimmed || !this.onNodeClick) return;
+    this.onNodeClick(id);
+  }
 
   dispose(): void {
     this.clearTrace();
     this.simulation?.stop();
     this.nodesLayer.removeEventListener('click', this.handleClick);
+    this.detachKeyboard();
     this.container.removeChild(this.svg);
   }
 }

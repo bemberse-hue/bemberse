@@ -377,6 +377,19 @@ h1, h2, h3 {
   transition: border-color var(--dur-fast) var(--ease);
 }
 .hud__btn:hover { border-color: var(--border-strong); }
+.hud__link { text-decoration: none; display: inline-flex; align-items: center; }
+
+/* Anillo de foco visible y sin color: hueso, recto, separado del borde. */
+:focus-visible {
+  outline: 2px solid var(--bone);
+  outline-offset: 3px;
+}
+.nodes-layer .node:focus { outline: none; }
+.nodes-layer .node:focus-visible .node__dot {
+  stroke: var(--bone) !important;
+  stroke-width: calc(3px * var(--node-scale, 1));
+}
+.nodes-layer .node:focus-visible .node__label { fill: var(--bone); }
 .hud__btn--primary { border-color: var(--gray-3); }
 .hud__btn--danger:hover { border-color: var(--danger); color: var(--danger); }
 
