@@ -244,3 +244,28 @@ test('navegacion — Enter sobre un nodo enfocado hace lo mismo que un click', a
   await expect(page.locator('#inspector')).toHaveClass(/hidden/);
   expect(await page.locator('.edge.trace-active').count()).toBeGreaterThan(0);
 });
+
+test('navegacion — el logo arriba a la izquierda vuelve al inicio y las pestanas del sitio se ven en el canvas', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await resetDb(page);
+  await completeOnboarding(page);
+
+  const logo = page.locator('#hud a#link-back-site');
+  await expect(logo.locator('img')).toBeVisible();
+  const box = await logo.boundingBox();
+  expect(box!.x).toBeLessThan(80); // a la izquierda, donde se espera un logo
+
+  const nav = page.locator('#hud .hud__nav');
+  for (const [text, href] of [
+    ['El problema', '../#dolor'],
+    ['Cómo funciona', '../#como-funciona'],
+    ['Hub', '../#hub'],
+    ['Quiénes somos', '../#quienes-somos'],
+  ]) {
+    await expect(nav.getByRole('link', { name: text, exact: true })).toHaveAttribute('href', href);
+  }
+
+  await nav.getByRole('link', { name: 'Quiénes somos' }).click();
+  await page.waitForURL((url) => url.pathname === '/' && url.hash === '#quienes-somos');
+  await expect(page.locator('#quienes-somos')).toBeVisible();
+});

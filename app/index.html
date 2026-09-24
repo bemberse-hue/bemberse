@@ -46,16 +46,28 @@
         </div>
       </section>
 
-      <!-- HUD superior -->
+      <!-- HUD superior: logo (vuelve al inicio) + pestanas del sitio | acciones del motor -->
       <header id="hud" class="hud">
-        <div class="hud__brand" id="hud-brand">BEMBERSE</div>
-        <div id="hud-status" class="hud__status">0 tareas · 0 desbloqueadas</div>
-        <div class="hud__actions">
-          <button id="btn-view-toggle" class="hud__btn" aria-pressed="false">Ver árbol</button>
-          <button id="btn-new-entry" class="hud__btn hud__btn--primary" title="Traer nuevas tareas (N)">+ Nueva entrada</button>
-          <!-- Enlace real a '/', no history.back(): quien abrio /app/ directo no tiene historial. -->
-          <a id="link-back-site" class="hud__btn hud__link" href="../" aria-label="Volver al sitio de Bemberse">← Bemberse</a>
-          <button id="btn-reset" class="hud__btn hud__btn--danger" title="Borrar todo">Reiniciar</button>
+        <div class="hud__bar">
+          <a id="link-back-site" class="hud__logo" href="../" aria-label="Bemberse: volver al inicio">
+            <img src="../logo.png" alt="" width="1400" height="212" />
+          </a>
+          <nav class="hud__nav" aria-label="Secciones de Bemberse">
+            <a href="../#dolor">El problema</a>
+            <a href="../#como-funciona">Cómo funciona</a>
+            <a href="../#hub">Hub</a>
+            <a href="../#quienes-somos">Quiénes somos</a>
+          </nav>
+          <div class="hud__actions">
+            <button id="btn-view-toggle" class="hud__btn" aria-pressed="false">Ver árbol</button>
+            <button id="btn-new-entry" class="hud__btn hud__btn--primary" title="Traer nuevas tareas (N)" aria-label="Nueva entrada">+ Nueva<span class="hud__btn-long"> entrada</span></button>
+            <button id="btn-reset" class="hud__btn hud__btn--danger" title="Borrar todo">Reiniciar</button>
+          </div>
+        </div>
+        <div class="hud__meta">
+          <span id="hud-brand" class="hud__brand">BEMBERSE</span>
+          <span class="hud__sep" aria-hidden="true">·</span>
+          <span id="hud-status" class="hud__status">0 tareas · 0 desbloqueadas</span>
         </div>
       </header>
 
