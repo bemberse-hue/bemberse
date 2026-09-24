@@ -323,6 +323,67 @@ export function getBlockerChain(graph: RuntimeGraph, nodeId: string): RuntimeNod
   return path;
 }
 
+/**
+ * Carga aguas abajo: cuantos nodos DISTINTOS se alcanzan desde `nodeId`
+ * siguiendo la direccion de las aristas. Set de visitados por consulta, no
+ * suma de hijos: en un DAG convergente un nodo alcanzable por dos caminos
+ * cuenta una sola vez.
+ */
+export function countDownstream(graph: RuntimeGraph, nodeId: string): number {
+  const seen = new Set<string>();
+  const stack = [...(graph.nodes.get(nodeId)?.unlocks ?? [])];
+  while (stack.length > 0) {
+    const id = stack.pop()!;
+    if (seen.has(id) || id === nodeId) continue;
+    seen.add(id);
+    stack.push(...(graph.nodes.get(id)?.unlocks ?? []));
+  }
+  return seen.size;
+}
+
+export interface CriticalPath {
+  nodeIds: string[];
+  unlockCount: number;
+}
+
+/**
+ * Ruta critica: el camino de un nodo accionable a un objetivo que MAS nodos
+ * distintos destraba — no el mas largo. Arranca en el accionable con mayor
+ * carga aguas abajo y avanza siempre hacia el sucesor con mayor carga
+ * (empates por id, para que sea determinista). `unlockCount` es la carga
+ * del nodo de arranque: todo lo que depende, directa o indirectamente, de el.
+ */
+export function getCriticalPath(graph: RuntimeGraph): CriticalPath {
+  const memo = new Map<string, number>();
+  const load = (id: string): number => {
+    let v = memo.get(id);
+    if (v === undefined) {
+      v = countDownstream(graph, id);
+      memo.set(id, v);
+    }
+    return v;
+  };
+  const best = (ids: string[]): string | undefined =>
+    [...ids].sort((a, b) => load(b) - load(a) || (a < b ? -1 : a > b ? 1 : 0))[0];
+
+  const actionable = [...graph.nodes.values()]
+    .filter((n) => n.status === 'unlocked' || n.status === 'core')
+    .map((n) => n.id);
+  const startId = best(actionable);
+  if (!startId) return { nodeIds: [], unlockCount: 0 };
+
+  const nodeIds = [startId];
+  let current = graph.nodes.get(startId)!;
+  while (!isGoalNode(current)) {
+    const nextId = best(current.unlocks.filter((id) => !nodeIds.includes(id)));
+    const next = nextId ? graph.nodes.get(nextId) : undefined;
+    if (!next) break;
+    nodeIds.push(next.id);
+    current = next;
+  }
+  return { nodeIds, unlockCount: load(startId) };
+}
+
 export function graphStats(graph: RuntimeGraph): { total: number; completed: number; unlocked: number; locked: number } {
   let completed = 0;
   let unlocked = 0;
