@@ -17,6 +17,18 @@
   </head>
   <body class="site">
     <div id="app">
+      <!-- Navegacion del sitio -->
+      <nav class="site-nav" aria-label="Principal">
+        <a class="site-nav__brand" href="#hero">BEMBERSE</a>
+        <div class="site-nav__links">
+          <a href="#dolor">El problema</a>
+          <a href="#como-funciona">Cómo funciona</a>
+          <a href="#hub">Hub</a>
+          <a href="#quienes-somos">Quiénes somos</a>
+        </div>
+        <a class="btn btn--secondary site-nav__cta" href="app/">Abrir Constella</a>
+      </nav>
+
       <!-- HERO -->
       <section id="hero" class="landing">
         <div id="landing-bg" class="landing__bg" aria-hidden="true"></div>
@@ -127,17 +139,50 @@
         </div>
       </section>
 
-      <!-- HUB DE PRODUCTIVIDAD (estructura para futuros acoples) -->
+      <!-- HUB DE PRODUCTIVIDAD: Constella hoy; el resto, placeholders provisionales -->
       <section id="hub" class="site-section">
-        <div class="site-section__inner">
-          <div class="site-section__eyebrow">PRÓXIMAMENTE</div>
+        <div class="site-section__inner site-section__inner--wide">
+          <div class="site-section__eyebrow">BEMBERSE HUB</div>
           <h2 class="site-section__title">El hub de productividad.</h2>
           <p class="site-section__body">
-            Constella es la puerta de entrada. Alrededor, estamos construyendo
-            un ecosistema de rutas pre-armadas para metas frecuentes, plantillas
-            operativas, y una red privada para quienes prefieren desenredar
-            acompañados. Esta sección crecerá con el producto.
+            Constella es la puerta de entrada. Alrededor crece un ecosistema
+            que se apoya en el mismo motor: rutas pre-armadas, plantillas
+            operativas y una red privada para desenredar acompañado.
           </p>
+          <ul class="hub-grid">
+            <li>
+              <a class="hub-card" href="app/" id="hub-card-constella">
+                <span class="hub-card__status">Disponible</span>
+                <strong class="hub-card__name">Constella</strong>
+                <span class="hub-card__desc">El motor. Vuelcas tu caos, tu IA lo ordena en un mapa y se enciende una tarea a la vez.</span>
+                <span class="hub-card__go">Abrir →</span>
+              </a>
+            </li>
+            <li>
+              <a class="hub-card hub-card--soon" href="rutas/" id="hub-card-rutas">
+                <span class="hub-card__status">Próximamente</span>
+                <strong class="hub-card__name">Rutas</strong>
+                <span class="hub-card__desc">Mapas pre-armados para metas frecuentes. Los importas y empiezas directo en el paso uno.</span>
+                <span class="hub-card__go">Ver adelanto →</span>
+              </a>
+            </li>
+            <li>
+              <a class="hub-card hub-card--soon" href="plantillas/" id="hub-card-plantillas">
+                <span class="hub-card__status">Próximamente</span>
+                <strong class="hub-card__name">Plantillas</strong>
+                <span class="hub-card__desc">Estructuras operativas para lo que se repite: la semana, el cierre de mes, un lanzamiento.</span>
+                <span class="hub-card__go">Ver adelanto →</span>
+              </a>
+            </li>
+            <li>
+              <a class="hub-card hub-card--soon" href="circulo/" id="hub-card-circulo">
+                <span class="hub-card__status">Próximamente</span>
+                <strong class="hub-card__name">Círculo</strong>
+                <span class="hub-card__desc">Una red privada y pequeña para avanzar acompañado. Compartes tu mapa, no tu vida.</span>
+                <span class="hub-card__go">Ver adelanto →</span>
+              </a>
+            </li>
+          </ul>
         </div>
       </section>
 

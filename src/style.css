@@ -245,6 +245,7 @@ h1, h2, h3 {
   text-transform: uppercase;
   min-height: 48px;
   cursor: pointer;
+  text-decoration: none;
   border: 1px solid var(--border);
   background: transparent;
   color: var(--bone);
@@ -264,6 +265,8 @@ h1, h2, h3 {
   color: var(--bg);
 }
 .btn--primary:hover { background: #ffffff; border-color: #ffffff; }
+.btn--secondary { background: transparent; border-color: var(--bone); color: var(--bone); }
+.btn--secondary:hover { background: var(--bone); color: var(--bg); }
 .btn--ghost { background: transparent; border-color: var(--gray-3); color: var(--gray-1); }
 .btn--ghost:hover { border-color: var(--gray-1); color: var(--bone); }
 .btn--complete {

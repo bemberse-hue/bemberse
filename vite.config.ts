@@ -24,6 +24,11 @@ export default defineConfig({
       input: {
         site: path.resolve(__dirname, 'index.html'),
         app: path.resolve(__dirname, 'app/index.html'),
+        // Placeholders provisionales del hub: productos anunciados que aun
+        // no existen. Estaticos, comparten tokens y layout con el sitio.
+        rutas: path.resolve(__dirname, 'rutas/index.html'),
+        plantillas: path.resolve(__dirname, 'plantillas/index.html'),
+        circulo: path.resolve(__dirname, 'circulo/index.html'),
       },
     },
   },
