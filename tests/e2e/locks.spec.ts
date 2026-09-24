@@ -58,6 +58,51 @@ test('pulsar un nodo desbloqueado abre el inspector como siempre', async ({ page
   await expect(page.locator('#inspector')).not.toHaveClass(/hidden/, { timeout: 5000 });
 });
 
+test('completar una tarea destella los nodos recien desbloqueados, sin candado y sin audio', async ({ page }) => {
+  await page.addInitScript(() => {
+    // Si algo intentara sonar, quedaria registrado aqui.
+    (window as any).__audio = 0;
+    const OrigAudio = window.Audio;
+    (window as any).Audio = function (...args: any[]) {
+      (window as any).__audio++;
+      return new (OrigAudio as any)(...args);
+    };
+    (window as any).AudioContext = function () {
+      (window as any).__audio++;
+    };
+  });
+  await loadSample(page);
+
+  // Registrar que nodos reciben la clase de destello (se retira en animationend).
+  await page.evaluate(() => {
+    (window as any).__flashed = [] as string[];
+    new MutationObserver((records) => {
+      for (const r of records) {
+        const el = r.target as Element;
+        if (el.classList.contains('node--just-unlocked')) (window as any).__flashed.push(el.getAttribute('data-id'));
+      }
+    }).observe(document.querySelector('.nodes-layer')!, { attributes: true, attributeFilter: ['class'], subtree: true });
+  });
+
+  let flashed: string[] = [];
+  for (let i = 0; i < 6 && flashed.length === 0; i++) {
+    await page.keyboard.press('Space');
+    await expect(page.locator('#cockpit')).not.toHaveClass(/hidden/, { timeout: 5000 });
+    await page.click('#btn-complete');
+    await expect(page.locator('#cockpit')).toHaveClass(/hidden/);
+    await page.waitForTimeout(150);
+    flashed = await page.evaluate(() => (window as any).__flashed as string[]);
+  }
+  expect(flashed.length).toBeGreaterThan(0);
+
+  for (const id of flashed) {
+    await expect(page.locator(`.node[data-id="${id}"]`)).not.toHaveClass(/node--locked/);
+  }
+  // La clase se retira sola al acabar la animacion.
+  await expect(page.locator('.node--just-unlocked')).toHaveCount(0, { timeout: 3000 });
+  expect(await page.evaluate(() => (window as any).__audio)).toBe(0);
+});
+
 test('con prefers-reduced-motion, la cadena se marca pero no corre la animacion', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await loadSample(page);

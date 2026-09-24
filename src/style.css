@@ -148,10 +148,22 @@ h1, h2, h3 {
   stroke-dasharray: 4 6;
   animation: edge-flow 0.7s linear infinite;
 }
+/* Destello de desbloqueo: el nodo que acaba de quedar libre se ilumina en
+   hueso una vez. Sin color de acento (ese es del "proximo paso"). */
+/* Va en el <g>, no en el circulo: el circulo puede llevar ya el pulso
+   infinito de .node--next y una animacion pisaria a la otra. */
+.node--just-unlocked { animation: unlock-flash 0.9s var(--ease) 1; }
+@keyframes unlock-flash {
+  0% { filter: drop-shadow(0 0 0 rgba(245, 245, 240, 0)); }
+  35% { filter: drop-shadow(0 0 18px rgba(245, 245, 240, 0.95)); }
+  100% { filter: drop-shadow(0 0 0 rgba(245, 245, 240, 0)); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .edge--active,
   .edge--critical,
-  .edge.trace-active { animation: none; }
+  .edge.trace-active,
+  .node--just-unlocked { animation: none; }
 }
 
 .nodes-layer .node { cursor: pointer; }

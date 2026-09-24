@@ -307,6 +307,30 @@ export class GraphView {
     this.traceTimeoutId = window.setTimeout(() => this.clearTrace(), 3200);
   }
 
+  /**
+   * Destello sobre los nodos que acaban de desbloquearse al completar una
+   * tarea: el candado ya se fue (styleNode), esto marca el momento. La
+   * clase se retira en `animationend`, no con un temporizador fijo; con
+   * movimiento reducido no hay animacion, asi que se retira de inmediato.
+   */
+  flashUnlocked(nodeIds: string[]): void {
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    for (const id of nodeIds) {
+      const g = this.nodeEls.get(id);
+      if (!g) continue;
+      g.classList.remove('node--just-unlocked');
+      if (reduceMotion) continue;
+      const onEnd = (e: Event): void => {
+        // Los hijos burbujean su propio animationend (el pulso del circulo).
+        if ((e as AnimationEvent).animationName !== 'unlock-flash') return;
+        g.classList.remove('node--just-unlocked');
+        g.removeEventListener('animationend', onEnd);
+      };
+      g.addEventListener('animationend', onEnd);
+      g.classList.add('node--just-unlocked');
+    }
+  }
+
   clearTrace(): void {
     if (this.traceTimeoutId !== null) {
       window.clearTimeout(this.traceTimeoutId);

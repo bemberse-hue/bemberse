@@ -188,6 +188,7 @@ function handleComplete(nodeId: string): void {
   graph = result.graph;
 
   graphView.applyStatuses(graph, { animateHighlight: true });
+  graphView.flashUnlocked(result.newlyUnlocked.map((n) => n.id));
   hud.updateStats(graph);
   persist();
 
